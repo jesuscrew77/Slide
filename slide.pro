@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     slide.cpp
 
 HEADERS  += mainwindow.h \
-    slide.h
+    slide.h \
+    catalog.h
 
 FORMS    += mainwindow.ui \
 

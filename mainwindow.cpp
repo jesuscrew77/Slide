@@ -209,9 +209,10 @@ void MainWindow::loadSettings()
 
 }
 
-void MainWindow::makeInscription(QSharedPointer<QImage> optimalImage,const QString&setableText,const int& fontX,const int& fontY,const int& fontSize)
+void MainWindow::makeInscription(QSharedPointer<QImage> optimalImage,const QString& setableText,int fontX,int fontY,int fontSize)
 {
-    QPainter painter_for_text;// наносим надпись на слайд
+    // наносим надпись на слайд
+    QPainter painter_for_text;
     painter_for_text.begin(optimalImage.data());
     QPen pen_for_text;
     QFont font = painter_for_text.font();
@@ -246,62 +247,62 @@ StarSlideData MainWindow::readInputStarSlideData()
     data.pointAlpha = ui->alphaLineEdit->text().toDouble();
     if(data.pointAlpha < 0 || data.pointAlpha > 360)
     {
-        throw SlideUIException("Неверно задан угол альфа");
+        throw std::invalid_argument("Неверно задан угол альфа");
     }
 
     data.pointBeta = ui->betaLineEdit->text().toDouble();
     if(data.pointBeta < -90 || data.pointBeta > 90)
     {
-        throw SlideUIException("Неверно задан угол дельта");
+        throw std::invalid_argument("Неверно задан угол дельта");
     }
 
     data.pointAzimut = ui->azLineEdit->text().toDouble();
     if(data.pointAzimut < 0 || data.pointAzimut > 360)
     {
-        throw throw SlideUIException("Неверно задан угол азимут");
+        throw std::invalid_argument("Неверно задан угол азимут");
     }
 
     data.insideViewAngle = ui->PicDiamLineEdit->text().toDouble();
     if(data.insideViewAngle < 0)
     {
-        throw SlideUIException("Неверно задано внутреннее поле зрения");
+        throw std::invalid_argument("Неверно задано внутреннее поле зрения");
     }
 
     data.focStart = ui->FocStartLineEdit->text().toDouble();
     if(data.focStart < 0)
     {
-        throw SlideUIException("Неверно задано фокусное расстояние");
+        throw std::invalid_argument("Неверно задано фокусное расстояние");
     }
 
     data.focEnd = ui->FocEndLineEdit->text().toDouble();
     if(data.focEnd < 0 || data.focEnd <= data.focStart)
     {
-        throw SlideUIException("Неверно задано фокусное расстояние (конец интервала)");
+        throw std::invalid_argument("Неверно задано фокусное расстояние (конец интервала)");
     }
 
 
     data.focStep = ui->FocStepLineEdit->text().toDouble();
     if(data.focStep < 0)
     {
-        throw SlideUIException("Неверно задан шаг по фокуснуму расстоянию");
+        throw std::invalid_argument("Неверно задан шаг по фокуснуму расстоянию");
     }
 
     data.minMv = ui->minMvLineEdit->text().toDouble();
     data.maxMv = ui->maxMvLineEdit->text().toDouble();
     if(data.maxMv < data.minMv)
     {
-        throw SlideUIException("Неверно задана максимальная звёздная величина");
+        throw std::invalid_argument("Неверно задана максимальная звёздная величина");
     }
     data.pixelPerStar = ui->comboBox->currentIndex();
     data.slideSizeX = ui->slidePixWidthLineEdit->text().toInt();
     if(data.slideSizeX <= 0)
     {
-        throw SlideUIException("Неверно задан размер слайда по Х");
+        throw std::invalid_argument("Неверно задан размер слайда по Х");
     }
     data.slideSizeY = ui->slidePixHeightLineEdit->text().toInt();
     if(data.slideSizeY <= 0)
     {
-        throw SlideUIException("Неверно задан размер слайда по У");
+        throw std::invalid_argument("Неверно задан размер слайда по У");
     }
     data.slideSizeMM_Y = ui->slideHeightLineEdit->text().toDouble();
     data.slideSizeMM_X = ui->slideWidthLineEdit->text().toDouble();
@@ -309,7 +310,7 @@ StarSlideData MainWindow::readInputStarSlideData()
     data.pix = ui->pixSizeLineEdit->text().toDouble();
     if(data.pix < 0)
     {
-        throw SlideUIException("Неверно задан пиксель");
+        throw std::invalid_argument("Неверно задан пиксель");
     }
 
     return data;
@@ -325,7 +326,7 @@ GroupImageParameters MainWindow::readGroupImageParameters()
         data.space = ui->imageSpaceLineEdit->text().toInt();
         if(data.space < 0)
         {
-            throw SlideUIException("Неверно задано значение пропуска между слайдами");
+            throw std::invalid_argument("Неверно задано значение пропуска между слайдами");
         }
     }
     return data;
@@ -337,24 +338,24 @@ GridSlideData MainWindow::readInputGridSlideData()
     data.grid_distance = ui->GridLenghtLineEdit->text().toInt();
     if(data.grid_distance<0)
     {
-        throw SlideUIException("Неверно задана дистанция сетки");
+        throw std::invalid_argument("Неверно задана дистанция сетки");
     }
     data.pixelPerStar = ui->comboBox->currentIndex();
     data.slideSizeX = ui->slidePixWidthLineEdit->text().toInt();
     if(data.slideSizeX <= 0)
     {
-        throw SlideUIException("Неверно задан размер сетки по Х");
+        throw std::invalid_argument("Неверно задан размер сетки по Х");
     }
     data.slideSizeY = ui->slidePixHeightLineEdit->text().toInt();
     if(data.slideSizeY <= 0)
     {
-        throw SlideUIException("Неверно задан размер сетки по У");
+        throw std::invalid_argument("Неверно задан размер сетки по У");
     }
 
     data.pix = ui->pixSizeLineEdit->text().toDouble();
     if(data.pix < 0)
     {
-        throw SlideUIException("Неверно задан пиксель");
+        throw std::invalid_argument("Неверно задан пиксель");
     }
 
     if(ui->GroupSlideRadioButton->isChecked())
@@ -364,7 +365,7 @@ GridSlideData MainWindow::readInputGridSlideData()
         data.space=ui->imageSpaceLineEdit->text().toInt();
         if(data.space < 0)
         {
-            throw SlideUIException("Неверно задано значение пропуска между сетками");
+            throw std::invalid_argument("Неверно задано значение пропуска между сетками");
         }
     }
 
@@ -372,7 +373,7 @@ GridSlideData MainWindow::readInputGridSlideData()
 }
 
 
-void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, const int &sz_x, const int &sz_y, const int &sp, const int &slideSizeX, const int &slideSizeY)
+void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int sz_x, int sz_y, int space, int slideSizeX, int slideSizeY)
 {
     QPainter grid_painter;
     grid_painter.begin(im.data());
@@ -381,1359 +382,1230 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, con
     {
         for(int curRow = 0;curRow < sz_x;curRow ++)
         {
+            grid_painter.drawImage(slideSizeX * curRow + space * curRow, slideSizeY * curColumn + space * curColumn, opt_img);
+        }
+    }
+     grid_painter.end();
+    }
 
-            if(curRow%2 == 0 && curColumn == 0)
+
+
+
+
+
+    void MainWindow::drawSlide(QScopedPointer <QImage> &im, QVector <QImage> &im_v, int sz_x, int sz_y, int space, int  slideSizeX, int slideSizeY)
+    {
+        QPainter slide_painter;
+        slide_painter.begin(im.data());
+
+        for(int i = 0;i < sz_y;i ++)
+        {
+            for(int j = 0;j < sz_x;j ++)
             {
-                grid_painter.drawImage(slideSizeX * curRow + sp * curRow,slideSizeY * curColumn,opt_img);
+                slide_painter.drawImage(slideSizeX * j + space * j,slideSizeY * i + space * i ,im_v[j + i * sz_x]);
+                qApp->processEvents();
             }
-            else if(curRow%2 != 0 && curColumn == 0)
+
+        }
+        slide_painter.end();
+
+    }
+
+    void MainWindow::drawPreviewItem(const QByteArray svg_byteArray,int  slideSizeX,int  slideSizeY)
+    {
+        svgPreview.reset(new QSvgRenderer(svg_byteArray));
+        svgPreviewItem.reset(new QGraphicsSvgItem());
+        svgPreviewItem->setSharedRenderer(svgPreview.data());
+
+        if(ui->showPreviewCheckBox->isChecked())
+        {
+            scene->setSceneRect(0,0,slideSizeX,slideSizeY);
+            scene->addItem(svgPreviewItem.data());
+            ui->graphicsView->setScene(scene.data());
+        }
+    }
+
+    void MainWindow::drawPreviewItems(int  slideSizeX,int  slideSizeY,int  groupImageWidth,int  groupImageHeight,int  space)
+    {
+        scene->setSceneRect(0,0,slideSizeX * groupImageWidth+(space*2) * groupImageWidth,slideSizeY * groupImageHeight+(space*2) * groupImageHeight);
+        for(int i = 0;i < groupImageHeight;i ++)
+        {
+            for(int j = 0;j < groupImageWidth;j ++)
             {
-                grid_painter.drawImage(slideSizeX * curRow + sp * curRow,slideSizeY * curColumn,opt_img);
+                scene->addItem(vectorOfSvgItems[j+i*groupImageWidth].data());
+                vectorOfSvgItems[j + i * groupImageWidth]->setPos(slideSizeX * j + space * j,slideSizeY * i + space * i);
+                qApp->processEvents();
             }
-            else if(curRow%2 == 0 && curColumn > 0)
-            {
-                grid_painter.drawImage(slideSizeX * curRow + sp * curRow, slideSizeY * curColumn +sp * curColumn, opt_img);
-            }
-            else if(curRow%2 != 0 && curColumn > 0)
-            {
-                grid_painter.drawImage(slideSizeX * curRow + sp * curRow,slideSizeY * curColumn + sp * curColumn, opt_img);
-            }
-            qApp->processEvents();
+
+        }
+    }
+
+
+
+    void MainWindow::setUIstate(bool state)
+    {
+        ui->OneSlideRadioButton->setDisabled(state);
+        ui->GroupSlideRadioButton->setDisabled(state);
+        ui->pushButton_2->setDisabled(state);
+        ui->pushButton_4->setDisabled(state);
+        ui->DistorsioCheck->setDisabled(state);
+    }
+
+    void MainWindow::updateLineXPix()
+    {
+        QString updateString;
+        int updateBuffer;
+        float pix = ui->pixSizeLineEdit->text().toDouble();
+        double slideSizeMM_X = ui->slideHeightLineEdit->text().toDouble();
+        if(slideSizeMM_X != 0 && pix != 0)
+        {
+            updateBuffer = slideSizeMM_X / pix;
+            updateString = QString::number(updateBuffer);
+            ui->slidePixHeightLineEdit->setText(updateString);
         }
 
     }
-    grid_painter.end();
-}
 
-
-
-
-
-void MainWindow::drawSlide(QScopedPointer<QImage> &im, QVector<QImage> &im_v, const int &sz_x, const int &sz_y, const int &sp, const int &slideSizeX, const int &slideSizeY)
-{
-    QPainter slide_painter;
-    slide_painter.begin(im.data());
-
-    for(int i = 0;i < sz_y;i ++)
+    void MainWindow::updateLineYPix()
     {
-        for(int j = 0;j < sz_x;j ++)
+        QString updateString;
+        int updateBuffer;
+        float pix = ui->pixSizeLineEdit->text().toDouble();
+        double slideSizeMM_Y=ui->slideWidthLineEdit->text().toDouble();
+        if(slideSizeMM_Y != 0 && pix != 0)
         {
-
-            if(j%2 == 0 && i == 0)
-            {
-
-                slide_painter.drawImage(slideSizeX*j+sp*j,slideSizeY*i,im_v[j+i*sz_x]);
-
-            }
-            else if(j%2!=0 && i==0)
-            {
-                slide_painter.drawImage(slideSizeX*j+sp*j,slideSizeY*i,im_v[j+i*sz_x]);
-
-            }
-            else if(j%2==0 && i>0)
-            {
-
-                slide_painter.drawImage(slideSizeX*j+sp*j,slideSizeY*i+sp*i,im_v[j+i*sz_x]);
-
-            }
-            else if(j%2!=0 && i>0)
-            {
-
-                slide_painter.drawImage(slideSizeX*j+sp*j,slideSizeY*i+sp*i,im_v[j+i*sz_x]);
-
-            }
-            qApp->processEvents();
+            updateBuffer = slideSizeMM_Y/pix;
+            updateString = QString::number((updateBuffer));
+            ui->slidePixWidthLineEdit->setText(updateString);
         }
 
     }
-    slide_painter.end();
 
-}
 
-void MainWindow::drawPreviewItem(const QByteArray svg_byteArray,const int &slideSizeX,const int &slideSizeY)
-{
-    svgPreview.reset(new QSvgRenderer(svg_byteArray));
-    svgPreviewItem.reset(new QGraphicsSvgItem());
-    svgPreviewItem->setSharedRenderer(svgPreview.data());
 
-    if(ui->showPreviewCheckBox->isChecked())
+    void MainWindow::updateLineXMM()
+
     {
-        scene->setSceneRect(0,0,slideSizeX,slideSizeY);
-        scene->addItem(svgPreviewItem.data());
-        ui->graphicsView->setScene(scene.data());
-    }
-}
-
-void MainWindow::drawPreviewItems(const int &slideSizeX,const int &slideSizeY,const int &groupImageWidth,const int &groupImageHeight,const int &space)
-{
-    scene->setSceneRect(0,0,slideSizeX * groupImageWidth+(space*2) * groupImageWidth,slideSizeY * groupImageHeight+(space*2) * groupImageHeight);
-    for(int i = 0;i < groupImageHeight;i ++)
-    {
-        for(int j = 0;j < groupImageWidth;j ++)
-
+        QString updateString;
+        float pix = ui->pixSizeLineEdit->text().toDouble();
+        int slideSizeX = ui->slidePixHeightLineEdit->text().toInt();
+        if(pix != 0 && slideSizeX != 0)
         {
-            if(j%2==0 && i==0)
-            {
-                scene->addItem(vectorOfSvgItems[j+i*groupImageWidth].data());
-                vectorOfSvgItems[j+i*groupImageWidth]->setPos(slideSizeX*j+space*j,slideSizeY*i);
-            }
-            else if(j%2!=0 && i==0)
-            {
-
-                scene->addItem(vectorOfSvgItems[j+i*groupImageWidth].data());
-                vectorOfSvgItems[j+i*groupImageWidth]->setPos(slideSizeX*j+space*j,slideSizeY*i);
-            }
-            else if(j%2==0 && i>0)
-            {
-
-                scene->addItem(vectorOfSvgItems[j+i*groupImageWidth].data());
-                vectorOfSvgItems[j+i*groupImageWidth]->setPos(slideSizeX*j+space*j,slideSizeY*i+space*i);
-            }
-            else if(j%2!=0 && i>0)
-            {
-
-                scene->addItem(vectorOfSvgItems[j+i*groupImageWidth].data());
-                vectorOfSvgItems[j+i*groupImageWidth]->setPos(slideSizeX*j+space*j,slideSizeY*i+space*i);
-            }
-            qApp->processEvents();
+            updateString = QString::number(slideSizeX * pix);
+            ui->slideHeightLineEdit->setText(updateString);
         }
     }
-}
 
 
 
-void MainWindow::setUIstate(bool state)
-{
-    ui->OneSlideRadioButton->setDisabled(state);
-    ui->GroupSlideRadioButton->setDisabled(state);
-    ui->pushButton_2->setDisabled(state);
-    ui->pushButton_4->setDisabled(state);
-    ui->DistorsioCheck->setDisabled(state);
-}
 
-void MainWindow::updateLineXPix()
-{
-    QString updateString;
-    int updateBuffer;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
-    double slideSizeMM_X = ui->slideHeightLineEdit->text().toDouble();
-    if(slideSizeMM_X != 0 && pix != 0)
+
+    void MainWindow::updateLineYMM()
+
     {
-        updateBuffer = slideSizeMM_X / pix;
-        updateString = QString::number(updateBuffer);
-        ui->slidePixHeightLineEdit->setText(updateString);
-    }
-
-}
-
-void MainWindow::updateLineYPix()
-{
-    QString updateString;
-    int updateBuffer;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
-    double slideSizeMM_Y=ui->slideWidthLineEdit->text().toDouble();
-    if(slideSizeMM_Y != 0 && pix != 0)
-    {
-        updateBuffer = slideSizeMM_Y/pix;
-        updateString = QString::number((update_buf));
-        ui->slidePixWidthLineEdit->setText(updateString);
-    }
-
-}
-
-
-
-void MainWindow::updateLineXMM()
-
-{
-    QString updateString;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
-    int slideSizeX = ui->slidePixHeightLineEdit->text().toInt();
-    if(pix != 0 && slideSizeX != 0)
-    {
-        updateString = QString::number(slideSizeX * pix);
-        ui->slideHeightLineEdit->setText(updateString);
-    }
-}
-
-
-
-
-
-void MainWindow::updateLineYMM()
-
-{
-    QString updateString;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
-    int slideSizeY = ui->slidePixWidthLineEdit->text().toInt();
-    if(pix != 0 && slideSizeY != 0)
-    {
-        updateString = QString::number(slideSizeY * pix);
-        ui->slideWidthLineEdit->setText(updateString);
-    }
-}
-
-
-void MainWindow::setLine()
-{
-    if(ui->GroupSlideRadioButton->isChecked())
-    {
-        ui->FocEndLineEdit->setDisabled(false);
-        ui->FocStepLineEdit->setDisabled(false);
-        ui->imageWeightLineEdit->setDisabled(false);
-        ui->imageHeightLineEdit->setDisabled(false);
-        ui->imageSpaceLineEdit->setDisabled(false);
-
-    }
-    else if(ui->OneSlideRadioButton->isChecked())
-    {
-        ui->FocEndLineEdit->setDisabled(true);
-        ui->FocStepLineEdit->setDisabled(true);
-        ui->imageWeightLineEdit->setDisabled(true);
-        ui->imageHeightLineEdit->setDisabled(true);
-        ui->imageSpaceLineEdit->setDisabled(true);
-
-    }
-}
-
-void MainWindow::setMatrixState()
-{
-    if(ui->checkBox->isChecked())
-    {
-        ui->slideWidthLineEdit->setReadOnly(true);
-        ui->slidePixWidthLineEdit->setReadOnly(true);
-        ui->slideWidthLineEdit->setText(ui->slideHeightLineEdit->text());
-        ui->slidePixWidthLineEdit->setText(ui->slidePixHeightLineEdit->text());
-    }
-    else if(!ui->checkBox->isChecked())
-    {
-        ui->slideWidthLineEdit->setReadOnly(false);
-        ui->slidePixWidthLineEdit->setReadOnly(false);
-    }
-
-}
-
-
-
-
-
-void MainWindow::setAlgorithmState()
-{
-    if(ui->checkSector->isChecked())
-    {
-        ui->PicDiamLineEdit->setDisabled(true);
-    }
-    else
-    {
-        ui->PicDiamLineEdit->setDisabled(false);
-    }
-
-
-}
-
-
-
-
-
-void MainWindow::setDistButtonState()
-{
-    if(!ui->DistorsioCheck->isChecked())
-    {
-        ui->pushButton_6->setDisabled(true);
-    }
-    else if(ui->DistorsioCheck->isChecked())
-    {
-        ui->pushButton_6->setDisabled(false);
-    }
-
-}
-
-
-
-void MainWindow::chooseTab()
-{
-    if(!ui->GenTabWidget->currentIndex())
-    {
-        ui->FocEndLineEdit->setDisabled(false);
-        ui->FocStartLineEdit->setDisabled(false);
-        ui->FocStepLineEdit->setDisabled(false);
-        ui->minMvLineEdit->setDisabled(false);
-        ui->maxMvLineEdit->setDisabled(false);
-    }
-    else if(ui->GenTabWidget->currentIndex() == 1)
-    {
-        ui->FocEndLineEdit->setDisabled(true);
-        ui->FocStartLineEdit->setDisabled(true);
-        ui->FocStepLineEdit->setDisabled(true);
-        ui->minMvLineEdit->setDisabled(true);
-        ui->maxMvLineEdit->setDisabled(true);
-    }
-}
-
-
-void MainWindow::clearSceneAndImages()
-{
-    if(ui->showPreviewCheckBox->isChecked())// если отображаем на превью, то очищаем его каждый раз
-    {
-        if(!scene)
+        QString updateString;
+        float pix = ui->pixSizeLineEdit->text().toDouble();
+        int slideSizeY = ui->slidePixWidthLineEdit->text().toInt();
+        if(pix != 0 && slideSizeY != 0)
         {
-            scene.reset(new QGraphicsScene);
+            updateString = QString::number(slideSizeY * pix);
+            ui->slideWidthLineEdit->setText(updateString);
+        }
+    }
+
+
+    void MainWindow::setLine()
+    {
+        if(ui->GroupSlideRadioButton->isChecked())
+        {
+            ui->FocEndLineEdit->setDisabled(false);
+            ui->FocStepLineEdit->setDisabled(false);
+            ui->imageWeightLineEdit->setDisabled(false);
+            ui->imageHeightLineEdit->setDisabled(false);
+            ui->imageSpaceLineEdit->setDisabled(false);
+
+        }
+        else if(ui->OneSlideRadioButton->isChecked())
+        {
+            ui->FocEndLineEdit->setDisabled(true);
+            ui->FocStepLineEdit->setDisabled(true);
+            ui->imageWeightLineEdit->setDisabled(true);
+            ui->imageHeightLineEdit->setDisabled(true);
+            ui->imageSpaceLineEdit->setDisabled(true);
+
+        }
+    }
+
+    void MainWindow::setMatrixState()
+    {
+        if(ui->checkBox->isChecked())
+        {
+            ui->slideWidthLineEdit->setReadOnly(true);
+            ui->slidePixWidthLineEdit->setReadOnly(true);
+            ui->slideWidthLineEdit->setText(ui->slideHeightLineEdit->text());
+            ui->slidePixWidthLineEdit->setText(ui->slidePixHeightLineEdit->text());
+        }
+        else if(!ui->checkBox->isChecked())
+        {
+            ui->slideWidthLineEdit->setReadOnly(false);
+            ui->slidePixWidthLineEdit->setReadOnly(false);
+        }
+
+    }
+
+
+
+
+
+    void MainWindow::setAlgorithmState()
+    {
+        if(ui->checkSector->isChecked())
+        {
+            ui->PicDiamLineEdit->setDisabled(true);
         }
         else
         {
-            svgPreview.reset();
-            svgPreviewItem.reset();
-            vectorOfSvgPreviews.clear();
-            vectorOfSvgItems.clear();
-            scene->updateString(scene->sceneRect());
+            ui->PicDiamLineEdit->setDisabled(false);
         }
 
-        ui->graphicsView->setScene(scene.data());
-    }
-    leftTopImage.reset();
-    leftDownImage.reset();
-    rightDownImage.reset();
-    rightTopImage.reset();
-    optimalImage.reset();
-}
-
-void MainWindow::setImagesSizes(const int &slideSizeX, const int &slideSizeY, const int& groupImageHeight , const int&groupImageWidth, const int& space)
-{
-    const int imageSizeLimit = 32767;
-    const int limitX = imageSizeLimit / slideSizeX;// вычисляем максимально возможное число слайдов в ширину на одном изображении
-    const int limitY = imageSizeLimit / slideSizeY;// вычисляем максимально возможное число слайдов в высоту на одном изображении
-    int imageSizeX = 0;
-    int imageSizeY = 0;
-    int imageSizeXLeftDown = 0;
-    int imageSizeYLeftDown = 0;
-    int imageSizeXRightTop = 0;
-    int imageSizeYRightTop = 0;
-
-
-    //размер изображения в зависимости от лимита и размера одного слайда
-    if(groupImageWidth <= limitX && groupImageHeight <= limitY) //если желаемая размерность не превышает лимит
-    {
-
-        imageSizeX = (slideSizeX * groupImageWidth)+(space*2) * groupImageWidth;
-        imageSizeY = (slideSizeY * groupImageHeight)+(space*2) * groupImageHeight;
-        leftTopImage.reset(new QImage(imageSizeX, imageSizeY , QImage::Format_Mono));
-        leftTopImage->fill(Qt::color1);
 
     }
 
-    else if(groupImageWidth > limitX && groupImageHeight > limitY) //если желаемая размерность превышает лимит по высоте и ширине
+
+
+
+
+    void MainWindow::setDistButtonState()
     {
-        int imageSizeXRightDown = 0;
-        int imageSizeYRightDown = 0;
-        imageSizeX = (slideSizeX * limitX) + (space * 2) * limitX;
-        imageSizeY = (slideSizeY * limitY) + (space * 2) * limitY;
-        imageSizeXLeftDown = imageSizeX;
-        imageSizeYLeftDown = imageSizeY;
-        imageSizeXRightTop = imageSizeX;
-        imageSizeYRightTop = imageSizeY;
-
-        /* Если ширина и высота больше, чем могут вместить 4 изображение, то последнему так же присваеваем максимально
-         * возможный размер, игнорируя превышение */
-        if((groupImageWidth-limitX) < limitX && (groupImageHeight-limitY) < limitY)
+        if(!ui->DistorsioCheck->isChecked())
         {
-            imageSizeXRightDown = slideSizeX * (groupImageWidth-limitX) + (space*2) * (groupImageWidth - limitX);
-            imageSizeYRightDown = slideSizeY * (groupImageHeight-limitY) + (space*2) * (groupImageHeight - limitY);
+            ui->pushButton_6->setDisabled(true);
         }
-        else
+        else if(ui->DistorsioCheck->isChecked())
         {
-            imageSizeXRightDown=imageSizeX;
-            imageSizeYRightDown=imageSizeY;
+            ui->pushButton_6->setDisabled(false);
         }
-
-
-        leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
-        leftTopImage->fill(Qt::color1);
-        leftDownImage.reset(new QImage(imageSizeXLeftDown,imageSizeYLeftDown, QImage::Format_Mono));
-        leftDownImage->fill(Qt::color1);
-        rightTopImage.reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
-        rightTopImage->fill(Qt::color1);
-        rightDownImage.reset(new QImage(imageSizeXRightDown,imageSizeYRightDown, QImage::Format_Mono));
-        rightDownImage->fill(Qt::color1);
-
 
     }
-    else if(groupImageWidth>limitX) //если желаемая размерность превышает лимит по ширине
+
+
+
+    void MainWindow::chooseTab()
     {
-        imageSizeX = (slideSizeX * limitX) + (space * 2) * limitX;
-        imageSizeY = (slideSizeY * groupImageHeight) + (space * 2) * groupImageHeight;
-
-        /* Если ширина больше, чем может вместить правое изображение, то ему так же присваеваем максимально
-         * возможный размер, игнорируя превышение */
-        if(groupImageWidth - limitX < limitX)
+        if(!ui->GenTabWidget->currentIndex())
         {
-            imageSizeXRightTop = slideSizeX * (groupImageWidth - limitX)+(space*2)*(groupImageWidth - limitX);
-            imageSizeYRightTop = slideSizeY * groupImageHeight+(space*2)*groupImageHeight;
+            ui->FocEndLineEdit->setDisabled(false);
+            ui->FocStartLineEdit->setDisabled(false);
+            ui->FocStepLineEdit->setDisabled(false);
+            ui->minMvLineEdit->setDisabled(false);
+            ui->maxMvLineEdit->setDisabled(false);
         }
-        else
+        else if(ui->GenTabWidget->currentIndex() == 1)
         {
-            imageSizeXRightTop = imageSizeX;
-            imageSizeYRightTop = imageSizeY;
+            ui->FocEndLineEdit->setDisabled(true);
+            ui->FocStartLineEdit->setDisabled(true);
+            ui->FocStepLineEdit->setDisabled(true);
+            ui->minMvLineEdit->setDisabled(true);
+            ui->maxMvLineEdit->setDisabled(true);
         }
-
-
-        leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
-        leftTopImage->fill(Qt::color1);
-        rightTopImage.reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
-        rightTopImage->fill(Qt::color1);
-
-
     }
-    else if(groupImageHeight > limitY)  //если желаемая размерность превышает лимит по высоте
-    {
-        imageSizeX = (slideSizeX * groupImageWidth) + (space * 2) * groupImageWidth;
-        imageSizeY = (slideSizeY * limitY) + (space*2) * limitY;
 
-        /* Если высота больше, чем может вместить нижнее изображение, то ему так же присваеваем максимально
-         * возможный размер, игнорируя превышение */
-        if(groupImageHeight - limitY < limitY)
+
+    void MainWindow::clearSceneAndImages()
+    {
+        if(ui->showPreviewCheckBox->isChecked())// если отображаем на превью, то очищаем его каждый раз
         {
-            imageSizeXLeftDown = slideSizeX * groupImageWidth + (space*2) * groupImageWidth;
-            imageSizeYLeftDown = slideSizeY * (groupImageHeight - limitY) + (space*2)*(groupImageHeight - limitY);
+            if(!scene)
+            {
+                scene.reset(new QGraphicsScene);
+            }
+            else
+            {
+                svgPreview.reset();
+                svgPreviewItem.reset();
+                vectorOfSvgPreviews.clear();
+                vectorOfSvgItems.clear();
+                scene->update(scene->sceneRect());
+            }
+
+            ui->graphicsView->setScene(scene.data());
         }
-        else
+        leftTopImage.reset();
+        leftDownImage.reset();
+        rightDownImage.reset();
+        rightTopImage.reset();
+        optimalImage.reset();
+    }
+
+    void MainWindow::setImagesSizes(int slideSizeX,int slideSizeY,int groupImageHeight ,int groupImageWidth, int space)
+    {
+        const int imageSizeLimit = 32767;
+        const int limitX = imageSizeLimit / slideSizeX;// вычисляем максимально воintсло слайдов в ширинуintизображении
+        const int limitY = imageSizeLimit / slideSizeY;// вычисляем максимально возможное число слайдов в высоту на одном изображении
+        int imageSizeX = 0;
+        int imageSizeY = 0;
+        int imageSizeXLeftDown = 0;
+        int imageSizeYLeftDown = 0;
+        int imageSizeXRightTop = 0;
+        int imageSizeYRightTop = 0;
+
+
+        //размер изображения в зависимости от лимита и размера одного слайда
+        if(groupImageWidth <= limitX && groupImageHeight <= limitY) //если желаемая размерность не превышает лимит
         {
+
+            imageSizeX = (slideSizeX * groupImageWidth)+(space*2) * groupImageWidth;
+            imageSizeY = (slideSizeY * groupImageHeight)+(space*2) * groupImageHeight;
+            leftTopImage.reset(new QImage(imageSizeX, imageSizeY , QImage::Format_Mono));
+            leftTopImage->fill(Qt::color1);
+
+        }
+
+        else if(groupImageWidth > limitX && groupImageHeight > limitY) //если желаемая размерность превышает лимит по высоте и ширине
+        {
+            int imageSizeXRightDown = 0;
+            int imageSizeYRightDown = 0;
+            imageSizeX = (slideSizeX * limitX) + (space * 2) * limitX;
+            imageSizeY = (slideSizeY * limitY) + (space * 2) * limitY;
             imageSizeXLeftDown = imageSizeX;
             imageSizeYLeftDown = imageSizeY;
+            imageSizeXRightTop = imageSizeX;
+            imageSizeYRightTop = imageSizeY;
+
+            /* Если ширина и высота больше, чем могут вместить 4 изображение, то последнему так же присваеваем максимально
+         * возможный размер, игнорируя превышение */
+            if((groupImageWidth-limitX) < limitX && (groupImageHeight-limitY) < limitY)
+            {
+                imageSizeXRightDown = slideSizeX * (groupImageWidth-limitX) + (space*2) * (groupImageWidth - limitX);
+                imageSizeYRightDown = slideSizeY * (groupImageHeight-limitY) + (space*2) * (groupImageHeight - limitY);
+            }
+            else
+            {
+                imageSizeXRightDown=imageSizeX;
+                imageSizeYRightDown=imageSizeY;
+            }
+
+
+            leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
+            leftTopImage->fill(Qt::color1);
+            leftDownImage.reset(new QImage(imageSizeXLeftDown,imageSizeYLeftDown, QImage::Format_Mono));
+            leftDownImage->fill(Qt::color1);
+            rightTopImage.reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
+            rightTopImage->fill(Qt::color1);
+            rightDownImage.reset(new QImage(imageSizeXRightDown,imageSizeYRightDown, QImage::Format_Mono));
+            rightDownImage->fill(Qt::color1);
+
+
         }
-
-        leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
-        leftTopImage->fill(Qt::color1);
-        leftDownImage.reset(new QImage(imageSizeXLeftDown, imageSizeYLeftDown, QImage::Format_Mono));
-        leftDownImage->fill(Qt::color1);
-
-    }
-}
-
-void MainWindow::openCatalog()
-{
-
-    QVector <double> alphaVec;
-    QVector <double> betaVec;
-    QVector <float> mvVec;
-    QVector <double> alphaVecSec;
-    QVector <double> betaVecSec;
-    QVector <long> countSecVec;
-    QVector <long> shiftVec;
-    QVector<short> newNumn;
-
-
-    data_star generalCat;
-    sector secCat;
-    QVector <sector> secVec;
-    QVector <data_star> dataStarVec;
-    QString bufFilename;
-    QString filenameAdd;
-    numbers number;
-
-    constexpr  static double transToGrad = 57.29577957855229;
-    constexpr  static double div = 0.00000001;
-    constexpr  static int structSize = 18;
-    catalogIsRead = false;
-
-    if(sizeof(generalCat) != structSize)
-    {
-        QMessageBox::information(NULL,"Ошибка","Размер структуры не соответствует заданному. Обратитесь к разработчику");
-        exit(1);
-    }
-    ifstream in(filename.toLocal8Bit().constData(),ios::binary);
-    if(in.is_open())
-    {
-        while(in.read((char*)&generalCat,sizeof(generalCat)))// считываем каталог в вектор структур
+        else if(groupImageWidth>limitX) //если желаемая размерность превышает лимит по ширине
         {
-            dataStarVec.append(generalCat);
+            imageSizeX = (slideSizeX * limitX) + (space * 2) * limitX;
+            imageSizeY = (slideSizeY * groupImageHeight) + (space * 2) * groupImageHeight;
+
+            /* Если ширина больше, чем может вместить правое изображение, то ему так же присваеваем максимально
+         * возможный размер, игнорируя превышение */
+            if(groupImageWidth - limitX < limitX)
+            {
+                imageSizeXRightTop = slideSizeX * (groupImageWidth - limitX)+(space*2)*(groupImageWidth - limitX);
+                imageSizeYRightTop = slideSizeY * groupImageHeight+(space*2)*groupImageHeight;
+            }
+            else
+            {
+                imageSizeXRightTop = imageSizeX;
+                imageSizeYRightTop = imageSizeY;
+            }
+
+
+            leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
+            leftTopImage->fill(Qt::color1);
+            rightTopImage.reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
+            rightTopImage->fill(Qt::color1);
+
+
         }
-        in.close();
-    }
-    else
-    {
-        QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-        ui->catalogStatusLabel->setText("Ошибка");
-        return;
-    }
-
-    for (QVector<data_star>::iterator it = dataStarVec.begin();it != dataStarVec.end();it ++)// расшифровываем считанный каталог
-    {
-        alphaVec.append((it->alpha) * div * (transToGrad));
-        betaVec.append((it->beta) * div * (transToGrad));
-        mvVec.append(((it->mv) - 20));
-    }
-    dataStarVec.clear();
-
-    for(int i = 0;i < mvVec.size();i ++)
-    {
-        mvVec[i] = mvVec[i] / 10;
-    }
-
-
-    bufFilename = filename;
-    filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end() - filename.begin());
-    filenameAdd.append("_SEC.CAT");
-    in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
-    if(in.is_open())
-    {
-        while(in.read((char*)&secCat,sizeof(sector)))// считываем каталог в вектор структур
+        else if(groupImageHeight > limitY)  //если желаемая размерность превышает лимит по высоте
         {
-            secVec.append(secCat);
-        }
-        in.close();
-    }
-    else
-    {
-        QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-        ui->catalogStatusLabel->setText("Ошибка");
-        return;
-    }
+            imageSizeX = (slideSizeX * groupImageWidth) + (space * 2) * groupImageWidth;
+            imageSizeY = (slideSizeY * limitY) + (space*2) * limitY;
 
-    for (QVector<sector>::iterator it = secVec.begin();it != secVec.end();it ++)
-    {
-        alphaVecSec.append((it->alpha_c)*(transToGrad));
-        betaVecSec.append((it->beta_c)*(transToGrad));
-        countSecVec.append(it->count_in_sector);
-        shiftVec.append(it->shift);
-    }
-    secVec.clear();
+            /* Если высота больше, чем может вместить нижнее изображение, то ему так же присваеваем максимально
+         * возможный размер, игнорируя превышение */
+            if(groupImageHeight - limitY < limitY)
+            {
+                imageSizeXLeftDown = slideSizeX * groupImageWidth + (space*2) * groupImageWidth;
+                imageSizeYLeftDown = slideSizeY * (groupImageHeight - limitY) + (space*2)*(groupImageHeight - limitY);
+            }
+            else
+            {
+                imageSizeXLeftDown = imageSizeX;
+                imageSizeYLeftDown = imageSizeY;
+            }
 
+            leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
+            leftTopImage->fill(Qt::color1);
+            leftDownImage.reset(new QImage(imageSizeXLeftDown, imageSizeYLeftDown, QImage::Format_Mono));
+            leftDownImage->fill(Qt::color1);
 
-    filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end()-filename.begin());
-    filenameAdd.append("_NUM.CAT");
-    in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
-    if(in.is_open())
-    {
-        while(in.read((char*)&number.num,sizeof(number.num)))// считываем каталог в вектор
-        {
-            newNumn.append(number.num);
-        }
-        in.close();
-    }
-    else
-    {
-        QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-        ui->catalogStatusLabel->setText("Ошибка");
-        return;
-    }
-
-    for(QVector<short>::iterator it = newNumn.begin();it != newNumn.end();it++)
-    {
-        if(*it < 0)
-        {
-            *it = *it*(-1);// избавляемся от отрицательных значений
         }
     }
-    for(int i = 0;i <= newNumn.size() - 1;i ++)
+
+    void MainWindow::openCatalog()
     {
-        newNumn[i] = newNumn[i] - 1;
-    }
 
-    QString countOfStar(QString::number(alphaVec.size()));
-    ui->catalogStatusLabel->setText(countOfStar);
-
-    catalogData.alpha_vec = alphaVec;
-    catalogData.beta_vec = betaVec;
-    catalogData.alpha_vec_sec = alphaVecSec;
-    catalogData.beta_vec_sec = betaVecSec;
-    catalogData.mv_vec = mvVec;
-    catalogData.new_numn = newNumn;
-    catalogData.shift_vec = shiftVec;
-    catalogData.count_sec_vec = countSecVec;
-
-    catalogIsRead = true;
-}
+        QVector <double> alphaVec;
+        QVector <double> betaVec;
+        QVector <float> mvVec;
+        QVector <double> alphaVecSec;
+        QVector <double> betaVecSec;
+        QVector <long> countSecVec;
+        QVector <long> shiftVec;
+        QVector<short> newNumn;
 
 
+        data_star generalCat;
+        sector secCat;
+        QVector <sector> secVec;
+        QVector <data_star> dataStarVec;
+        QString bufFilename;
+        QString filenameAdd;
+        numbers number;
 
+        constexpr  static double transToGrad = 57.29577957855229;
+        constexpr  static double div = 0.00000001;
+        constexpr  static int structSize = 18;
+        catalogIsRead = false;
 
-
-void MainWindow::chooseCatalog()
-{
-    if(lastCatalogDirectory.isNull())
-    {
-        filename = QFileDialog::getOpenFileName(this,
-                                                tr("Open .CAT"), ".",
-                                                tr(".CAT files (*.CAT)"));
-        ui->filenameLineEdit->setText(filename);
-        int pos = filename.lastIndexOf("/");
-        lastCatalogDirectory = filename.left(pos);
-    }
-    else
-    {
-        filename = QFileDialog::getOpenFileName(this,
-                                                tr("Open .CAT"), lastCatalogDirectory,
-                                                tr(".CAT files (*.CAT)"));
-        ui->filenameLineEdit->setText(filename);
-
-    }
-    openCatalog();
-
-}
-
-
-
-void MainWindow::useCurrentCatalog()
-{
-    openCatalog();
-}
-
-
-
-void MainWindow::chooseDistorsioFile()
-{
-    xDistorsioVector.clear();
-    yDistorsioVector.clear();
-
-    if(lastDistorsioDirectory.isNull())
-    {
-        distorsioFilename = QFileDialog::getOpenFileName(this,
-                                                         tr("Open .txt"), ".",
-                                                         tr(".txt files (*.txt)"));
-
-        int pos = distorsioFilename.lastIndexOf("/");
-        lastDistorsioDirectory = distorsioFilename.left(pos);
-
-    }
-    else
-    {
-        distorsioFilename = QFileDialog::getOpenFileName(this,
-                                                         tr("Open .txt"), lastDistorsioDirectory,
-                                                         tr(".txt files (*.txt)"));
-    }
-    QFile file(distorsioFilename);
-    QTextStream in(&file);
-    QString line;
-    in.setRealNumberNotation(QTextStream::ScientificNotation);
-    if(file.open(QIODevice::ReadOnly |QIODevice::Text))
-    {
-        line = in.readAll();
-    }
-    else
-    {
-        QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-        ui->distReadInfoLabel->setText("Коэффициенты не считаны");
-        ui->DistorsioPathLineEdit->setText(" ");
-        file.close();
-        distorsioIsRead = false;
-        return;
-    }
-
-    file.close();
-
-    line.replace("\n", " ");
-    QStringList result = line.split(" ", QString::SkipEmptyParts);
-    for(int i = 0;i < result.size();i ++)
-    {
-        if(i%2 == 0)
+        if(sizeof(generalCat) != structSize)
         {
-            xDistorsioVector.append(result[i].toDouble());
+            QMessageBox::information(NULL,"Ошибка","Размер структуры не соответствует заданному. Обратитесь к разработчику");
+            exit(1);
+        }
+        ifstream in(filename.toLocal8Bit().constData(),ios::binary);
+        if(in.is_open())
+        {
+            while(in.read((char*)&generalCat,sizeof(generalCat)))// считываем каталог в вектор структур
+            {
+                dataStarVec.append(generalCat);
+            }
+            in.close();
         }
         else
         {
-            yDistorsioVector.append(result[i].toDouble());
+            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
+            ui->catalogStatusLabel->setText("Ошибка");
+            return;
         }
-    }
 
-    constexpr int maxCoefsCount = 21;
-    while(xDistorsioVector.size() != maxCoefsCount)
-    {
-        xDistorsioVector.append(0);
-        yDistorsioVector.append(0);
-    }
-
-    ui->DistorsioPathLineEdit->setText(distorsioFilename);
-    ui->distReadInfoLabel->setText("Коэффициенты считаны");
-    distorsioIsRead = true;
-
-}
-
-
-
-QByteArray MainWindow::createPreviewImage(const int imageWidth, const int iamgeHeight, const int fontSize, const int fontX, const int fontY, const QString setableText, QVector<StarParameters> coordinatesOfStars)
-{
-
-    QDomDocument doc("pic");
-    QDomElement svg = doc.createElement("svg");
-    QDomElement cube = doc.createElement("rect");
-    svg.setAttribute("viewBox",QString("0 ")+"0 "+QString::number(imageWidth)+" "+QString::number(iamgeHeight));
-    svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
-    svg.setAttribute("encoding","UTF-8");
-    svg.setAttribute("width",QString::number(imageWidth));
-    svg.setAttribute("height",QString::number(iamgeHeight));
-    cube.setAttribute("x","0");
-    cube.setAttribute("y","0");
-    cube.setAttribute("width",QString::number(imageWidth));
-    cube.setAttribute("height",QString::number(iamgeHeight));
-    cube.setAttribute("fill","black");
-    doc.appendChild(svg);
-    svg.appendChild(cube);
-    for(auto& starCoordinate : coordinatesOfStars)
-    {
-        QDomElement star = doc.createElement("rect");
-        star.setAttribute("x",QString::number(starCoordinate.x));
-        star.setAttribute("fill","white");
-        star.setAttribute("y",QString::number(starCoordinate.y));
-        star.setAttribute("width",QString::number(starCoordinate.sizeX));
-        star.setAttribute("height",QString::number(starCoordinate.sizeY));
-        svg.appendChild(star);
-    }
-    QDomElement textElement = doc.createElement("text");
-    QDomText text = doc.createTextNode(setableText);
-    textElement.setAttribute("x",QString::number(fontX));
-    textElement.setAttribute("y",QString::number(fontY));
-    textElement.setAttribute("style","fill: white;");
-    textElement.setAttribute("font-size",QString::number(fontSize));
-    textElement.appendChild(text);
-    svg.appendChild(textElement);
-    QByteArray svgImage = doc.toByteArray();
-    return svgImage;
-}
-
-
-
-void MainWindow::createImage()
-{
-
-    if(!catalogIsRead)// если каталог не считан
-    {
-        QMessageBox::warning(NULL,"Ошибка","Выберите каталог или подтвердите использование текущего");
-        return;
-    }
-
-    if(ui->DistorsioCheck->isChecked() && !distorsioIsRead)
-    {
-        QMessageBox::warning(NULL,"Ошибка","Выберите файл с коэффициентами дисторсии");
-        return;
-    }
-
-    ui->progressBar->setValue(0);
-
-    try
-    {
-        setUIstate(true);
-        clearSceneAndImages();
-        StarSlideData slideData(readInputStarSlideData());
-        GroupImageParameters groupImgData (readGroupImageParameters());
-        InscriptParams inscriptData(readInscriptionParams());
-        QScopedPointer<SlideCreator> slideCreator(new SlideCreator());
-        slideCreator->calculateAngularDistOptions(slideData,catalogData,ui->checkSector->isChecked());
-
-
-        if(ui->OneSlideRadioButton->isChecked())
+        for (QVector<data_star>::iterator it = dataStarVec.begin();it != dataStarVec.end();it ++)// расшифровываем считанный каталог
         {
-            ui->progressBar->setRange(0, 100);
-            DistorsioData distData;
-            if(ui->DistorsioCheck->isChecked())
-            {
-                distData.xDistorsioVector = xDistorsioVector;
-                distData.yDistorsioVector = yDistorsioVector;
-            }
-
-            SlideParameters imgData = slideCreator->createStarSlide(slideData.focStart,ui->checkSector->isChecked(),ui->DistorsioCheck->isChecked(),distData);
-            optimalImage = slideCreator->getSlidePointer();
-            ui->progressBar->setValue(50);
-
-            QString setableText = inscriptData.prefix + " "+ "f=" + QString::number(slideData.focStart)+"mm"+","+" "
-                    +QString::number(imgData.count_of_stars)+"zv." + "," + " " + " cat."+" "
-                    +QString::number(catalogData.alpha_vec.size())+","+" " + ui->comboBox->currentText()+","
-                    +" "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0) + ","
-                    +" "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0) + ","+" "
-                    +"2w= " + QString::number(imgData.view_angle_x)+"x"
-                    +QString::number(imgData.view_angle_y)+" "+inscriptData.suffix;
-
-
-            makeInscription(optimalImage,setableText,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
-
-            if(ui->showPreviewCheckBox->isChecked())
-            {
-                QByteArray previewImageData =
-                        createPreviewImage(slideData.slideSizeX,slideData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,setableText,imgData.coordinatesOfStars);
-                drawPreviewItem(previewImageData,slideData.slideSizeX,slideData.slideSizeY);
-            }
-            ui->progressBar->setValue(100);
+            alphaVec.append((it->alpha) * div * (transToGrad));
+            betaVec.append((it->beta) * div * (transToGrad));
+            mvVec.append(((it->mv) - 20));
         }
+        dataStarVec.clear();
 
-
-        else if(ui->GroupSlideRadioButton->isChecked())
+        for(int i = 0;i < mvVec.size();i ++)
         {
-            // проверка соответствия длины массива фокусных расстояний размерности матрицы
-            if ((groupImgData.groupImageWidth * groupImgData.groupImageHeight) < ((slideData.focEnd - slideData.focStart) / slideData.focStep) + 1)
+            mvVec[i] = mvVec[i] / 10;
+        }
+
+
+        bufFilename = filename;
+        filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end() - filename.begin());
+        filenameAdd.append("_SEC.CAT");
+        in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
+        if(in.is_open())
+        {
+            while(in.read((char*)&secCat,sizeof(sector)))// считываем каталог в вектор структур
             {
-
-                QMessageBox msgBox;
-                msgBox.setText("Внимание!");
-                msgBox.setInformativeText("Заданное число изображений меньше интервала по фокусному расстоянию");
-                msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Retry);
-                int ret = msgBox.exec();
-                switch (ret) {
-                case QMessageBox::Ignore:
-                    break;
-                case QMessageBox::Retry:
-                    setUIstate(false);
-                    return;
-                default:
-
-                    break;
-                }
+                secVec.append(secCat);
             }
+            in.close();
+        }
+        else
+        {
+            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
+            ui->catalogStatusLabel->setText("Ошибка");
+            return;
+        }
 
-            if ((groupImgData.groupImageWidth * groupImgData.groupImageHeight) > ((slideData.focEnd - slideData.focStart) / slideData.focStep) + 1)
+        for (QVector<sector>::iterator it = secVec.begin();it != secVec.end();it ++)
+        {
+            alphaVecSec.append((it->alpha_c)*(transToGrad));
+            betaVecSec.append((it->beta_c)*(transToGrad));
+            countSecVec.append(it->count_in_sector);
+            shiftVec.append(it->shift);
+        }
+        secVec.clear();
+
+
+        filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end()-filename.begin());
+        filenameAdd.append("_NUM.CAT");
+        in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
+        if(in.is_open())
+        {
+            while(in.read((char*)&number.num,sizeof(number.num)))// считываем каталог в вектор
             {
-                QMessageBox msgBox;
-                msgBox.setText("Внимание!");
-                msgBox.setInformativeText("Заданное число изображений больше интервала по фокусному расстоянию");
-                msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Ignore );
-                int ret = msgBox.exec();
-                switch (ret) {
-                case QMessageBox::Ignore:
-                    break;
-                case QMessageBox::Retry:
-                    setUIstate(false);
-                    return;
-                default:
-
-                    break;
-                }
-
+                newNumn.append(number.num);
             }
+            in.close();
+        }
+        else
+        {
+            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
+            ui->catalogStatusLabel->setText("Ошибка");
+            return;
+        }
 
-            QVector <float> focusVector;
-            QVector <QImage> imageVector;
-            QVector <QImage> leftDownVector;
-            QVector <QImage> rightTopVector;
-            QVector <QImage> rightDownVector;
-            QSharedPointer <QImage> bufImage;
-
-
-            const int imageSizeLimit = 32767;
-            int limitX = imageSizeLimit / slideData.slideSizeX;// вычисляем максимально возможное число слайдов в ширину на одном изображении
-            int limitY = imageSizeLimit / slideData.slideSizeY;// вычисляем максимально возможное число слайдов в высоту на одном изображении
-            setImagesSizes(slideData.slideSizeX, slideData.slideSizeY, groupImgData.groupImageHeight, groupImgData.groupImageWidth, groupImgData.space);
-
-
-
-            for(float i = slideData.focStart;i <= slideData.focEnd;i += slideData.focStep) // формируем вектор фокусных расстояний
+        for(QVector<short>::iterator it = newNumn.begin();it != newNumn.end();it++)
+        {
+            if(*it < 0)
             {
-                focusVector.append(i);
+                *it = *it*(-1);// избавляемся от отрицательных значений
             }
-            // если размерность матрицы больше длины массива фок.расстояний, дозабиваем массив значениями из его
-            // начала
+        }
+        for(int i = 0;i <= newNumn.size() - 1;i ++)
+        {
+            newNumn[i] = newNumn[i] - 1;
+        }
 
-            int difference = (groupImgData.groupImageWidth * groupImgData.groupImageHeight)-(((slideData.focEnd - slideData.focStart) / slideData.focStep) + 1);
-            if(difference >= 0)
-            {
-                for(int i = 0; i <= difference;i ++)
-                {
-                    focusVector.append(focusVector[i]);
-                }
+        QString countOfStar(QString::number(alphaVec.size()));
+        ui->catalogStatusLabel->setText(countOfStar);
 
-            }
+        catalogData.alpha_vec = alphaVec;
+        catalogData.beta_vec = betaVec;
+        catalogData.alpha_vec_sec = alphaVecSec;
+        catalogData.beta_vec_sec = betaVecSec;
+        catalogData.mv_vec = mvVec;
+        catalogData.new_numn = newNumn;
+        catalogData.shift_vec = shiftVec;
+        catalogData.count_sec_vec = countSecVec;
 
-            ui->progressBar->setRange(0, groupImgData.groupImageHeight * groupImgData.groupImageWidth);
-
-            DistorsioData distData;
-            if(ui->DistorsioCheck->isChecked())
-            {
-                distData.xDistorsioVector = xDistorsioVector;
-                distData.yDistorsioVector = yDistorsioVector;
-            }
-
-            QVector::iterator focusValue = focusVector.begin();
-            for(int imgHeight = 0; imgHeight < groupImgData.groupImageHeight;imgHeight ++)
-            {
-
-                for(int imWidth = 0; imWidth < groupImgData.groupImageWidth;imWidth ++)
-                {
-
-                    ui->progressBar->setValue(imWidth + imgHeight * groupImgData.groupImageWidth + 1);
-
-                    SlideParameters imgData =
-                            slideCreator->createStarSlide(*focusValue, ui->checkSector->isChecked(), ui->DistorsioCheck->isChecked(), distData);
-
-                    bufImage = slideCreator->getSlidePointer();
-                    QString setableText = inscriptData.prefix+" "+"f="+QString::number(*focusValue)+ "mm" + "," + " "
-                            +QString::number(imgData.count_of_stars)+"zv."+","+" "+" cat."+" "
-                            +QString::number(catalogData.alpha_vec.size())+","+" "+ui->comboBox->currentText()+","
-                            +" "+QChar(0x03B1)+"="+QString::number(slideData.pointAlpha)+QChar(0x00B0)+","
-                            +" "+QChar(0x03B4)+"="+QString::number(slideData.pointBeta)+QChar(0x00B0)+","+" "
-                            +"2w= " +QString::number(imgData.view_angle_x)+"x"
-                            +QString::number(imgData.view_angle_y)+" "+inscriptData.suffix; // ПРОВЕРИТЬ
-                    makeInscription(bufImage,setableText,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+        catalogIsRead = true;
+    }
 
 
-                    if(ui->showPreviewCheckBox->isChecked()) //если используем превью
-                    {
-                        QByteArray previewImageData =
-                                createPreviewImage(slideData.slideSizeX,slideData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,setableText,imgData.coordinatesOfStars);
-                        QSharedPointer<QSvgRenderer> temporarySvg(new QSvgRenderer(previewImageData));
-                        vectorOfSvgPreviews.append(temporarySvg);
-                        QSharedPointer <QGraphicsSvgItem> temporarySvgItem(new QGraphicsSvgItem);
-                        temporarySvgItem->setSharedRenderer(vectorOfSvgPreviews.last().data());
-                        vectorOfSvgItems.append(temporarySvgItem);
-                    }
 
-                    // расфасовываем слайды по изображениям
-                    if(imgHeight <= limitY - 1 && imWidth <= limitX - 1) // если текущая ширина и высота не превышают лимит
-                    {
-                        imageVector.append(*bufImage);
-                    }
 
-                    else if(imgHeight > limitY - 1 && imWidth > limitX - 1) // если текущая ширина и высота превышают лимит
-                    {
-                        rightDownVector.append(*bufImage);
-                    }
-                    else if(imWidth > limitX - 1) // если текущая ширина превышает лимит
-                    {
-                        rightTopVector.append(*bufImage);
-                    }
 
-                    else if(imgHeight > limitY - 1) // если текущая высота превышает лимит
-                    {
-                        leftDownVector.append(*bufImage);
-                    }
-                    bufImage.reset();
-                    qApp->processEvents();
-                    std::next(focusValue);
-                }
-            }
-
-            if(leftTopImage)
-            {
-
-                int sizeY = leftTopImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
-                int sizeX = leftTopImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                drawSlide(leftTopImage,imageVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
-
-            }
-
-            if(leftDownImage)
-            {
-
-                int sizeY = leftDownImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
-                int sizeX = leftDownImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                drawSlide(leftDownImage,leftDownVector,sizeX,sizeY,groupImgData.space,slideData.slideSizeX,slideData.slideSizeY);
-
-            }
-
-            if(rightTopImage)
-            {
-                int sizeY = rightTopImage->height()/(slideData.slideSizeY+groupImgData.space * 2);
-                int sizeX = rightTopImage->width()/(slideData.slideSizeX+groupImgData.space * 2);
-                drawSlide(rightTopImage,rightTopVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
-
-            }
-
-            if(rightDownImage)
-            {
-
-                int sizeY = rightDownImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
-                int sizeX = rightDownImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                drawSlide(rightDownImage,rightDownVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
-            }
-
-            if(ui->showPreviewCheckBox->isChecked())
-            {
-                drawPreviewItems(slideData.slideSizeX, slideData.slideSizeY, groupImgData.groupImageWidth, groupImgData.groupImageHeight, groupImgData.space);
-            }
+    void MainWindow::chooseCatalog()
+    {
+        if(lastCatalogDirectory.isNull())
+        {
+            filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Open .CAT"), ".",
+                                                    tr(".CAT files (*.CAT)"));
+            ui->filenameLineEdit->setText(filename);
+            int pos = filename.lastIndexOf("/");
+            lastCatalogDirectory = filename.left(pos);
+        }
+        else
+        {
+            filename = QFileDialog::getOpenFileName(this,
+                                                    tr("Open .CAT"), lastCatalogDirectory,
+                                                    tr(".CAT files (*.CAT)"));
+            ui->filenameLineEdit->setText(filename);
 
         }
+        openCatalog();
+
     }
 
-    catch(double &a)
+
+
+    void MainWindow::useCurrentCatalog()
     {
-        setUIstate(false);
-        QString message = QString("Недопустимое значение")+" "+QString::number(a);
-        QMessageBox::information(NULL,"Ошибка",message);
-        return;
-    }
-    catch(float &a)
-    {
-        setUIstate(false);
-        QString message = QString("Недопустимое значение")+" "+QString::number(a);
-        QMessageBox::information(NULL,"Ошибка",message);
-        return;
-    }
-    catch(exception &e)
-    {
-        setUIstate(false);
-        QMessageBox::information(NULL,"Ошибка",e.what());
-        return;
-    }
-    catch(...)
-    {
-        setUIstate(false);
-        QMessageBox::information(NULL,"Ошибка","Неизвестная ошибка");
-        return;
+        openCatalog();
     }
 
-    setUIstate(false);
-}
 
 
-
-
-void MainWindow::createGrid()
-{
-
-    if(ui->DistorsioCheck->isChecked() && !distorsioIsRead)
+    void MainWindow::chooseDistorsioFile()
     {
-        QMessageBox::warning(NULL,"Ошибка","Выберите файл с коэффициентами дисторсии");
-        return;
+        xDistorsioVector.clear();
+        yDistorsioVector.clear();
+
+        if(lastDistorsioDirectory.isNull())
+        {
+            distorsioFilename = QFileDialog::getOpenFileName(this,
+                                                             tr("Open .txt"), ".",
+                                                             tr(".txt files (*.txt)"));
+
+            int pos = distorsioFilename.lastIndexOf("/");
+            lastDistorsioDirectory = distorsioFilename.left(pos);
+
+        }
+        else
+        {
+            distorsioFilename = QFileDialog::getOpenFileName(this,
+                                                             tr("Open .txt"), lastDistorsioDirectory,
+                                                             tr(".txt files (*.txt)"));
+        }
+        QFile file(distorsioFilename);
+        QTextStream in(&file);
+        in.setRealNumberNotation(QTextStream::ScientificNotation);
+        if(file.open(QIODevice::ReadOnly |QIODevice::Text))
+        {
+            double x, y;
+            while(!(in >> x >> y).atEnd())
+            {
+                xDistorsioVector.append(x);
+                yDistorsioVector.append(y);
+            }
+        }
+        else
+        {
+            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
+            ui->distReadInfoLabel->setText("Коэффициенты не считаны");
+            ui->DistorsioPathLineEdit->setText(" ");
+            file.close();
+            distorsioIsRead = false;
+            return;
+        }
+        file.close();
+        constexpr int maxCoefsCount = 21;
+        while(xDistorsioVector.size() != maxCoefsCount)
+        {
+            xDistorsioVector.append(0);
+            yDistorsioVector.append(0);
+        }
+
+        ui->DistorsioPathLineEdit->setText(distorsioFilename);
+        ui->distReadInfoLabel->setText("Коэффициенты считаны");
+        distorsioIsRead = true;
+
     }
-    try
+
+
+
+    QByteArray MainWindow::createPreviewImage(const int imageWidth, const int iamgeHeight, const int fontSize, const int fontX, const int fontY, const QString setableText, QVector<StarParameters> coordinatesOfStars)
     {
+
+        QDomDocument doc("pic");
+        QDomElement svg = doc.createElement("svg");
+        QDomElement cube = doc.createElement("rect");
+        svg.setAttribute("viewBox",QString("0 ")+"0 "+QString::number(imageWidth)+" "+QString::number(iamgeHeight));
+        svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+        svg.setAttribute("encoding","UTF-8");
+        svg.setAttribute("width",QString::number(imageWidth));
+        svg.setAttribute("height",QString::number(iamgeHeight));
+        cube.setAttribute("x","0");
+        cube.setAttribute("y","0");
+        cube.setAttribute("width",QString::number(imageWidth));
+        cube.setAttribute("height",QString::number(iamgeHeight));
+        cube.setAttribute("fill","black");
+        doc.appendChild(svg);
+        svg.appendChild(cube);
+        for(auto& starCoordinate : coordinatesOfStars)
+        {
+            QDomElement star = doc.createElement("rect");
+            star.setAttribute("x",QString::number(starCoordinate.x));
+            star.setAttribute("fill","white");
+            star.setAttribute("y",QString::number(starCoordinate.y));
+            star.setAttribute("width",QString::number(starCoordinate.sizeX));
+            star.setAttribute("height",QString::number(starCoordinate.sizeY));
+            svg.appendChild(star);
+        }
+        QDomElement textElement = doc.createElement("text");
+        QDomText text = doc.createTextNode(setableText);
+        textElement.setAttribute("x",QString::number(fontX));
+        textElement.setAttribute("y",QString::number(fontY));
+        textElement.setAttribute("style","fill: white;");
+        textElement.setAttribute("font-size",QString::number(fontSize));
+        textElement.appendChild(text);
+        svg.appendChild(textElement);
+        QByteArray svgImage = doc.toByteArray();
+        return svgImage;
+    }
+
+
+
+    void MainWindow::createImage()
+    {
+
+        if(!catalogIsRead)// если каталог не считан
+        {
+            QMessageBox::warning(NULL,"Ошибка","Выберите каталог или подтвердите использование текущего");
+            return;
+        }
+
+        if(ui->DistorsioCheck->isChecked() && !distorsioIsRead)
+        {
+            QMessageBox::warning(NULL,"Ошибка","Выберите файл с коэффициентами дисторсии");
+            return;
+        }
 
         ui->progressBar->setValue(0);
-        setUIstate(true);
-        clearSceneAndImages();
 
-        QScopedPointer <SlideCreator> slideCreator(new SlideCreator());
-        GridSlideData gridData(readInputGridSlideData());
-        InscriptParams inscriptData(readInscriptionParams());
-
-        DistorsioData distData;
-        distData.xDistorsioVector=xDistorsioVector;
-        distData.yDistorsioVector=yDistorsioVector;
-        if(ui->OneSlideRadioButton->isChecked())
-        {
-
-            QVector<StarParameters> coordinatesOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
-            optimalImage = slideCreator->getSlidePointer();
-            QString textForGrid=inscriptData.prefix+" "+"Разм.пикселя:"+" "+ui->comboBox->currentText()+","+" "+
-                    "Расстояние,пикс.:"+" "+QString::number(gridData.grid_distance)+" "+inscriptData.suffix;
-            makeInscription(optimalImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
-            QByteArray previewImageData=createPreviewImage(gridData.slideSizeX,gridData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,textForGrid,coordinatesOfStars);
-
-            if(ui->showPreviewCheckBox->isChecked())
-            {
-                drawPreviewItem(previewImageData,gridData.slideSizeX,gridData.slideSizeY);
-            }
-            ui->progressBar->setValue(100);
-        }
-
-        else if(ui->GroupSlideRadioButton->isChecked())
-        {
-            setImagesSizes(gridData.slideSizeX,gridData.slideSizeY,gridData.groupImageHeight,gridData.groupImageWidth,gridData.space);
-            ui->progressBar->setRange(0,100);
-            QSharedPointer<QImage>bufImage;
-
-            QVector<StarParameters> coordinatesOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
-            bufImage = slideCreator->getSlidePointer();
-            QString textForGrid = inscriptData.prefix+" "+"Size,pix:"+" "+ui->comboBox->currentText()+","+" "+
-                    "Distance,pix.:"+" "+QString::number(gridData.grid_distance)+" "+inscriptData.suffix;
-            makeInscription(bufImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
-
-            if(ui->showPreviewCheckBox->isChecked()) //если используем превью
-            {
-                QByteArray previewImageData =
-                        createPreviewImage(gridData.slideSizeX,gridData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,textForGrid,coordinatesOfStars);
-                QSharedPointer<QSvgRenderer> temporarySvg(new QSvgRenderer(previewImageData));
-
-
-                for(int imgHeight = 0;imgHeight < gridData.groupImageHeight;imgHeight ++)
-                {
-                    for( int imWidth = 0;imWidth < gridData.groupImageWidth;imWidth ++)
-                    {
-                        vectorOfSvgPreviews.append(temporarySvg);
-                        QSharedPointer <QGraphicsSvgItem> temporarySvgItem(new QGraphicsSvgItem);
-                        temporarySvgItem->setSharedRenderer(vectorOfSvgPreviews.last().data());
-                        vectorOfSvgItems.append(temporarySvgItem);
-                        qApp->processEvents();
-                    }
-                }
-            }
-            ui->progressBar->setValue(50);
-            if (leftTopImage)
-            {
-                int sizeY=leftTopImage->height()/(gridData.slideSizeY+gridData.space*2);
-                int sizeX=leftTopImage->width()/(gridData.slideSizeX+gridData.space*2);
-                drawGridSlides(leftTopImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-
-            }
-            if(leftDownImage)// ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
-            {
-
-                int sizeY=leftDownImage->height()/(gridData.slideSizeY+gridData.space*2);
-                int sizeX=leftDownImage->width()/(gridData.slideSizeX+gridData.space*2);
-                drawGridSlides(leftDownImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-
-            }
-
-            if(rightTopImage) // ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
-
-            {
-                int sizeY=rightTopImage->height()/(gridData.slideSizeY+gridData.space*2);
-                int sizeX=rightTopImage->width()/(gridData.slideSizeX+gridData.space*2);
-                drawGridSlides(rightTopImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-
-            }
-
-            if(rightDownImage) // ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
-            {
-                int sizeY=rightDownImage->height()/(gridData.slideSizeY+gridData.space*2);
-                int sizeX=rightDownImage->width()/(gridData.slideSizeX+gridData.space*2);
-                drawGridSlides(rightDownImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-            }
-
-            ui->progressBar->setValue(100);
-            if(ui->showPreviewCheckBox->isChecked())
-            {
-                drawPreviewItems(gridData.slideSizeX,gridData.slideSizeY,gridData.groupImageWidth,gridData.groupImageHeight,gridData.space);
-            }
-
-        }
-
-    }
-
-    catch(double &a)
-    {
-        setUIstate(false);
-        QString message=QString("Недопустимое значение")+" "+QString::number(a);
-        QMessageBox::information(NULL,"Ошибка",message);
-        return;
-    }
-    catch(float &a)
-    {
-        setUIstate(false);
-        QString message=QString("Недопустимое значение")+" "+QString::number(a);
-        QMessageBox::information(NULL,"Ошибка",message);
-        return;
-    }
-    catch(exception &e)
-    {
-        setUIstate(false);
-        QMessageBox::information(NULL,"Ошибка",e.what());
-        return;
-    }
-    catch(...)
-    {
-        setUIstate(false);
-        QMessageBox::information(NULL,"Ошибка","Неизвестная ошибка");
-        return;
-    }
-    setUIstate(false);
-}
-
-
-
-
-
-
-void MainWindow::testForSlide()
-{
-    //QMessageBox::information(NULL,"Сохранение",QString::number(ui->frame->width()));
-    if(!catalogIsRead)// если каталог не считан
-    {
-        QMessageBox::warning(NULL,"Ошибка","Выберите каталог или подтвердите использование текущего");
-        return;
-    }
-    else
-    {
         try
         {
+            setUIstate(true);
+            clearSceneAndImages();
+            StarSlideData slideData(readInputStarSlideData());
+            GroupImageParameters groupImgData (readGroupImageParameters());
+            InscriptParams inscriptData(readInscriptionParams());
             QScopedPointer<SlideCreator> slideCreator(new SlideCreator());
-            StarSlideData slideData = readInputStarSlideData();
             slideCreator->calculateAngularDistOptions(slideData,catalogData,ui->checkSector->isChecked());
 
-            DistorsioData distData;
-            distData.xDistorsioVector = xDistorsioVector;
-            distData.yDistorsioVector = yDistorsioVector;
-
-
-            TestSlideParameters testData=slideCreator->testStarSlide(ui->checkSector->isChecked(),ui->DistorsioCheck->isChecked(),distData);
-            QString message;
 
             if(ui->OneSlideRadioButton->isChecked())
             {
-                message = QString("Число звёзд на слайде :")+" "+QString::number(testData.count_of_stars)
-                        +"\n"+ "Фокусное расстояние :"+" "+QString::number(slideData.focStart)
-                        +"\n"+ "Угол зрения слайда ШхВ, град :"+" "+QString::number(testData.view_angle_x)+"x"+QString::number(testData.view_angle_y)
-                        +"\n"+ "Размер слайда пикс. :"+" "+QString::number(slideData.slideSizeX)+"x"+QString::number(slideData.slideSizeY)
-                        +"\n"+ "Размер слайда мм. :"+" "+QString::number(slideData.slideSizeMM_X)+"x"+QString::number(slideData.slideSizeMM_Y);
+                ui->progressBar->setRange(0, 100);
+                DistorsioData distData;
+                if(ui->DistorsioCheck->isChecked())
+                {
+                    distData.xDistorsioVector = xDistorsioVector;
+                    distData.yDistorsioVector = yDistorsioVector;
+                }
 
+                SlideParameters imgData = slideCreator->createStarSlide(slideData.focStart,ui->checkSector->isChecked(),ui->DistorsioCheck->isChecked(),distData);
+                optimalImage = slideCreator->getSlidePointer();
+                ui->progressBar->setValue(50);
+
+                QString setableText = inscriptData.prefix + " "+ "f=" + QString::number(slideData.focStart)+"mm"+","+" "
+                        +QString::number(imgData.count_of_stars)+"zv." + "," + " " + " cat."+" "
+                        +QString::number(catalogData.alpha_vec.size())+","+" " + ui->comboBox->currentText()+","
+                        +" "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0) + ","
+                        +" "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0) + ","+" "
+                        +"2w= " + QString::number(imgData.view_angle_x)+"x"
+                        +QString::number(imgData.view_angle_y)+" "+inscriptData.suffix;
+
+
+                makeInscription(optimalImage,setableText,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+
+                if(ui->showPreviewCheckBox->isChecked())
+                {
+                    QByteArray previewImageData =
+                            createPreviewImage(slideData.slideSizeX,slideData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,setableText,imgData.coordinatesOfStars);
+                    drawPreviewItem(previewImageData,slideData.slideSizeX,slideData.slideSizeY);
+                }
+                ui->progressBar->setValue(100);
+            }
+
+
+            else if(ui->GroupSlideRadioButton->isChecked())
+            {
+                // проверка соответствия длины массива фокусных расстояний размерности матрицы
+                if ((groupImgData.groupImageWidth * groupImgData.groupImageHeight) < ((slideData.focEnd - slideData.focStart) / slideData.focStep) + 1)
+                {
+
+                    QMessageBox msgBox;
+                    msgBox.setText("Внимание!");
+                    msgBox.setInformativeText("Заданное число изображений меньше интервала по фокусному расстоянию");
+                    msgBox.setStandardButtons(QMessageBox::Ignore | QMessageBox::Retry);
+                    int ret = msgBox.exec();
+                    switch (ret) {
+                    case QMessageBox::Ignore:
+                        break;
+                    case QMessageBox::Retry:
+                        setUIstate(false);
+                        return;
+                    default:
+
+                        break;
+                    }
+                }
+
+                if ((groupImgData.groupImageWidth * groupImgData.groupImageHeight) > ((slideData.focEnd - slideData.focStart) / slideData.focStep) + 1)
+                {
+                    QMessageBox msgBox;
+                    msgBox.setText("Внимание!");
+                    msgBox.setInformativeText("Заданное число изображений больше интервала по фокусному расстоянию");
+                    msgBox.setStandardButtons(QMessageBox::Retry | QMessageBox::Ignore );
+                    int ret = msgBox.exec();
+                    switch (ret) {
+                    case QMessageBox::Ignore:
+                        break;
+                    case QMessageBox::Retry:
+                        setUIstate(false);
+                        return;
+                    default:
+
+                        break;
+                    }
+
+                }
+
+                QVector <float> focusVector;
+                QVector <QImage> imageVector;
+                QVector <QImage> leftDownVector;
+                QVector <QImage> rightTopVector;
+                QVector <QImage> rightDownVector;
+                QSharedPointer <QImage> bufImage;
+
+
+                const int imageSizeLimit = 32767;
+                int limitX = imageSizeLimit / slideData.slideSizeX;// вычисляем максимально возможное число слайдов в ширину на одном изображении
+                int limitY = imageSizeLimit / slideData.slideSizeY;// вычисляем максимально возможное число слайдов в высоту на одном изображении
+                setImagesSizes(slideData.slideSizeX, slideData.slideSizeY, groupImgData.groupImageHeight, groupImgData.groupImageWidth, groupImgData.space);
+
+
+
+                for(float i = slideData.focStart;i <= slideData.focEnd;i += slideData.focStep) // формируем вектор фокусных расстояний
+                {
+                    focusVector.append(i);
+                }
+                // если размерность матрицы больше длины массива фок.расстояний, дозабиваем массив значениями из его
+                // начала
+
+                int difference = (groupImgData.groupImageWidth * groupImgData.groupImageHeight)-(((slideData.focEnd - slideData.focStart) / slideData.focStep) + 1);
+                if(difference >= 0)
+                {
+                    for(int i = 0; i <= difference;i ++)
+                    {
+                        focusVector.append(focusVector[i]);
+                    }
+
+                }
+
+                ui->progressBar->setRange(0, groupImgData.groupImageHeight * groupImgData.groupImageWidth);
+
+                DistorsioData distData;
+                if(ui->DistorsioCheck->isChecked())
+                {
+                    distData.xDistorsioVector = xDistorsioVector;
+                    distData.yDistorsioVector = yDistorsioVector;
+                }
+
+                QVector<float>::const_iterator focusValue = focusVector.begin();
+                for(int imgHeight = 0; imgHeight < groupImgData.groupImageHeight;imgHeight ++)
+                {
+
+                    for(int imWidth = 0; imWidth < groupImgData.groupImageWidth;imWidth ++)
+                    {
+
+                        ui->progressBar->setValue(imWidth + imgHeight * groupImgData.groupImageWidth + 1);
+                        qDebug() << *focusValue;
+                        SlideParameters imgData =
+                                slideCreator->createStarSlide(*focusValue, ui->checkSector->isChecked(), ui->DistorsioCheck->isChecked(), distData);
+
+                        bufImage = slideCreator->getSlidePointer();
+                        QString setableText = inscriptData.prefix+" "+"f="+QString::number(*focusValue)+ "mm" + "," + " "
+                                +QString::number(imgData.count_of_stars)+"zv."+","+" "+" cat."+" "
+                                +QString::number(catalogData.alpha_vec.size())+","+" "+ui->comboBox->currentText()+","
+                                +" "+QChar(0x03B1)+"="+QString::number(slideData.pointAlpha)+QChar(0x00B0)+","
+                                +" "+QChar(0x03B4)+"="+QString::number(slideData.pointBeta)+QChar(0x00B0)+","+" "
+                                +"2w= " +QString::number(imgData.view_angle_x)+"x"
+                                +QString::number(imgData.view_angle_y)+" "+inscriptData.suffix; // ПРОВЕРИТЬ
+                        makeInscription(bufImage,setableText,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+
+
+                        if(ui->showPreviewCheckBox->isChecked()) //если используем превью
+                        {
+                            QByteArray previewImageData =
+                                    createPreviewImage(slideData.slideSizeX,slideData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,setableText,imgData.coordinatesOfStars);
+                            QSharedPointer<QSvgRenderer> temporarySvg(new QSvgRenderer(previewImageData));
+                            vectorOfSvgPreviews.append(temporarySvg);
+                            QSharedPointer <QGraphicsSvgItem> temporarySvgItem(new QGraphicsSvgItem);
+                            temporarySvgItem->setSharedRenderer(vectorOfSvgPreviews.last().data());
+                            vectorOfSvgItems.append(temporarySvgItem);
+                        }
+
+                        // расфасовываем слайды по изображениям
+                        if(imgHeight <= limitY - 1 && imWidth <= limitX - 1) // если текущая ширина и высота не превышают лимит
+                        {
+                            imageVector.append(*bufImage);
+                        }
+
+                        else if(imgHeight > limitY - 1 && imWidth > limitX - 1) // если текущая ширина и высота превышают лимит
+                        {
+                            rightDownVector.append(*bufImage);
+                        }
+                        else if(imWidth > limitX - 1) // если текущая ширина превышает лимит
+                        {
+                            rightTopVector.append(*bufImage);
+                        }
+
+                        else if(imgHeight > limitY - 1) // если текущая высота превышает лимит
+                        {
+                            leftDownVector.append(*bufImage);
+                        }
+                        bufImage.reset();
+                        ++focusValue;
+
+                    }
+                }
+
+                if(leftTopImage)
+                {
+
+                    int sizeY = leftTopImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
+                    int sizeX = leftTopImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
+                    drawSlide(leftTopImage,imageVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
+
+                }
+
+                if(leftDownImage)
+                {
+                    int sizeY = leftDownImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
+                    int sizeX = leftDownImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
+                    drawSlide(leftDownImage,leftDownVector,sizeX,sizeY,groupImgData.space,slideData.slideSizeX,slideData.slideSizeY);
+
+                }
+
+                if(rightTopImage)
+                {
+                    int sizeY = rightTopImage->height()/(slideData.slideSizeY+groupImgData.space * 2);
+                    int sizeX = rightTopImage->width()/(slideData.slideSizeX+groupImgData.space * 2);
+                    drawSlide(rightTopImage,rightTopVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
+
+                }
+
+                if(rightDownImage)
+                {
+
+                    int sizeY = rightDownImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
+                    int sizeX = rightDownImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
+                    drawSlide(rightDownImage,rightDownVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
+                }
+
+                if(ui->showPreviewCheckBox->isChecked())
+                {
+                    drawPreviewItems(slideData.slideSizeX, slideData.slideSizeY, groupImgData.groupImageWidth, groupImgData.groupImageHeight, groupImgData.space);
+                }
+
+            }
+            setUIstate(false);
+        }
+
+        catch(exception &e)
+        {
+            setUIstate(false);
+            QMessageBox::information(NULL,"Ошибка",e.what());
+            return;
+        }
+
+
+    }
+
+
+
+
+    void MainWindow::createGrid()
+    {
+
+        if(ui->DistorsioCheck->isChecked() && !distorsioIsRead)
+        {
+            QMessageBox::warning(NULL,"Ошибка","Выберите файл с коэффициентами дисторсии");
+            return;
+        }
+        try
+        {
+
+            ui->progressBar->setValue(0);
+            setUIstate(true);
+            clearSceneAndImages();
+
+            QScopedPointer <SlideCreator> slideCreator(new SlideCreator());
+            GridSlideData gridData(readInputGridSlideData());
+            InscriptParams inscriptData(readInscriptionParams());
+
+            DistorsioData distData;
+            distData.xDistorsioVector=xDistorsioVector;
+            distData.yDistorsioVector=yDistorsioVector;
+            if(ui->OneSlideRadioButton->isChecked())
+            {
+
+                QVector<StarParameters> coordinatesOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
+                optimalImage = slideCreator->getSlidePointer();
+                QString textForGrid=inscriptData.prefix+" "+"Разм.пикселя:"+" "+ui->comboBox->currentText()+","+" "+
+                        "Расстояние,пикс.:"+" "+QString::number(gridData.grid_distance)+" "+inscriptData.suffix;
+                makeInscription(optimalImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+                QByteArray previewImageData=createPreviewImage(gridData.slideSizeX,gridData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,textForGrid,coordinatesOfStars);
+
+                if(ui->showPreviewCheckBox->isChecked())
+                {
+                    drawPreviewItem(previewImageData,gridData.slideSizeX,gridData.slideSizeY);
+                }
+                ui->progressBar->setValue(100);
             }
 
             else if(ui->GroupSlideRadioButton->isChecked())
             {
-                GroupImageParameters groupImageParams(readGroupImageParameters());
-                message=QString("ШхВ :")+" "+QString::number(groupImageParams.groupImageWidth) + "x" + QString::number(groupImageParams.groupImageHeight)+
-                        "\n"+"Число cлайдов :"+" "+QString::number(groupImageParams.groupImageWidth * groupImageParams.groupImageHeight)+
-                        "\n"+"Число фокусных расстояний :"+" "+QString::number(((slideData.focEnd - slideData.focStart)/slideData.focStep) + 1)+
-                        "\n"+"Размер мм. :"+" "+QString::number(slideData.slideSizeMM_X * groupImageParams.groupImageWidth)+
-                        "x"+QString::number(slideData.slideSizeMM_Y * groupImageParams.groupImageHeight)+
-                        "\n"+"Размер пикс. :"+" "+QString::number(slideData.slideSizeX * groupImageParams.groupImageWidth)+
-                        "x"+QString::number(slideData.slideSizeY*groupImageParams.groupImageHeight)
-                        +"\n"+ "Фокусное расстояние первого слайда :"+" "+QString::number(slideData.focStart)
-                        +"\n"+ "Размер первого слайда мм. :"+" "+QString::number(slideData.slideSizeMM_X) + "x" + QString::number(slideData.slideSizeMM_Y)
-                        +"\n"+ "Размер первого слайда пикс. :"+" "+QString::number(slideData.slideSizeX) + "x" + QString::number(slideData.slideSizeY)
-                        +"\n"+ "Угол зрения первого слайда ШхВ, град :"+" "+QString::number(testData.view_angle_x)+"x" + QString::number(testData.view_angle_y)
-                        +"\n"+ "Число звезд на первом слайде :"+" "+QString::number(testData.count_of_stars);
+                setImagesSizes(gridData.slideSizeX,gridData.slideSizeY,gridData.groupImageHeight,gridData.groupImageWidth,gridData.space);
+                ui->progressBar->setRange(0,100);
+                QSharedPointer<QImage>bufImage;
 
+                QVector<StarParameters> coordinatesOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
+                bufImage = slideCreator->getSlidePointer();
+                QString textForGrid = inscriptData.prefix+" "+"Size,pix:"+" "+ui->comboBox->currentText()+","+" "+
+                        "Distance,pix.:"+" "+QString::number(gridData.grid_distance)+" "+inscriptData.suffix;
+                makeInscription(bufImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+
+                if(ui->showPreviewCheckBox->isChecked()) //если используем превью
+                {
+                    QByteArray previewImageData =
+                            createPreviewImage(gridData.slideSizeX,gridData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,textForGrid,coordinatesOfStars);
+                    QSharedPointer<QSvgRenderer> temporarySvg(new QSvgRenderer(previewImageData));
+
+
+                    for(int imgHeight = 0;imgHeight < gridData.groupImageHeight;imgHeight ++)
+                    {
+                        for( int imWidth = 0;imWidth < gridData.groupImageWidth;imWidth ++)
+                        {
+                            vectorOfSvgPreviews.append(temporarySvg);
+                            QSharedPointer <QGraphicsSvgItem> temporarySvgItem(new QGraphicsSvgItem);
+                            temporarySvgItem->setSharedRenderer(vectorOfSvgPreviews.last().data());
+                            vectorOfSvgItems.append(temporarySvgItem);
+                            qApp->processEvents();
+                        }
+                    }
+                }
+                ui->progressBar->setValue(50);
+                if (leftTopImage)
+                {
+                    int sizeY = leftTopImage->height()/(gridData.slideSizeY+gridData.space*2);
+                    int sizeX = leftTopImage->width()/(gridData.slideSizeX+gridData.space*2);
+                    drawGridSlides(leftTopImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
+
+                }
+                if(leftDownImage)// ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
+                {
+
+                    int sizeY=leftDownImage->height()/(gridData.slideSizeY+gridData.space*2);
+                    int sizeX=leftDownImage->width()/(gridData.slideSizeX+gridData.space*2);
+                    drawGridSlides(leftDownImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
+
+                }
+
+                if(rightTopImage) // ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
+
+                {
+                    int sizeY=rightTopImage->height()/(gridData.slideSizeY+gridData.space*2);
+                    int sizeX=rightTopImage->width()/(gridData.slideSizeX+gridData.space*2);
+                    drawGridSlides(rightTopImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
+
+                }
+
+                if(rightDownImage) // ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
+                {
+                    int sizeY=rightDownImage->height()/(gridData.slideSizeY+gridData.space*2);
+                    int sizeX=rightDownImage->width()/(gridData.slideSizeX+gridData.space*2);
+                    drawGridSlides(rightDownImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
+                }
+
+                ui->progressBar->setValue(100);
+                if(ui->showPreviewCheckBox->isChecked())
+                {
+                    drawPreviewItems(gridData.slideSizeX,gridData.slideSizeY,gridData.groupImageWidth,gridData.groupImageHeight,gridData.space);
+                }
 
             }
-            QMessageBox::information(NULL,"Тест",message);
-
-
-
+            setUIstate(false);
         }
-        catch(double &a)
-        {
-            QString message = QString("Недопустимое значение")+" "+QString::number(a);
-            QMessageBox::information(NULL,"Ошибка",message);
-            return;
-        }
-        catch(float &a)
-        {
-            QString message = QString("Недопустимое значение")+" "+QString::number(a);
-            QMessageBox::information(NULL,"Ошибка",message);
-            return;
-        }
+
         catch(exception &e)
         {
+            setUIstate(false);
             QMessageBox::information(NULL,"Ошибка",e.what());
             return;
         }
-        catch(...)
-        {
-            QMessageBox::information(NULL,"Ошибка","Неизвестная ошибка");
-            return;
-        }
+
     }
-}
 
 
-void MainWindow::saveImage()
-{
-    QTime currentTime;
 
 
-    QString filenameSave = QFileDialog::getSaveFileName(this,
-                                                        tr("Save tiff"), ".",
-                                                        tr("tiff files (*.tiff)"));
-    QImageWriter writer;
-    writer.setFormat("tiff");
-    writer.setFileName(filenameSave);
-    if(ui->OneSlideRadioButton->isChecked())
+
+
+    void MainWindow::testForSlide()
     {
-        if(!optimalImage.isNull())
+        //QMessageBox::information(NULL,"Сохранение",QString::number(ui->frame->width()));
+        if(!catalogIsRead)// если каталог не считан
         {
-            if(!writer.write(*optimalImage))
-            {
-                QMessageBox::information(NULL,"Ошибка",writer.errorString());
-                return;
-            }
-            optimalImage.reset();
+            QMessageBox::warning(NULL,"Ошибка","Выберите каталог или подтвердите использование текущего");
+            return;
         }
         else
         {
-            QMessageBox::information(NULL,"Ошибка","Нечего сохранять");
-            return;
+            try
+            {
+                QScopedPointer<SlideCreator> slideCreator(new SlideCreator());
+                StarSlideData slideData = readInputStarSlideData();
+                slideCreator->calculateAngularDistOptions(slideData,catalogData,ui->checkSector->isChecked());
+
+                DistorsioData distData;
+                distData.xDistorsioVector = xDistorsioVector;
+                distData.yDistorsioVector = yDistorsioVector;
+
+
+                TestSlideParameters testData=slideCreator->testStarSlide(ui->checkSector->isChecked(),ui->DistorsioCheck->isChecked(),distData);
+                QString message;
+
+                if(ui->OneSlideRadioButton->isChecked())
+                {
+                    message = QString("Число звёзд на слайде :")+" "+QString::number(testData.count_of_stars)
+                            +"\n"+ "Фокусное расстояние :"+" "+QString::number(slideData.focStart)
+                            +"\n"+ "Угол зрения слайда ШхВ, град :"+" "+QString::number(testData.view_angle_x)+"x"+QString::number(testData.view_angle_y)
+                            +"\n"+ "Размер слайда пикс. :"+" "+QString::number(slideData.slideSizeX)+"x"+QString::number(slideData.slideSizeY)
+                            +"\n"+ "Размер слайда мм. :"+" "+QString::number(slideData.slideSizeMM_X)+"x"+QString::number(slideData.slideSizeMM_Y);
+
+                }
+
+                else if(ui->GroupSlideRadioButton->isChecked())
+                {
+                    GroupImageParameters groupImageParams(readGroupImageParameters());
+                    message=QString("ШхВ :")+" "+QString::number(groupImageParams.groupImageWidth) + "x" + QString::number(groupImageParams.groupImageHeight)+
+                            "\n"+"Число cлайдов :"+" "+QString::number(groupImageParams.groupImageWidth * groupImageParams.groupImageHeight)+
+                            "\n"+"Число фокусных расстояний :"+" "+QString::number(((slideData.focEnd - slideData.focStart)/slideData.focStep) + 1)+
+                            "\n"+"Размер мм. :"+" "+QString::number(slideData.slideSizeMM_X * groupImageParams.groupImageWidth)+
+                            "x"+QString::number(slideData.slideSizeMM_Y * groupImageParams.groupImageHeight)+
+                            "\n"+"Размер пикс. :"+" "+QString::number(slideData.slideSizeX * groupImageParams.groupImageWidth)+
+                            "x"+QString::number(slideData.slideSizeY*groupImageParams.groupImageHeight)
+                            +"\n"+ "Фокусное расстояние первого слайда :"+" "+QString::number(slideData.focStart)
+                            +"\n"+ "Размер первого слайда мм. :"+" "+QString::number(slideData.slideSizeMM_X) + "x" + QString::number(slideData.slideSizeMM_Y)
+                            +"\n"+ "Размер первого слайда пикс. :"+" "+QString::number(slideData.slideSizeX) + "x" + QString::number(slideData.slideSizeY)
+                            +"\n"+ "Угол зрения первого слайда ШхВ, град :"+" "+QString::number(testData.view_angle_x)+"x" + QString::number(testData.view_angle_y)
+                            +"\n"+ "Число звезд на первом слайде :"+" "+QString::number(testData.count_of_stars);
+
+
+                }
+                QMessageBox::information(NULL,"Тест",message);
+
+
+            }
+
+            catch(exception &e)
+            {
+                QMessageBox::information(NULL,"Ошибка",e.what());
+                return;
+            }
+
         }
     }
-    else if(ui->GroupSlideRadioButton->isChecked())
+
+
+    void MainWindow::saveImage()
     {
-        if(!leftTopImage.isNull())
+        QTime currentTime;
+
+
+        QString filenameSave = QFileDialog::getSaveFileName(this,
+                                                            tr("Save tiff"), ".",
+                                                            tr("tiff files (*.tiff)"));
+        QImageWriter writer;
+        writer.setFormat("tiff");
+        writer.setFileName(filenameSave);
+        if(ui->OneSlideRadioButton->isChecked())
         {
-
-            if(!writer.write(*leftTopImage))
+            if(!optimalImage.isNull())
             {
-
-                QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                if(!writer.write(*optimalImage))
+                {
+                    QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                    return;
+                }
+                optimalImage.reset();
+            }
+            else
+            {
+                QMessageBox::information(NULL,"Ошибка","Нечего сохранять");
                 return;
             }
-
-            leftTopImage.reset();
         }
-        else
+        else if(ui->GroupSlideRadioButton->isChecked())
         {
-            QMessageBox::information(NULL,"Ошибка","Нечего сохранять");
-            return;
-        }
-        if(!leftDownImage.isNull())
-        {
-
-            QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1,filenameSave.end() - filenameSave.begin());
-            filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss")+"left_down.tiff");
-            writer.setFileName(filenameSaveAdd);
-            if(!writer.write(*leftDownImage))
+            if(!leftTopImage.isNull())
             {
-                QMessageBox::information(NULL,"Ошибка",writer.errorString());
+
+                if(!writer.write(*leftTopImage))
+                {
+
+                    QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                    return;
+                }
+
+                leftTopImage.reset();
+            }
+            else
+            {
+                QMessageBox::information(NULL,"Ошибка","Нечего сохранять");
                 return;
             }
-            leftDownImage.reset();
-
-
-        }
-
-        if(!rightTopImage.isNull())
-        {
-
-            QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1,filenameSave.end() - filenameSave.begin());
-            filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss") + "right_top.tiff");
-            writer.setFileName(filenameSaveAdd);
-            if(!writer.write(*rightTopImage))
+            if(!leftDownImage.isNull())
             {
-                QMessageBox::information(NULL,"Ошибка",writer.errorString());
-                return;
+
+                QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1,filenameSave.end() - filenameSave.begin());
+                filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss")+"left_down.tiff");
+                writer.setFileName(filenameSaveAdd);
+                if(!writer.write(*leftDownImage))
+                {
+                    QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                    return;
+                }
+                leftDownImage.reset();
+
+
             }
-            rightTopImage.reset();
-        }
 
-        if(!rightDownImage.isNull())
-        {
-
-            QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/")+1,filenameSave.end()-filenameSave.begin());
-            filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss") + "right_down.tiff");
-            writer.setFileName(filenameSaveAdd);
-            if(!writer.write(*rightDownImage))
+            if(!rightTopImage.isNull())
             {
-                QMessageBox::information(NULL,"Ошибка",writer.errorString());
-                return;
+
+                QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1,filenameSave.end() - filenameSave.begin());
+                filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss") + "right_top.tiff");
+                writer.setFileName(filenameSaveAdd);
+                if(!writer.write(*rightTopImage))
+                {
+                    QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                    return;
+                }
+                rightTopImage.reset();
             }
-            rightDownImage.reset();
+
+            if(!rightDownImage.isNull())
+            {
+
+                QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/")+1,filenameSave.end()-filenameSave.begin());
+                filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss") + "right_down.tiff");
+                writer.setFileName(filenameSaveAdd);
+                if(!writer.write(*rightDownImage))
+                {
+                    QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                    return;
+                }
+                rightDownImage.reset();
+            }
         }
+        QMessageBox::information(NULL,"Сохранение","Успешно сохранено");
     }
-    QMessageBox::information(NULL,"Сохранение","Успешно сохранено");
-}
 
 
 
 
-bool MainWindow::eventFilter(QObject *object, QEvent *event)
-{
-
-    if (object == ui->graphicsView->viewport() && event->type() == QEvent::Wheel) {
-        return true;
-    }
-    return false;
-}
-
-void MainWindow::wheelEvent(QWheelEvent *event){
-
-    QPoint cPos = ui->graphicsView->pos();
-    if(QCursor::pos().x() > cPos.x())
+    bool MainWindow::eventFilter(QObject *object, QEvent *event)
     {
-        ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
-        // шкала
-        double scaleFactor = 1.15;
-        if(event->delta() > 0)
-        {
-            // Приближение
-            ui->graphicsView-> scale(scaleFactor, scaleFactor);
 
-        } else
+        if (object == ui->graphicsView->viewport() && event->type() == QEvent::Wheel) {
+            return true;
+        }
+        return false;
+    }
+
+    void MainWindow::wheelEvent(QWheelEvent *event){
+
+        QPoint cPos = ui->graphicsView->pos();
+        if(QCursor::pos().x() > cPos.x())
         {
-            //Отдаление
-            ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+            ui->graphicsView->setTransformationAnchor(QGraphicsView::AnchorUnderMouse);
+            // шкала
+            double scaleFactor = 1.15;
+            if(event->delta() > 0)
+            {
+                // Приближение
+                ui->graphicsView-> scale(scaleFactor, scaleFactor);
+
+            } else
+            {
+                //Отдаление
+                ui->graphicsView->scale(1.0 / scaleFactor, 1.0 / scaleFactor);
+            }
         }
     }
-}
 
 
-MainWindow::~MainWindow()
-{
-    saveSettings();
-    delete ui;
-}
+    MainWindow::~MainWindow()
+    {
+        saveSettings();
+        delete ui;
+    }
 

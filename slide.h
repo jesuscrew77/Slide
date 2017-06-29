@@ -1,41 +1,9 @@
 #ifndef SLIDE_H
 #define SLIDE_H
-#include<QVector>
-#include <QImage>
-#include <QPen>
-#include <QPainter>
-#include <QApplication>
-#include <QMessageBox>
-#include <fstream>
-#include <cmath>
-#include <QVector>
-#include <QString>
-#include <algorithm>
-#include <QFileDialog>
-#include <QFile>
-#include <QIODevice>
-#include <QDataStream>
-#include <QStringList>
-#include <QImage>
-#include<QImageIOPlugin>
-#include<QImageWriter>
-#include <QPixmap>
-#include <QGraphicsPixmapItem>
-#include <QGraphicsScene>
-#include<QWheelEvent>
-#include <QScrollBar>
-#include<QChar>
-#include<QSettings>
-#include<QTextCodec>
-#include <exception>
-#include <QTextStream>
-#include <QTime>
-#include <QDomDocument>
-#include <QSvgRenderer>
-#include <QXmlStreamReader>
-#include <QGraphicsSvgItem>
-#define QT_SHAREDPOINTER_TRACK_POINTERS
+#include <catalog.h>
 #include <QSharedPointer>
+#include <QImage>
+#include <QRgb>
 
 struct StarSlideData /*структура, содержащая информацию для создания слайда*/
 {
@@ -76,17 +44,7 @@ struct GridSlideData /*структура содержащая данные дл
     int space = 0;/*расстояние между слайдами*/
 };
 
-struct CatalogData /*структура, содержащая звездный каталог*/
-{
-    QVector <double> alpha_vec;
-    QVector <double> beta_vec;
-    QVector <float> mv_vec;
-    QVector <double> alpha_vec_sec;
-    QVector <double> beta_vec_sec;
-    QVector <long> count_sec_vec;
-    QVector <long> shift_vec;
-    QVector<short> new_numn;
-};
+
 struct DistorsioData
 {
     QList<double> xDistorsioVector;
@@ -140,21 +98,19 @@ public:
 
 
     void calculateAngularDistOptions (const StarSlideData &_slide_data,const CatalogData& _cat_data,bool check_sector);
-    SlideParameters  createStarSlide(const float& focus, bool check_sector, bool dist_check, const DistorsioData& distData);
-    QVector<StarParameters>  createGridSlide(const GridSlideData& slideData, bool check_distorsio, const DistorsioData& distData);
+    SlideParameters  createStarSlide(float focus, bool check_sector, bool dist_check, const DistorsioData& distData);
+    QVector <StarParameters>  createGridSlide(const GridSlideData& slideData, bool check_distorsio, const DistorsioData& distData);
     TestSlideParameters testStarSlide(bool check_sector, bool check_distorsio, const DistorsioData &distData);
-    QSharedPointer<QImage> getSlidePointer();
-    SLIDE_TYPE SlideType() const
-    {
-        return slide_type;
-    }
+    QSharedPointer <QImage> getSlidePointer();
+    SLIDE_TYPE SlideType() const noexcept { return slide_type; }
 
 private:
+    double calcScalarProduct(double l_oz, double l_st, double m_oz, double m_st, double n_oz, double n_st);
     void calcAngularDistancesWithSectors();
     void calcAngularDistancesNoSectors();
-    bool outOfImage(const int&start_pos,const int& x_size,const int& y_size,const int&central_x_c,const int&x, const int&y, const int& pixelPerStar);
-    int getStarSize(const int& default_size, const int& star_pos);
-    int getStarPos(const int& default_size, const int& star_pos);
+    bool outOfImage(int start_pos,int x_size, int y_size,int central_x_c, int x, int y, int pixelPerStar);
+    int getStarSize(int default_size, int star_pos);
+    int getStarPos(int default_size, int star_pos);
     double& calc_dist(double &coord_a, const double &coord_b,const QList<double>distorsio_coef);
     QVector< QVector<float> > calc_transition_matrix(const double &pointAlpha,const double &pointBeta,const double &pointAzimut);
 
@@ -163,10 +119,10 @@ private:
     StarSlideData slideData;
     CatalogData catalogData;
     SLIDE_TYPE slide_type;
-    bool star_slide_data_prepared=false;
+    bool star_slide_data_prepared = false;
 
-    constexpr static double trans_to_rad=0.0174532925;
-    constexpr static double trans_to_grad=57.29577957855229;
+    constexpr static double trans_to_rad = 0.0174532925;
+    constexpr static double trans_to_grad = 57.29577957855229;
 
 
 

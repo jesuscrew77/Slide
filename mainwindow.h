@@ -1,10 +1,41 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
+#define QT_SHAREDPOINTER_TRACK_POINTERS
 #include <QMainWindow>
-#include<QGraphicsPixmapItem>
-#include <QGraphicsSvgItem>
-#include<QSettings>
 #include <slide.h>
+#include <QVector>
+#include <QPen>
+#include <QPainter>
+#include <QApplication>
+#include <QMessageBox>
+#include <fstream>
+#include <cmath>
+#include <QVector>
+#include <QString>
+#include <algorithm>
+#include <QFileDialog>
+#include <QFile>
+#include <QIODevice>
+#include <QDataStream>
+#include <QStringList>
+#include <QImage>
+#include <QImageIOPlugin>
+#include <QImageWriter>
+#include <QPixmap>
+#include <QGraphicsPixmapItem>
+#include <QGraphicsScene>
+#include <QWheelEvent>
+#include <QChar>
+#include <QSettings>
+#include <QTextCodec>
+#include <exception>
+#include <QTextStream>
+#include <QTime>
+#include <QDomDocument>
+#include <QSvgRenderer>
+#include <QXmlStreamReader>
+#include <QGraphicsSvgItem>
+#include <QSharedPointer>
 
 
 struct InscriptParams
@@ -23,22 +54,7 @@ struct GroupImageParameters
     int space = 0;/*расстояние между слайдами*/
 };
 
-class SlideUIException : public std::exception
-{
-public:
-    SlideUIException() noexcept: whatStr("Неизвестная ошибка") {}
-    SlideUIException(const std::string &&whatStr) noexcept : whatStr(std::move(whatStr)) { }
-    SlideUIException(const std::string &whatStr) noexcept : whatStr(whatStr) { }
-    ~DbException() noexcept = default;
 
-    const char* what() const noexcept override
-    {
-        return whatStr.c_str();
-    }
-
-private:
-    std::string whatStr;
-};
 
 namespace Ui {
 class MainWindow;
@@ -66,19 +82,20 @@ public:
 
 private:
     void setStyle();
+    void initWidgetsOptionConnections();
     QByteArray createPreviewImage(const int imageWidth,const int iamgeHeight,const int fontSize,const int fontX,const int fontY,const QString setableText,QVector<StarParameters> coordinatesOfStars);
     GroupImageParameters readGroupImageParameters();
     StarSlideData readInputStarSlideData();
     GridSlideData readInputGridSlideData();
     InscriptParams readInscriptionParams();
-    void drawSlide(QScopedPointer<QImage> &im, QVector<QImage> &im_v, const int &sz_x, const int &sz_y, const int &sp, const int &slideSizeX, const int &slideSizeY);
-    void drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, const int &sz_x, const int &sz_y, const int &sp, const int &slideSizeX, const int &slideSizeY);
-    void drawPreviewItems(const int &slideSizeX,const int &slideSizeY,const int &groupImageWidth,const int &groupImageHeight,const int &space);
+    void drawSlide(QScopedPointer<QImage>& im, QVector<QImage>& im_v, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
+    void drawGridSlides(QScopedPointer<QImage>& im, QImage &opt_img, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
+    void drawPreviewItems(int  slideSizeX,int  slideSizeY,int  groupImageWidth,int  groupImageHeight,int  space);
     void chooseTab();
-    void drawPreviewItem(const QByteArray svg_img,const int &slideSizeX,const int &slideSizeY);
+    void drawPreviewItem(const QByteArray svg_img,int  slideSizeX,int  slideSizeY);
     void clearSceneAndImages();
-    void setImagesSizes(const int& slideSizeX,const int &slideSizeY,const int &groupImageHeight ,const int &groupImageWidth, const int &space);
-    void makeInscription(QSharedPointer<QImage> optimalImage,const QString& setableText,const int& fontX,const int& fontY,const int& fontSize);
+    void setImagesSizes(int slideSizeX,int slideSizeY,int groupImageHeight ,int groupImageWidth, int space);
+    void makeInscription(QSharedPointer<QImage> optimalImage,const QString& setableText, int fontX,int fontY,int fontSize);
     void setUIstate(bool state);
     void openCatalog();
     void updateLineXPix();
@@ -94,7 +111,6 @@ private:
     bool eventFilter(QObject *object, QEvent *event);
     void wheelEvent(QWheelEvent* event);
 
-    Ui::MainWindow *ui;
 
     CatalogData catalogData;
     QScopedPointer<QImage> leftTopImage;
@@ -110,7 +126,7 @@ private:
     QVector<QSharedPointer<QSvgRenderer>> vectorOfSvgPreviews;
     QVector<QSharedPointer<QGraphicsSvgItem>> vectorOfSvgItems;
 
-
+    Ui::MainWindow *ui;
     QSettings* settings = nullptr;
     QList<double> xDistorsioVector;
     QList<double> yDistorsioVector;
@@ -120,44 +136,10 @@ private:
     QString lastDistorsioDirectory;
     bool catalogIsRead = false;
     bool distorsioIsRead = false;
-    void initWidgetsOptionConnections();
+
 };
 
 
-
-#pragma pack(push,1)
-struct sector // каталог секторов
-{
-    float alpha_c;
-    float beta_c;
-    qint16 count_in_sector;
-    int shift;
-};
-#pragma pack(pop)
-
-
-
-#pragma pack(push,1)
-struct data_star // основной каталог/бортовой каталог
-{
-    qint32  NSAO;
-    qint32 alpha;
-    qint32 beta;
-    qint16 ualpha;
-    qint16 ubeta;
-    unsigned char mv;
-    char sp;
-};
-#pragma pack(pop)
-
-
-
-#pragma pack(push,1)
-struct numbers // основной каталог/бортовой каталог
-{
-    qint16 num;
-};
-#pragma pack(pop)
 
 
 
