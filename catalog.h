@@ -3,17 +3,99 @@
 
 #include <QtGlobal>
 #include <QVector>
+#include <fstream>
+#include <iostream>
 
 struct CatalogData /*структура, содержащая звездный каталог*/
 {
-    QVector <double> alpha_vec;
-    QVector <double> beta_vec;
-    QVector <float> mv_vec;
-    QVector <double> alpha_vec_sec;
-    QVector <double> beta_vec_sec;
-    QVector <long> count_sec_vec;
-    QVector <long> shift_vec;
-    QVector<short> new_numn;
+public:
+    void openCatalog(const QString& filename,  bool& status, QString& error);
+
+    const QVector<double>& alphaVec() const noexcept {
+        return alphaAngles;
+    }
+    void setAlphaVec(const QVector <double>& vec) noexcept
+    {
+        alphaAngles = vec;
+    }
+
+    const QVector<double>& betaVec() const noexcept {
+        return betaAngles;
+    }
+
+    void setBetaVec(const QVector <double>& vec) noexcept
+    {
+        betaAngles = vec;
+    }
+
+    const QVector <float> & mvVec() const noexcept {
+        return mv;
+    }
+
+    void setMvVec(const QVector <float>& vec) noexcept
+    {
+        mv = vec;
+    }
+
+    const QVector<double>& alphaVecSec() const noexcept {
+        return alphaAnglesSec;
+    }
+
+    void setAlphaVecSec(const QVector <double>& vec) noexcept
+    {
+        alphaAnglesSec = vec;
+    }
+
+
+    const QVector<double>& betaVecSec() const noexcept {
+        return betaAnglesSec;
+    }
+
+    void setBetaVecSec(const QVector <double>& vec) noexcept
+    {
+        betaAnglesSec = vec;
+    }
+
+    const QVector<long>& countVecSec() const noexcept {
+
+        return countSec;
+    }
+
+    void setCountVecSec(const QVector <long>& vec) noexcept
+    {
+        countSec = vec;
+    }
+
+    const QVector<long>& shiftVec() const noexcept {
+        return shift;
+    }
+
+    void setshiftVec(const QVector <long>& vec) noexcept
+    {
+        shift = vec;
+    }
+
+    const QVector<short>& newNumn() const noexcept {
+        return newNumbers;
+    }
+
+    void setNewNumn(const QVector <short>& vec) noexcept
+    {
+        newNumbers = vec;
+    }
+
+private:
+    constexpr  static double transToGrad = 57.29577957855229;
+    constexpr  static double div = 0.00000001;
+    constexpr  static int structSize = 18;
+    QVector <double> alphaAngles;
+    QVector <double> betaAngles;
+    QVector <float> mv;
+    QVector <double> alphaAnglesSec;
+    QVector <double> betaAnglesSec;
+    QVector <long> countSec;
+    QVector <long> shift;
+    QVector<short> newNumbers;
 };
 
 #pragma pack(push,1)

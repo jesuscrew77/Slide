@@ -8,7 +8,6 @@
 #include <QPainter>
 #include <QApplication>
 #include <QMessageBox>
-#include <fstream>
 #include <cmath>
 #include <QVector>
 #include <QString>
@@ -88,8 +87,8 @@ private:
     StarSlideData readInputStarSlideData();
     GridSlideData readInputGridSlideData();
     InscriptParams readInscriptionParams();
-    void drawSlide(QScopedPointer<QImage>& im, QVector<QImage>& im_v, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
-    void drawGridSlides(QScopedPointer<QImage>& im, QImage &opt_img, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
+    void drawSlide(QSharedPointer <QImage> im, QVector<QImage>& im_v, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
+    void drawGridSlides(QSharedPointer <QImage> im, QImage &opt_img, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
     void drawPreviewItems(int  slideSizeX,int  slideSizeY,int  groupImageWidth,int  groupImageHeight,int  space);
     void chooseTab();
     void drawPreviewItem(const QByteArray svg_img,int  slideSizeX,int  slideSizeY);
@@ -113,10 +112,11 @@ private:
 
 
     CatalogData catalogData;
-    QScopedPointer<QImage> leftTopImage;
-    QScopedPointer<QImage> leftDownImage;
-    QScopedPointer<QImage> rightTopImage;
-    QScopedPointer<QImage> rightDownImage;
+//    QScopedPointer<QImage> leftTopImage;
+//    QScopedPointer<QImage> leftDownImage;
+//    QScopedPointer<QImage> rightTopImage;
+//    QScopedPointer<QImage> rightDownImage;
+    QVector <QSharedPointer <QImage>> images;
     QSharedPointer<QImage> optimalImage;
 
 
@@ -126,7 +126,7 @@ private:
     QVector<QSharedPointer<QSvgRenderer>> vectorOfSvgPreviews;
     QVector<QSharedPointer<QGraphicsSvgItem>> vectorOfSvgItems;
 
-    Ui::MainWindow *ui;
+    Ui::MainWindow* ui;
     QSettings* settings = nullptr;
     QList<double> xDistorsioVector;
     QList<double> yDistorsioVector;

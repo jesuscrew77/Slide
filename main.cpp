@@ -2,13 +2,16 @@
 #include <QApplication>
 #include <QFont>
 #include <QFontDatabase>
+#include <QtGlobal>
 int main(int argc, char *argv[])
 {
-    QApplication::setAttribute(Qt::AA_Use96Dpi);
+
     QApplication a(argc, argv);
-    QFont font = qApp->font();
+    QFont font("Segoe UI");
     font.setPixelSize(11);
-    qApp->setFont(font);
+    QApplication::setFont(font);
+    QApplication::setAttribute(Qt::AA_Use96Dpi);
+    qSetMessagePattern("%{file} (%{function}, %{line}) : %{message}");
     MainWindow w;
     w.show();
 

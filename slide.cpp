@@ -105,18 +105,18 @@ void SlideCreator::calcAngularDistancesWithSectors()
     // Для входа в сектор
 
     QVector <double> l_oz_sec;
-    l_oz_sec.reserve(catalogData.alpha_vec_sec.size());
+    l_oz_sec.reserve(catalogData.alphaVecSec().size());
     QVector <double> m_oz_sec;
-    m_oz_sec.reserve(catalogData.alpha_vec_sec.size());
+    m_oz_sec.reserve(catalogData.alphaVecSec().size());
     QVector <double> n_oz_sec;
-    n_oz_sec.reserve(catalogData.alpha_vec_sec.size());
+    n_oz_sec.reserve(catalogData.alphaVecSec().size());
 
-    for(int i = 0;i < catalogData.alpha_vec_sec.size();i ++)// направляющие косинусы центров секторов
+    for(int i = 0;i < catalogData.alphaVecSec().size();i ++)// направляющие косинусы центров секторов
     {
-        double cos_b = cos(catalogData.beta_vec_sec[i] * trans_to_rad);
-        double cos_a = cos(catalogData.alpha_vec_sec[i] * trans_to_rad);
-        double sin_b = sin(catalogData.beta_vec_sec[i] * trans_to_rad);
-        double sin_a = sin(catalogData.alpha_vec_sec[i] * trans_to_rad);
+        double cos_b = cos(catalogData.betaVecSec()[i] * trans_to_rad);
+        double cos_a = cos(catalogData.alphaVecSec()[i] * trans_to_rad);
+        double sin_b = sin(catalogData.betaVecSec()[i] * trans_to_rad);
+        double sin_a = sin(catalogData.alphaVecSec()[i] * trans_to_rad);
         l_oz_sec.append(cos_b * cos_a);
         m_oz_sec.append(cos_b * sin_a);
         n_oz_sec.append(sin_b);
@@ -137,9 +137,9 @@ void SlideCreator::calcAngularDistancesWithSectors()
     int pos = it_sec-angle_cos_sec.begin();
 
     QVector<int> stars_in_sector;
-    for(int i = catalogData.shift_vec[pos];i < (catalogData.shift_vec[pos] + catalogData.count_sec_vec[pos]); i++)
+    for(int i = catalogData.shiftVec()[pos];i < (catalogData.shiftVec()[pos] + catalogData.countVecSec()[pos]); i++)
     {
-        stars_in_sector.append(catalogData.new_numn[i]);// формируем вектор, содержащий номера звезд в секторе
+        stars_in_sector.append(catalogData.newNumn()[i]);// формируем вектор, содержащий номера звезд в секторе
     }
 
     QVector<double> result_sec_beta;
@@ -149,8 +149,8 @@ void SlideCreator::calcAngularDistancesWithSectors()
 
     for(int i = 0;i < stars_in_sector.size();i ++)
     {
-        result_sec_alpha.append(catalogData.alpha_vec[stars_in_sector[i]]);
-        result_sec_beta.append(catalogData.beta_vec[stars_in_sector[i]]);
+        result_sec_alpha.append(catalogData.alphaVec()[stars_in_sector[i]]);
+        result_sec_beta.append(catalogData.betaVec()[stars_in_sector[i]]);
     }
 
 
@@ -197,27 +197,27 @@ void SlideCreator::calcAngularDistancesNoSectors()
 
 
     QVector <double> l_st;
-    l_st.reserve(catalogData.alpha_vec.size());
+    l_st.reserve(catalogData.alphaVec().size());
     QVector <double> m_st;
-    m_st.reserve(catalogData.alpha_vec.size());
+    m_st.reserve(catalogData.alphaVec().size());
     QVector <double> n_st;
-    n_st.reserve(catalogData.alpha_vec.size());
+    n_st.reserve(catalogData.alphaVec().size());
 
-    for(int i=0;i<catalogData.alpha_vec.size();i++)
+    for(int i = 0;i < catalogData.alphaVec().size();i ++)
     {
         // вычисляем направляющие косинусы всех звезд
-        double cos_b = cos(catalogData.beta_vec[i] * trans_to_rad);
-        double cos_a = cos(catalogData.alpha_vec[i] * trans_to_rad);
-        double sin_b = sin(catalogData.beta_vec[i] * trans_to_rad);
-        double sin_a = sin(catalogData.alpha_vec[i]  * trans_to_rad);
+        double cos_b = cos(catalogData.betaVec()[i] * trans_to_rad);
+        double cos_a = cos(catalogData.alphaVec()[i] * trans_to_rad);
+        double sin_b = sin(catalogData.betaVec()[i] * trans_to_rad);
+        double sin_a = sin(catalogData.alphaVec()[i]  * trans_to_rad);
         l_st.append(cos_b * cos_a);
         m_st.append(cos_b * sin_a);
         n_st.append(sin_b);
     }
 
     QVector<double> angle_cos;
-    angle_cos.reserve(catalogData.alpha_vec.size());
-    for(int i = 0;i < catalogData.alpha_vec.size();i ++)
+    angle_cos.reserve(catalogData.alphaVec().size());
+    for(int i = 0;i < catalogData.alphaVec().size();i ++)
     {
         // вычисляем косинус угла между точкой проецирования и координатами звезд
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
@@ -226,8 +226,8 @@ void SlideCreator::calcAngularDistancesNoSectors()
     }
 
     angle_data.angle_cos = angle_cos;
-    angle_data.result_sec_alpha = catalogData.alpha_vec;
-    angle_data.result_sec_beta = catalogData.beta_vec;
+    angle_data.result_sec_alpha = catalogData.alphaVec();
+    angle_data.result_sec_beta = catalogData.betaVec();
 }
 
 
@@ -366,8 +366,8 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
         {
             double field_of_view_cos = cos(view_angle*trans_to_rad);
             if((angle_data.angle_cos[i]) >= field_of_view_cos
-                    && catalogData.mv_vec[i] > slideData.minMv
-                    && catalogData.mv_vec[i] < slideData.maxMv)
+                    && catalogData.mvVec()[i] > slideData.minMv
+                    && catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angle_data.result_sec_alpha[i]);
                 result_beta.append(angle_data.result_sec_beta[i]);
@@ -378,8 +378,8 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
         {
             double inside_diam_of_view_cos = cos((slideData.insideViewAngle/2) * trans_to_rad);
             if(angle_data.angle_cos[i] >= inside_diam_of_view_cos
-                    && catalogData.mv_vec[i] > slideData.minMv
-                    && catalogData.mv_vec[i] < slideData.maxMv)
+                    && catalogData.mvVec()[i] > slideData.minMv
+                    && catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angle_data.result_sec_alpha[i]);
                 result_beta.append(angle_data.result_sec_beta[i]);
@@ -514,8 +514,8 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
         {
             double field_of_view_cos = cos(view_angle * trans_to_rad);
             if((angle_data.angle_cos[i]) >= field_of_view_cos &&
-                    catalogData.mv_vec[i] > slideData.minMv &&
-                    catalogData.mv_vec[i] < slideData.maxMv)
+                    catalogData.mvVec()[i] > slideData.minMv &&
+                    catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angle_data.result_sec_alpha[i]);
                 result_beta.append(angle_data.result_sec_beta[i]);
@@ -526,8 +526,8 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
         {
             double inside_field_of_view_cos = cos((slideData.insideViewAngle/2) * trans_to_rad);
             if((angle_data.angle_cos[i]) >= inside_field_of_view_cos &&
-                    catalogData.mv_vec[i] > slideData.minMv &&
-                    catalogData.mv_vec[i] < slideData.maxMv)
+                    catalogData.mvVec()[i] > slideData.minMv &&
+                    catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angle_data.result_sec_alpha[i]);
                 result_beta.append(angle_data.result_sec_beta[i]);

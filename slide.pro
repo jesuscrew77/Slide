@@ -15,7 +15,8 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    slide.cpp
+    slide.cpp \
+    catalog.cpp
 
 HEADERS  += mainwindow.h \
     slide.h \

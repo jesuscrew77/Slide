@@ -373,7 +373,7 @@ GridSlideData MainWindow::readInputGridSlideData()
 }
 
 
-void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int sz_x, int sz_y, int space, int slideSizeX, int slideSizeY)
+void MainWindow::drawGridSlides(QSharedPointer<QImage> im, QImage &opt_img, int sz_x, int sz_y, int space, int slideSizeX, int slideSizeY)
 {
     QPainter grid_painter;
     grid_painter.begin(im.data());
@@ -393,7 +393,7 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
 
 
 
-    void MainWindow::drawSlide(QScopedPointer <QImage> &im, QVector <QImage> &im_v, int sz_x, int sz_y, int space, int  slideSizeX, int slideSizeY)
+    void MainWindow::drawSlide(QSharedPointer<QImage> im, QVector <QImage> &im_v, int sz_x, int sz_y, int space, int  slideSizeX, int slideSizeY)
     {
         QPainter slide_painter;
         slide_painter.begin(im.data());
@@ -630,10 +630,11 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
 
             ui->graphicsView->setScene(scene.data());
         }
-        leftTopImage.reset();
-        leftDownImage.reset();
-        rightDownImage.reset();
-        rightTopImage.reset();
+
+        for(auto& image : images)
+        {
+            image.reset();
+        }
         optimalImage.reset();
     }
 
@@ -656,8 +657,8 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
 
             imageSizeX = (slideSizeX * groupImageWidth)+(space*2) * groupImageWidth;
             imageSizeY = (slideSizeY * groupImageHeight)+(space*2) * groupImageHeight;
-            leftTopImage.reset(new QImage(imageSizeX, imageSizeY , QImage::Format_Mono));
-            leftTopImage->fill(Qt::color1);
+            images[0].reset(new QImage(imageSizeX, imageSizeY , QImage::Format_Mono));
+            images[0]->fill(Qt::color1);
 
         }
 
@@ -681,19 +682,19 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
             }
             else
             {
-                imageSizeXRightDown=imageSizeX;
-                imageSizeYRightDown=imageSizeY;
+                imageSizeXRightDown = imageSizeX;
+                imageSizeYRightDown = imageSizeY;
             }
 
 
-            leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
-            leftTopImage->fill(Qt::color1);
-            leftDownImage.reset(new QImage(imageSizeXLeftDown,imageSizeYLeftDown, QImage::Format_Mono));
-            leftDownImage->fill(Qt::color1);
-            rightTopImage.reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
-            rightTopImage->fill(Qt::color1);
-            rightDownImage.reset(new QImage(imageSizeXRightDown,imageSizeYRightDown, QImage::Format_Mono));
-            rightDownImage->fill(Qt::color1);
+            images[0].reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
+            images[0]->fill(Qt::color1);
+            images[1].reset(new QImage(imageSizeXLeftDown,imageSizeYLeftDown, QImage::Format_Mono));
+            images[1]->fill(Qt::color1);
+            images[2].reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
+            images[2]->fill(Qt::color1);
+            images[3].reset(new QImage(imageSizeXRightDown,imageSizeYRightDown, QImage::Format_Mono));
+            images[3]->fill(Qt::color1);
 
 
         }
@@ -716,10 +717,10 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
             }
 
 
-            leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
-            leftTopImage->fill(Qt::color1);
-            rightTopImage.reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
-            rightTopImage->fill(Qt::color1);
+            images[0].reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
+            images[0]->fill(Qt::color1);
+            images[2].reset(new QImage(imageSizeXRightTop,imageSizeYRightTop, QImage::Format_Mono));
+            images[2]->fill(Qt::color1);
 
 
         }
@@ -741,147 +742,30 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
                 imageSizeYLeftDown = imageSizeY;
             }
 
-            leftTopImage.reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
-            leftTopImage->fill(Qt::color1);
-            leftDownImage.reset(new QImage(imageSizeXLeftDown, imageSizeYLeftDown, QImage::Format_Mono));
-            leftDownImage->fill(Qt::color1);
+            images[0].reset(new QImage(imageSizeX,imageSizeY, QImage::Format_Mono));
+            images[0]->fill(Qt::color1);
+            images[1].reset(new QImage(imageSizeXLeftDown, imageSizeYLeftDown, QImage::Format_Mono));
+            images[1]->fill(Qt::color1);
 
         }
     }
 
     void MainWindow::openCatalog()
     {
-
-        QVector <double> alphaVec;
-        QVector <double> betaVec;
-        QVector <float> mvVec;
-        QVector <double> alphaVecSec;
-        QVector <double> betaVecSec;
-        QVector <long> countSecVec;
-        QVector <long> shiftVec;
-        QVector<short> newNumn;
-
-
-        data_star generalCat;
-        sector secCat;
-        QVector <sector> secVec;
-        QVector <data_star> dataStarVec;
-        QString bufFilename;
-        QString filenameAdd;
-        numbers number;
-
-        constexpr  static double transToGrad = 57.29577957855229;
-        constexpr  static double div = 0.00000001;
-        constexpr  static int structSize = 18;
-        catalogIsRead = false;
-
-        if(sizeof(generalCat) != structSize)
+        bool status = false;
+        QString error;
+        catalogData.openCatalog(filename,status,error);
+        if(!status)
         {
-            QMessageBox::information(NULL,"Ошибка","Размер структуры не соответствует заданному. Обратитесь к разработчику");
-            exit(1);
-        }
-        ifstream in(filename.toLocal8Bit().constData(),ios::binary);
-        if(in.is_open())
-        {
-            while(in.read((char*)&generalCat,sizeof(generalCat)))// считываем каталог в вектор структур
-            {
-                dataStarVec.append(generalCat);
-            }
-            in.close();
+            ui->catalogStatusLabel->setText("Ошибка");
+            catalogIsRead = status;
+            QMessageBox::critical(NULL,"Ошибка", error);
         }
         else
         {
-            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-            ui->catalogStatusLabel->setText("Ошибка");
-            return;
+            catalogIsRead = status;
+            ui->catalogStatusLabel->setText(QString::number(catalogData.alphaVec().size()));
         }
-
-        for (QVector<data_star>::iterator it = dataStarVec.begin();it != dataStarVec.end();it ++)// расшифровываем считанный каталог
-        {
-            alphaVec.append((it->alpha) * div * (transToGrad));
-            betaVec.append((it->beta) * div * (transToGrad));
-            mvVec.append(((it->mv) - 20));
-        }
-        dataStarVec.clear();
-
-        for(int i = 0;i < mvVec.size();i ++)
-        {
-            mvVec[i] = mvVec[i] / 10;
-        }
-
-
-        bufFilename = filename;
-        filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end() - filename.begin());
-        filenameAdd.append("_SEC.CAT");
-        in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
-        if(in.is_open())
-        {
-            while(in.read((char*)&secCat,sizeof(sector)))// считываем каталог в вектор структур
-            {
-                secVec.append(secCat);
-            }
-            in.close();
-        }
-        else
-        {
-            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-            ui->catalogStatusLabel->setText("Ошибка");
-            return;
-        }
-
-        for (QVector<sector>::iterator it = secVec.begin();it != secVec.end();it ++)
-        {
-            alphaVecSec.append((it->alpha_c)*(transToGrad));
-            betaVecSec.append((it->beta_c)*(transToGrad));
-            countSecVec.append(it->count_in_sector);
-            shiftVec.append(it->shift);
-        }
-        secVec.clear();
-
-
-        filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end()-filename.begin());
-        filenameAdd.append("_NUM.CAT");
-        in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
-        if(in.is_open())
-        {
-            while(in.read((char*)&number.num,sizeof(number.num)))// считываем каталог в вектор
-            {
-                newNumn.append(number.num);
-            }
-            in.close();
-        }
-        else
-        {
-            QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
-            ui->catalogStatusLabel->setText("Ошибка");
-            return;
-        }
-
-        for(QVector<short>::iterator it = newNumn.begin();it != newNumn.end();it++)
-        {
-            if(*it < 0)
-            {
-                *it = *it*(-1);// избавляемся от отрицательных значений
-            }
-        }
-        for(int i = 0;i <= newNumn.size() - 1;i ++)
-        {
-            newNumn[i] = newNumn[i] - 1;
-        }
-
-        QString countOfStar(QString::number(alphaVec.size()));
-        ui->catalogStatusLabel->setText(countOfStar);
-
-        catalogData.alpha_vec = alphaVec;
-        catalogData.beta_vec = betaVec;
-        catalogData.alpha_vec_sec = alphaVecSec;
-        catalogData.beta_vec_sec = betaVecSec;
-        catalogData.mv_vec = mvVec;
-        catalogData.new_numn = newNumn;
-        catalogData.shift_vec = shiftVec;
-        catalogData.count_sec_vec = countSecVec;
-
-        catalogIsRead = true;
     }
 
 
@@ -1039,6 +923,7 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
 
         try
         {
+
             setUIstate(true);
             clearSceneAndImages();
             StarSlideData slideData(readInputStarSlideData());
@@ -1064,7 +949,7 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
 
                 QString setableText = inscriptData.prefix + " "+ "f=" + QString::number(slideData.focStart)+"mm"+","+" "
                         +QString::number(imgData.count_of_stars)+"zv." + "," + " " + " cat."+" "
-                        +QString::number(catalogData.alpha_vec.size())+","+" " + ui->comboBox->currentText()+","
+                        +QString::number(catalogData.alphaVec().size())+","+" " + ui->comboBox->currentText()+","
                         +" "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0) + ","
                         +" "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0) + ","+" "
                         +"2w= " + QString::number(imgData.view_angle_x)+"x"
@@ -1182,7 +1067,7 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
                         bufImage = slideCreator->getSlidePointer();
                         QString setableText = inscriptData.prefix+" "+"f="+QString::number(*focusValue)+ "mm" + "," + " "
                                 +QString::number(imgData.count_of_stars)+"zv."+","+" "+" cat."+" "
-                                +QString::number(catalogData.alpha_vec.size())+","+" "+ui->comboBox->currentText()+","
+                                +QString::number(catalogData.alphaVec().size())+","+" "+ui->comboBox->currentText()+","
                                 +" "+QChar(0x03B1)+"="+QString::number(slideData.pointAlpha)+QChar(0x00B0)+","
                                 +" "+QChar(0x03B4)+"="+QString::number(slideData.pointBeta)+QChar(0x00B0)+","+" "
                                 +"2w= " +QString::number(imgData.view_angle_x)+"x"
@@ -1226,38 +1111,16 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
                     }
                 }
 
-                if(leftTopImage)
+                for(auto& image : images)
                 {
-
-                    int sizeY = leftTopImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
-                    int sizeX = leftTopImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                    drawSlide(leftTopImage,imageVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
-
+                    if(image->isNull())
+                    {
+                        int sizeY = image->height()/(slideData.slideSizeY + groupImgData.space * 2);
+                        int sizeX = image->width()/(slideData.slideSizeX + groupImgData.space * 2);
+                        drawSlide(image,imageVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
+                    }
                 }
 
-                if(leftDownImage)
-                {
-                    int sizeY = leftDownImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
-                    int sizeX = leftDownImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                    drawSlide(leftDownImage,leftDownVector,sizeX,sizeY,groupImgData.space,slideData.slideSizeX,slideData.slideSizeY);
-
-                }
-
-                if(rightTopImage)
-                {
-                    int sizeY = rightTopImage->height()/(slideData.slideSizeY+groupImgData.space * 2);
-                    int sizeX = rightTopImage->width()/(slideData.slideSizeX+groupImgData.space * 2);
-                    drawSlide(rightTopImage,rightTopVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
-
-                }
-
-                if(rightDownImage)
-                {
-
-                    int sizeY = rightDownImage->height()/(slideData.slideSizeY + groupImgData.space * 2);
-                    int sizeX = rightDownImage->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                    drawSlide(rightDownImage,rightDownVector,sizeX,sizeY,groupImgData.space, slideData.slideSizeX,slideData.slideSizeY);
-                }
 
                 if(ui->showPreviewCheckBox->isChecked())
                 {
@@ -1301,17 +1164,17 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
             InscriptParams inscriptData(readInscriptionParams());
 
             DistorsioData distData;
-            distData.xDistorsioVector=xDistorsioVector;
-            distData.yDistorsioVector=yDistorsioVector;
+            distData.xDistorsioVector = xDistorsioVector;
+            distData.yDistorsioVector = yDistorsioVector;
             if(ui->OneSlideRadioButton->isChecked())
             {
 
                 QVector<StarParameters> coordinatesOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
                 optimalImage = slideCreator->getSlidePointer();
-                QString textForGrid=inscriptData.prefix+" "+"Разм.пикселя:"+" "+ui->comboBox->currentText()+","+" "+
+                QString textForGrid = inscriptData.prefix+" "+"Разм.пикселя:"+" "+ui->comboBox->currentText()+","+" "+
                         "Расстояние,пикс.:"+" "+QString::number(gridData.grid_distance)+" "+inscriptData.suffix;
                 makeInscription(optimalImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
-                QByteArray previewImageData=createPreviewImage(gridData.slideSizeX,gridData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,textForGrid,coordinatesOfStars);
+                QByteArray previewImageData = createPreviewImage(gridData.slideSizeX,gridData.slideSizeY,inscriptData.fontSize,inscriptData.fontX,inscriptData.fontY,textForGrid,coordinatesOfStars);
 
                 if(ui->showPreviewCheckBox->isChecked())
                 {
@@ -1352,36 +1215,15 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
                     }
                 }
                 ui->progressBar->setValue(50);
-                if (leftTopImage)
+
+                for(auto& image : images)
                 {
-                    int sizeY = leftTopImage->height()/(gridData.slideSizeY+gridData.space*2);
-                    int sizeX = leftTopImage->width()/(gridData.slideSizeX+gridData.space*2);
-                    drawGridSlides(leftTopImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-
-                }
-                if(leftDownImage)// ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
-                {
-
-                    int sizeY=leftDownImage->height()/(gridData.slideSizeY+gridData.space*2);
-                    int sizeX=leftDownImage->width()/(gridData.slideSizeX+gridData.space*2);
-                    drawGridSlides(leftDownImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-
-                }
-
-                if(rightTopImage) // ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
-
-                {
-                    int sizeY=rightTopImage->height()/(gridData.slideSizeY+gridData.space*2);
-                    int sizeX=rightTopImage->width()/(gridData.slideSizeX+gridData.space*2);
-                    drawGridSlides(rightTopImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
-
-                }
-
-                if(rightDownImage) // ЗАПОЛНЯЕМ ДОПОЛНИТЕЛЬНЫЕ ИЗОБРАЖЕНИЯ
-                {
-                    int sizeY=rightDownImage->height()/(gridData.slideSizeY+gridData.space*2);
-                    int sizeX=rightDownImage->width()/(gridData.slideSizeX+gridData.space*2);
-                    drawGridSlides(rightDownImage,*bufImage,sizeX,sizeY,gridData.space, gridData.slideSizeX,gridData.slideSizeY);
+                    if(image->isNull())
+                    {
+                        int sizeY = image->height()/(gridData.slideSizeY + gridData.space * 2);
+                        int sizeX = image->width()/(gridData.slideSizeX + gridData.space * 2);
+                        drawGridSlides(image,*bufImage,sizeX,sizeY,gridData.space,gridData.slideSizeX,gridData.slideSizeY);
+                    }
                 }
 
                 ui->progressBar->setValue(100);
@@ -1505,65 +1347,65 @@ void MainWindow::drawGridSlides(QScopedPointer<QImage> &im, QImage &opt_img, int
         }
         else if(ui->GroupSlideRadioButton->isChecked())
         {
-            if(!leftTopImage.isNull())
+            if(!images[0].isNull())
             {
 
-                if(!writer.write(*leftTopImage))
+                if(!writer.write(*images[0]))
                 {
 
                     QMessageBox::information(NULL,"Ошибка",writer.errorString());
                     return;
                 }
 
-                leftTopImage.reset();
+                images[0].reset();
             }
             else
             {
                 QMessageBox::information(NULL,"Ошибка","Нечего сохранять");
                 return;
             }
-            if(!leftDownImage.isNull())
+            if(!images[1].isNull())
             {
 
                 QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1,filenameSave.end() - filenameSave.begin());
                 filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss")+"left_down.tiff");
                 writer.setFileName(filenameSaveAdd);
-                if(!writer.write(*leftDownImage))
+                if(!writer.write(*images[1]))
                 {
                     QMessageBox::information(NULL,"Ошибка",writer.errorString());
                     return;
                 }
-                leftDownImage.reset();
+                images[1].reset();
 
 
             }
 
-            if(!rightTopImage.isNull())
+            if(!images[2].isNull())
             {
 
                 QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1,filenameSave.end() - filenameSave.begin());
                 filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss") + "right_top.tiff");
                 writer.setFileName(filenameSaveAdd);
-                if(!writer.write(*rightTopImage))
+                if(!writer.write(*images[2]))
                 {
                     QMessageBox::information(NULL,"Ошибка",writer.errorString());
                     return;
                 }
-                rightTopImage.reset();
+                images[2].reset();
             }
 
-            if(!rightDownImage.isNull())
+            if(!images[3].isNull())
             {
 
-                QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/")+1,filenameSave.end()-filenameSave.begin());
+                QString filenameSaveAdd = filenameSave.remove(filenameSave.lastIndexOf("/") + 1 ,filenameSave.end()-filenameSave.begin());
                 filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss") + "right_down.tiff");
                 writer.setFileName(filenameSaveAdd);
-                if(!writer.write(*rightDownImage))
+                if(!writer.write(*images[3]))
                 {
                     QMessageBox::information(NULL,"Ошибка",writer.errorString());
                     return;
                 }
-                rightDownImage.reset();
+                images[3].reset();
             }
         }
         QMessageBox::information(NULL,"Сохранение","Успешно сохранено");
