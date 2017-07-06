@@ -253,7 +253,7 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData &grid_
 
     slide_type = INVALID_TYPE;
     unsigned char* data_image = new unsigned char[grid_d.slideSizeX*grid_d.slideSizeY];
-    QVector<StarParameters> coordinatesOfStars;
+    QVector<StarParameters> coordsOfStars;
     if(check_distorsio)
     {
         for(int y = grid_d.grid_distance;y < (grid_d.slideSizeY-grid_d.grid_distance);y += (grid_d.grid_distance+grid_d.pixelPerStar))
@@ -274,7 +274,7 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData &grid_
                 star_parameters.y = getStarPos(grid_d.pixelPerStar,y_pix);
                 star_parameters.sizeX = getStarSize(grid_d.pixelPerStar,x_pix);
                 star_parameters.sizeY = getStarSize(grid_d.pixelPerStar,y_pix);
-                coordinatesOfStars.append(star_parameters);
+                coordsOfStars.append(star_parameters);
 
                 int start_pos = x_pix+y_pix*grid_d.slideSizeX;
 
@@ -306,7 +306,7 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData &grid_
                 star_parameters.y = getStarPos(grid_d.pixelPerStar,y);
                 star_parameters.sizeX = getStarSize(grid_d.pixelPerStar,x);
                 star_parameters.sizeY = getStarSize(grid_d.pixelPerStar,y);
-                coordinatesOfStars.append(star_parameters);
+                coordsOfStars.append(star_parameters);
                 int start_pos=x + y * grid_d.slideSizeX;
                 for(int i = 0;i< grid_d.pixelPerStar;i ++)
                 {
@@ -338,7 +338,7 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData &grid_
 
 
     slide_type=GRID_TYPE;
-    return coordinatesOfStars;
+    return coordsOfStars;
 }
 
 
@@ -407,7 +407,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
     int x_coord,y_coord;
     float CC;
     unsigned char* data_image = new unsigned char[slideData.slideSizeX * slideData.slideSizeY];
-    QVector <StarParameters> coordinatesOfStars;
+    QVector <StarParameters> coordsOfStars;
     for(int i = 0;i < filtered_l_st.size();i ++)
     {
 
@@ -447,7 +447,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
             star_parameters.y = getStarPos(slideData.pixelPerStar,y_coord);
             star_parameters.sizeX = getStarSize(slideData.pixelPerStar,x_coord);
             star_parameters.sizeY = getStarSize(slideData.pixelPerStar,y_coord);
-            coordinatesOfStars.append(star_parameters);
+            coordsOfStars.append(star_parameters);
 
 
             int pos_pix = y_coord * slideData.slideSizeX + x_coord;
@@ -486,7 +486,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
     image_data.count_of_stars = count_of_stars;
     image_data.view_angle_x = view_angle_x;
     image_data.view_angle_y = view_angle_y;
-    image_data.coordinatesOfStars = coordinatesOfStars;
+    image_data.coordsOfStars = coordsOfStars;
 
     slide_type=STAR_TYPE;
     return image_data;

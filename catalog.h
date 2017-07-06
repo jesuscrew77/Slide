@@ -84,6 +84,18 @@ public:
         newNumbers = vec;
     }
 
+    void clear()
+    {
+        alphaAngles.clear();
+        betaAngles.clear();
+        mv.clear();
+        alphaAnglesSec.clear();
+        betaAnglesSec.clear();
+        countSec.clear();
+        shift.clear();
+        newNumbers.clear();
+    }
+
 private:
     constexpr  static double transToGrad = 57.29577957855229;
     constexpr  static double div = 0.00000001;

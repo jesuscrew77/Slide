@@ -39,9 +39,6 @@ struct GridSlideData /*структура содержащая данные дл
     int slideSizeX = 0;
     int slideSizeY = 0;
     double pix = 0;
-    int groupImageHeight = 0;/*количество слайдов в высоту*/
-    int groupImageWidth = 0;/*количество слайдов в ширину*/
-    int space = 0;/*расстояние между слайдами*/
 };
 
 
@@ -65,7 +62,7 @@ struct SlideParameters /*структура, содержания инфомац
     double view_angle_x = 0;
     double view_angle_y = 0;
     int count_of_stars = 0;
-    QVector<StarParameters> coordinatesOfStars;
+    QVector<StarParameters> coordsOfStars;
 };
 
 struct TestSlideParameters
