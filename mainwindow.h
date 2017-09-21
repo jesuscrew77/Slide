@@ -122,7 +122,7 @@ private:
 
     Ui::MainWindow* ui;
 
-    CatalogData catalogData;
+    Catalog catalogData;
     QVector <QSharedPointer <QImage>> images;
     QSharedPointer<QImage> optimalImage;
     QScopedPointer<QGraphicsScene> scene;

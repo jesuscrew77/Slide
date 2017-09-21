@@ -1,4 +1,4 @@
- QProgressBar {border: 1px solid grey;text-align: center;} 
+ QProgressBar {border: 1px solid grey;text-align: center;}
   QProgressBar::chunk {background-color: #05B8CC; width: 20px;} 
   QPushButton { border: 1px solid gray; 
   background-color: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, 
@@ -17,9 +17,10 @@
   border-color: navy; /* make the default button prominent */} 
 
   QComboBox {border: 1px solid gray} 
-  QTabWidget::tab-bar { 
-   left: 5px; } 
-  QTabWidget::pane {border: 1px solid #e5e5e5; background-color: #262626;border-radius: 3px; } 
+  QTabWidget::tab-bar 
+  { 
+   left: 5px; 
+  }
   QTabBar::tab {background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, 
   stop: 0 #E1E1E1, stop: 0.4 #DDDDDD, 
   stop: 0.5 #D8D8D8, stop: 1.0 #D3D3D3); 
@@ -40,4 +41,4 @@
   border-bottom-color: #C2C7CB; } 
   QScrollArea {border:1px #CCCCCC solid; 
   border-radius: 10 px;} 
-  QGroupBox {border:1px solid #e5e5e5;border-radius: 3px;} 
+
