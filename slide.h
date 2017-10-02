@@ -8,38 +8,38 @@
 
 struct StarSlideData /*информация для создания слайда*/
 {
-    double pointAlpha = 0;
-    double pointBeta = 0;
-    double pointAzimut = 0;
-    double insideViewAngle = 0;
-    float focStart = 0;
-    float focEnd = 0;
-    float focStep = 0;
-    double minMv = 0;
-    double maxMv = 0;
-    float pix = 0;
-    int pixelPerStar = 0;
-    int slideSizeX = 0;
-    int slideSizeY = 0;
-    double slideSizeMM_Y = 0;
-    double slideSizeMM_X = 0;
+    double pointAlpha;
+    double pointBeta;
+    double pointAzimut;
+    double insideViewAngle;
+    float focStart;
+    float focEnd;
+    float focStep;
+    double minMv;
+    double maxMv;
+    float pix;
+    int pixelPerStar;
+    int slideSizeX;
+    int slideSizeY;
+    double slideSizeMM_Y;
+    double slideSizeMM_X;
 };
 struct StarParameters /*информация о координатах и размерах звезд*/
 {
-    int x = 0;
-    int y = 0;
-    int sizeX = 0;
-    int sizeY = 0;
+    int x;
+    int y;
+    int sizeX;
+    int sizeY;
 };
 
 
 struct GridSlideData /* данные для создания слайда-сетки*/
 {
-    int grid_distance = 0;
-    int pixelPerStar = 0;
-    int slideSizeX = 0;
-    int slideSizeY = 0;
-    double pix = 0;
+    int grid_distance;
+    int pixelPerStar;
+    int slideSizeX;
+    int slideSizeY;
+    double pix;
 };
 
 

@@ -243,7 +243,7 @@ InscriptParams MainWindow::readInscriptionParams()
 }
 StarSlideData MainWindow::readInputStarSlideData()
 {
-    StarSlideData data;
+    StarSlideData data {};
     data.pointAlpha = ui->alphaLineEdit->text().toDouble();
     if (data.pointAlpha < 0 || data.pointAlpha > 360)
     {
@@ -318,7 +318,7 @@ StarSlideData MainWindow::readInputStarSlideData()
 
 GroupImgParams MainWindow::readGroupImgParams()
 {
-    GroupImgParams data;
+    GroupImgParams data {};
     if (ui->GroupSlideRadioButton->isChecked())
     {
         data.countY = ui->imageHeightLineEdit->text().toDouble();
@@ -334,7 +334,7 @@ GroupImgParams MainWindow::readGroupImgParams()
 
 GridSlideData MainWindow::readInputGridSlideData()
 {
-    GridSlideData data;
+    GridSlideData data {};
     data.grid_distance = ui->GridLenghtLineEdit->text().toInt();
     if (data.grid_distance<0)
     {

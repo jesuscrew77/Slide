@@ -48,9 +48,9 @@ struct InscriptParams
 
 struct GroupImgParams
 {
-    int countY = 0;/*количество слайдов в высоту*/
-    int countX = 0;/*количество слайдов в ширину*/
-    int space = 0;/*расстояние между слайдами*/
+    int countY;/*количество слайдов в высоту*/
+    int countX;/*количество слайдов в ширину*/
+    int space;/*расстояние между слайдами*/
 };
 
 

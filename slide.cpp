@@ -15,9 +15,9 @@ QVector <QRgb> SlideCreator::colorTable = createColorTable();
 
 
 SlideCreator::SlideCreator()
-    :angleData(AngularDistanceOptions()),
-      slideData(StarSlideData()),
-      catalogData(Catalog()),
+    :angleData(AngularDistanceOptions{}),
+      slideData(StarSlideData{}),
+      catalogData(Catalog{}),
       slideType(SLIDE_TYPE::INVALID_TYPE)
 {
 
