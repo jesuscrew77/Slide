@@ -1,5 +1,7 @@
 #include "slide.h"
 #include <qDebug>
+#include <QFile>
+#include <QTextStream>
 
 QVector <QRgb> createColorTable ()
 {
@@ -48,9 +50,9 @@ QVector< QVector<float> > SlideCreator::calcTransitionMatrix(double pointAlpha, 
     float PS,PC,QS,QC,RS,RC;
     for (int i = 0;i < trMat.size();i ++) trMat[i].resize(3);
 
-    PS = sin(pointAzimut * trans_to_rad); PC= cos(pointAzimut * trans_to_rad);
-    QS = sin(pointBeta * trans_to_rad); QC = cos(pointBeta * trans_to_rad);
-    RS = sin(pointAlpha * trans_to_rad); RC = cos(pointAlpha * trans_to_rad);
+    PS = sin(pointAzimut * transToRad); PC= cos(pointAzimut * transToRad);
+    QS = sin(pointBeta * transToRad); QC = cos(pointBeta * transToRad);
+    RS = sin(pointAlpha * transToRad); RC = cos(pointAlpha * transToRad);
     trMat[0][0] = -PC*RS-PS*RC*QS;
     trMat[0][1] = PC*RC-PS*RS*QS;
     trMat[0][2] = PS*QC;
@@ -112,9 +114,9 @@ double SlideCreator::calcScalarProduct(double l_oz, double l_st, double m_oz, do
 void SlideCreator::calcAngularDistancesWithSectors()
 {
     // вычисляем направляющие косинусы точки проектирования
-    double l_oz = cos(slideData.pointBeta * trans_to_rad) * cos(slideData.pointAlpha * trans_to_rad);
-    double m_oz = cos(slideData.pointBeta * trans_to_rad) * sin(slideData.pointAlpha * trans_to_rad);
-    double n_oz = sin(slideData.pointBeta * trans_to_rad);
+    double l_oz = cos(slideData.pointBeta * transToRad) * cos(slideData.pointAlpha * transToRad);
+    double m_oz = cos(slideData.pointBeta * transToRad) * sin(slideData.pointAlpha * transToRad);
+    double n_oz = sin(slideData.pointBeta * transToRad);
 
     // Для входа в сектор
 
@@ -127,13 +129,13 @@ void SlideCreator::calcAngularDistancesWithSectors()
 
     for (int i = 0;i < catalogData.alphaVecSec().size();i ++)// направляющие косинусы центров секторов
     {
-        double cos_b = cos(catalogData.betaVecSec()[i] * trans_to_rad);
-        double cos_a = cos(catalogData.alphaVecSec()[i] * trans_to_rad);
-        double sin_b = sin(catalogData.betaVecSec()[i] * trans_to_rad);
-        double sin_a = sin(catalogData.alphaVecSec()[i] * trans_to_rad);
-        l_oz_sec.append(cos_b * cos_a);
-        m_oz_sec.append(cos_b * sin_a);
-        n_oz_sec.append(sin_b);
+        double cos_d = cos(catalogData.betaVecSec()[i] * transToRad);
+        double cos_a = cos(catalogData.alphaVecSec()[i] * transToRad);
+        double sin_d = sin(catalogData.betaVecSec()[i] * transToRad);
+        double sin_a = sin(catalogData.alphaVecSec()[i] * transToRad);
+        l_oz_sec.append(cos_d * cos_a);
+        m_oz_sec.append(cos_d * sin_a);
+        n_oz_sec.append(sin_d);
     }
 
     // считаем косинусы между центром проектирования и центрами секторов, находим ближайший
@@ -157,13 +159,13 @@ void SlideCreator::calcAngularDistancesWithSectors()
     }
 
     const auto countOfStars = starsInSector.size();
-    angleData.result_beta.reserve(countOfStars);
-    angleData.result_alpha.reserve(countOfStars);
+    angleData.resultBeta.reserve(countOfStars);
+    angleData.resultAlpha.reserve(countOfStars);
 
     for (int i = 0;i < countOfStars; i ++)
     {
-        angleData.result_alpha.append(catalogData.alphaVec()[starsInSector[i]]);
-        angleData.result_beta.append(catalogData.betaVec()[starsInSector[i]]);
+        angleData.resultAlpha.append(catalogData.alphaVec()[starsInSector[i]]);
+        angleData.resultBeta.append(catalogData.betaVec()[starsInSector[i]]);
     }
 
 
@@ -174,32 +176,32 @@ void SlideCreator::calcAngularDistancesWithSectors()
     QVector<double> n_st;
     n_st.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars;i ++)//направляющие косинусы звезд в секторе
+    for (int i = 0; i < countOfStars; i++)//направляющие косинусы звезд в секторе
     {
-        double cos_b = cos(angleData.result_beta[i] * trans_to_rad);
-        double cos_a = cos(angleData.result_alpha[i] * trans_to_rad);
-        double sin_b = sin(angleData.result_beta[i] * trans_to_rad);
-        double sin_a = sin(angleData.result_alpha[i] * trans_to_rad);
-        l_st.append(cos_b * cos_a);
-        m_st.append(cos_b * sin_a);
-        n_st.append(sin_b);
+        double cos_d = cos(angleData.resultBeta[i] * transToRad);
+        double cos_a = cos(angleData.resultAlpha[i] * transToRad);
+        double sin_d = sin(angleData.resultBeta[i] * transToRad);
+        double sin_a = sin(angleData.resultAlpha[i] * transToRad);
+        l_st.append(cos_d * cos_a);
+        m_st.append(cos_d * sin_a);
+        n_st.append(sin_d);
     }
 
-    angleData.angle_cos.reserve(countOfStars);
+    angleData.angleCos.reserve(countOfStars);
 
     for (int i = 0;i < countOfStars;i ++)// косинусы между точкой проектирования и звездами в секторе
     {
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
-        angleData.angle_cos.append(scalar_product);
+        angleData.angleCos.append(scalar_product);
     }
 
 }
 void SlideCreator::calcAngularDistancesNoSectors()
 {
     // вычисляем направляющие косинусы точки проектирования
-    double l_oz = cos(slideData.pointBeta * trans_to_rad) * cos(slideData.pointAlpha * trans_to_rad);
-    double m_oz = cos(slideData.pointBeta * trans_to_rad) * sin(slideData.pointAlpha * trans_to_rad);
-    double n_oz = sin(slideData.pointBeta * trans_to_rad);
+    double l_oz = cos(slideData.pointBeta * transToRad) * cos(slideData.pointAlpha * transToRad);
+    double m_oz = cos(slideData.pointBeta * transToRad) * sin(slideData.pointAlpha * transToRad);
+    double n_oz = sin(slideData.pointBeta * transToRad);
 
     const auto countOfStars = catalogData.alphaVec().size();
     QVector <double> l_st;
@@ -212,36 +214,36 @@ void SlideCreator::calcAngularDistancesNoSectors()
     for (int i = 0;i < countOfStars;i ++)
     {
         // вычисляем направляющие косинусы всех звезд
-        double cos_b = cos(catalogData.betaVec()[i] * trans_to_rad);
-        double cos_a = cos(catalogData.alphaVec()[i] * trans_to_rad);
-        double sin_b = sin(catalogData.betaVec()[i] * trans_to_rad);
-        double sin_a = sin(catalogData.alphaVec()[i]  * trans_to_rad);
-        l_st.append(cos_b * cos_a);
-        m_st.append(cos_b * sin_a);
-        n_st.append(sin_b);
+        double cosD = cos(catalogData.betaVec()[i] * transToRad);
+        double cos_a = cos(catalogData.alphaVec()[i] * transToRad);
+        double sinD = sin(catalogData.betaVec()[i] * transToRad);
+        double sin_a = sin(catalogData.alphaVec()[i]  * transToRad);
+        l_st.append(cosD * cos_a);
+        m_st.append(cosD * sin_a);
+        n_st.append(sinD);
     }
 
 
-    angleData.angle_cos.reserve(countOfStars);
+    angleData.angleCos.reserve(countOfStars);
     for (int i = 0;i < countOfStars;i ++)
     {
         // вычисляем косинус угла между точкой проецирования и координатами звезд
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
-        angleData.angle_cos.append(scalar_product);
+        angleData.angleCos.append(scalar_product);
 
     }
 
-    angleData.result_alpha = catalogData.alphaVec();
-    angleData.result_beta = catalogData.betaVec();
+    angleData.resultAlpha = catalogData.alphaVec();
+    angleData.resultBeta = catalogData.betaVec();
 }
 
-void SlideCreator::calcViewAngle(double& view_angle_x, double& view_angle_y, double& view_angle)
+void SlideCreator::calcViewAngle(double& viewAngleX, double& viewAngleY, double& viewAngle)
 {
     // считаем угол зрения в зависимости от фокусного расстояния и размерности матрицы
-    view_angle_x = atan((((slideData.slideSizeX / 2) * slideData.pix)/(slideData.focStart))) * 2 * trans_to_grad;
-    view_angle_y = atan((((slideData.slideSizeY / 2) * slideData.pix)/(slideData.focStart))) * 2 * trans_to_grad;
+    viewAngleX = atan(((slideData.slideSizeX / 2 * slideData.pix) / slideData.focStart)) * 2 * transToGrad;
+    viewAngleY = atan(((slideData.slideSizeY / 2 * slideData.pix) / slideData.focStart)) * 2 * transToGrad;
     // угол зрения - описанная окружность
-    view_angle = sqrt(pow(view_angle_x, 2) + pow(view_angle_y, 2));
+    viewAngle = sqrt(pow(viewAngleX, 2) + pow(viewAngleY, 2));
 }
 
 
@@ -262,7 +264,7 @@ void SlideCreator::calculateAngularDistOptions(const StarSlideData& _slide_data,
 
 
 /*возвращает вспомогательные слайды в виде сетки*/
-QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_d, bool check_distorsio, const DistorsioData& distData)
+QVector <StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_d, bool check_distorsio, const DistorsioData& distData)
 {
 
     slideType = SLIDE_TYPE::INVALID_TYPE;
@@ -270,9 +272,9 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_
     QVector <StarParameters> coordsOfStars;
     if (check_distorsio)
     {
-        for (int y = grid_d.grid_distance;y < (grid_d.slideSizeY - grid_d.grid_distance);y += (grid_d.grid_distance + grid_d.pixelPerStar))
+        for (int y = grid_d.gridDistance;y < (grid_d.slideSizeY - grid_d.gridDistance);y += (grid_d.gridDistance + grid_d.pixelPerStar))
         {
-            for (int x = grid_d.grid_distance;x < (grid_d.slideSizeX - grid_d.grid_distance);x += (grid_d.grid_distance + grid_d.pixelPerStar))
+            for (int x = grid_d.gridDistance;x < (grid_d.slideSizeX - grid_d.gridDistance);x += (grid_d.gridDistance + grid_d.pixelPerStar))
             {
 
                 double y_mm = (y - grid_d.slideSizeY / 2) * grid_d.pix;
@@ -311,9 +313,9 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_
 
     else
     {
-        for (int y = grid_d.grid_distance;y < (grid_d.slideSizeY-grid_d.grid_distance);y += (grid_d.grid_distance+grid_d.pixelPerStar))
+        for (int y = grid_d.gridDistance;y < (grid_d.slideSizeY-grid_d.gridDistance);y += (grid_d.gridDistance+grid_d.pixelPerStar))
         {
-            for (int x = grid_d.grid_distance;x < (grid_d.slideSizeX-grid_d.grid_distance);x += (grid_d.grid_distance+grid_d.pixelPerStar))
+            for (int x = grid_d.gridDistance;x < (grid_d.slideSizeX-grid_d.gridDistance);x += (grid_d.gridDistance+grid_d.pixelPerStar))
             {
                 StarParameters starParameters;
                 starParameters.x = getStarPos(grid_d.pixelPerStar,x);
@@ -347,130 +349,133 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_
 
 
 /*Перед выполнением этой функции должны быть рассчитаны угловые расстояния между точкой проецирования и звездами, т.е выполнена функция calculateAngularDistOptions  */
-SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bool check_distorsio, const DistorsioData& distData = DistorsioData())
+SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bool check_distorsio, const DistorsioData& distData = DistorsioData {})
 {
     slideType = SLIDE_TYPE::INVALID_TYPE;
-    if (!starSlideDataPrepare) return SlideParameters();
+    if (!starSlideDataPrepare) return SlideParameters {};
 
-    double viewAngleX, viewAngleY, view_angle;
-    calcViewAngle(viewAngleX, viewAngleY, view_angle);
+    double viewAngleX, viewAngleY, viewAngle;
+    calcViewAngle(viewAngleX, viewAngleY, viewAngle);
 
 
-    QVector <double> result_alpha;
-    QVector <double> result_beta;
+    QVector <double> resultAlpha;
+    QVector <double> resultBeta;
 
-    for (int i = 0;i < angleData.angle_cos.size();i ++)
+    for (int i = 0;i < angleData.angleCos.size(); i++)
     {
         if (check_sector)// если учитываем сектора
         {
-            double fieldOfViewCos = cos(view_angle * trans_to_rad);
-            if ((angleData.angle_cos[i]) >= fieldOfViewCos
+            double fieldOfViewCos = cos(viewAngle * transToRad);
+            if ((angleData.angleCos[i]) >= fieldOfViewCos
                     && catalogData.mvVec()[i] > slideData.minMv
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
-                result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                resultAlpha.append(angleData.resultAlpha[i]);
+                resultBeta.append(angleData.resultBeta[i]);
 
             }
         }
         else // если не учитываем
         {
-            double insideDiamOfViewCos = cos((slideData.insideViewAngle / 2) * trans_to_rad);
-            if (angleData.angle_cos[i] >= insideDiamOfViewCos
+            double insideDiamOfViewCos = cos(slideData.insideViewAngle / 2 * transToRad);
+            if (angleData.angleCos[i] >= insideDiamOfViewCos
                     && catalogData.mvVec()[i] > slideData.minMv
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
-                result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                resultAlpha.append(angleData.resultAlpha[i]);
+                resultBeta.append(angleData.resultBeta[i]);
             }
         }
     }
-    QVector <double> filtered_l_st;
-    QVector <double> filtered_m_st;
-    QVector <double> filtered_n_st;
+    QVector <double> filteredLSt;
+    QVector <double> filteredMSt;
+    QVector <double> filteredNSt;
 
-    for (int i = 0;i < result_beta.size();i ++)
+    for (int i = 0;i < resultBeta.size();i ++)
     {
-        double cos_b = cos(result_beta[i] * trans_to_rad);
-        double cos_a = cos(result_alpha[i] * trans_to_rad);
-        double sin_b = sin(result_beta[i] * trans_to_rad);
-        double sin_a = sin(result_alpha[i] * trans_to_rad);
+        double cosD = cos(resultBeta[i] * transToRad);
+        double cosA = cos(resultAlpha[i] * transToRad);
+        double sinD = sin(resultBeta[i] * transToRad);
+        double sinA = sin(resultAlpha[i] * transToRad);
 
-        filtered_l_st.append(cos_b * cos_a);
-        filtered_m_st.append(cos_b * sin_a);
-        filtered_n_st.append(sin_b);
+        filteredLSt.append(cosD * cosA);
+        filteredMSt.append(cosD * sinA);
+        filteredNSt.append(sinD);
     }
 
 
+    QScopedArrayPointer <unsigned char> dataImage;
+    if (!onlyParameters)
+        dataImage.reset(new unsigned char [slideData.slideSizeX * slideData.slideSizeY]);
 
-    QScopedArrayPointer <unsigned char> dataImage(new unsigned char [slideData.slideSizeX * slideData.slideSizeY]);
     QVector <StarParameters> coordsOfStars;
 
     double x_coord_mm, y_coord_mm;
-    int x_coord, y_coord;
+    int xCoord, yCoord;
     float CC;
     int countOfStars = 0;//для подсчёта числа звезд, попавших на слайд
-    for (int i = 0;i < filtered_l_st.size();i ++)
+    for (int i = 0;i < filteredLSt.size();i ++)
     {
 
-        CC = angleData.trMat[2][0] * filtered_l_st[i]
+        CC = angleData.trMat[2][0] * filteredLSt[i]
                 +
-                angleData.trMat[2][1] * filtered_m_st[i]
+                angleData.trMat[2][1] * filteredMSt[i]
                 +
-                angleData.trMat[2][2] * filtered_n_st[i];
+                angleData.trMat[2][2] * filteredNSt[i];
 
         if (check_distorsio)
         {
 
-            x_coord_mm = (-focus * (angleData.trMat[0][0] * filtered_l_st[i]
-                    + angleData.trMat[0][1] * filtered_m_st[i]
-                    + angleData.trMat[0][2] * filtered_n_st[i]) / CC);
-            y_coord_mm = (-focus * (angleData.trMat[1][0] * filtered_l_st[i]
-                    + angleData.trMat[1][1] * filtered_m_st[i]
-                    + angleData.trMat[1][2] * filtered_n_st[i]) / CC);
+            x_coord_mm = (-focus * (angleData.trMat[0][0] * filteredLSt[i]
+                    + angleData.trMat[0][1] * filteredMSt[i]
+                    + angleData.trMat[0][2] * filteredNSt[i]) / CC);
+            y_coord_mm = (-focus * (angleData.trMat[1][0] * filteredLSt[i]
+                    + angleData.trMat[1][1] * filteredMSt[i]
+                    + angleData.trMat[1][2] * filteredNSt[i]) / CC);
             x_coord_mm = calc_dist(x_coord_mm, y_coord_mm, distData.xDistorsioVector);
             y_coord_mm = calc_dist(y_coord_mm, x_coord_mm, distData.yDistorsioVector);
-            x_coord = x_coord_mm / slideData.pix + 0.5;
-            y_coord = y_coord_mm / slideData.pix + 0.5;
+            xCoord = x_coord_mm / slideData.pix + 0.5;
+            yCoord = y_coord_mm / slideData.pix + 0.5;
 
         }
 
         else
         {
-            x_coord = (-focus * (angleData.trMat[0][0] * filtered_l_st[i]
-                    + angleData.trMat[0][1] * filtered_m_st[i]
-                    + angleData.trMat[0][2]*filtered_n_st[i]) / CC) / slideData.pix + 0.5;
-            y_coord = (-focus * (angleData.trMat[1][0] * filtered_l_st[i]
-                    + angleData.trMat[1][1] * filtered_m_st[i]
-                    + angleData.trMat[1][2] * filtered_n_st[i]) / CC) / slideData.pix + 0.5;
+            xCoord = (-focus * (angleData.trMat[0][0] * filteredLSt[i]
+                    + angleData.trMat[0][1] * filteredMSt[i]
+                    + angleData.trMat[0][2]*filteredNSt[i]) / CC) / slideData.pix + 0.5;
+            yCoord = (-focus * (angleData.trMat[1][0] * filteredLSt[i]
+                    + angleData.trMat[1][1] * filteredMSt[i]
+                    + angleData.trMat[1][2] * filteredNSt[i]) / CC) / slideData.pix + 0.5;
 
         }
 
-        x_coord += slideData.slideSizeX / 2; y_coord += slideData.slideSizeY / 2;// x_coord,slideSizeX- ось X, y_coord,slideSizeY - ось Y
+        xCoord += slideData.slideSizeX / 2; yCoord += slideData.slideSizeY / 2;// x_coord,slideSizeX- ось X, y_coord,slideSizeY - ось Y
 
-        if (x_coord > 0 && x_coord < slideData.slideSizeX && y_coord > 0 && y_coord < slideData.slideSizeY)
+        if (xCoord > 0 && xCoord < slideData.slideSizeX && yCoord > 0 && yCoord < slideData.slideSizeY)
         {
             StarParameters starParameters;
-            starParameters.x = getStarPos(slideData.pixelPerStar, x_coord);
-            starParameters.y = getStarPos(slideData.pixelPerStar, y_coord);
-            starParameters.sizeX = getStarSize(slideData.pixelPerStar, x_coord);
-            starParameters.sizeY = getStarSize(slideData.pixelPerStar, y_coord);
+            starParameters.x = getStarPos(slideData.pixelPerStar, xCoord);
+            starParameters.y = getStarPos(slideData.pixelPerStar, yCoord);
+            starParameters.sizeX = getStarSize(slideData.pixelPerStar, xCoord);
+            starParameters.sizeY = getStarSize(slideData.pixelPerStar, yCoord);
             coordsOfStars.append(starParameters);
 
 
-            int pos_pix = y_coord * slideData.slideSizeX + x_coord;
-            int start_pos = pos_pix - (slideData.pixelPerStar/2) * slideData.slideSizeX - (slideData.pixelPerStar/2);
+            int posPix = yCoord * slideData.slideSizeX + xCoord;
+            int startPos = posPix - (slideData.pixelPerStar/2) * slideData.slideSizeX - (slideData.pixelPerStar/2);
 
-            for (int y = 0;y < slideData.pixelPerStar;y ++)
+            for (int y = 0; y < slideData.pixelPerStar; y++)
             {
-                for (int x = 0;x < slideData.pixelPerStar;x ++)
+                for (int x = 0; x < slideData.pixelPerStar; x++)
                 {
 
-                    if (outOfImage(start_pos, slideData.slideSizeX, slideData.slideSizeY, x_coord, x, y, slideData.pixelPerStar))
+                    if (outOfImage(startPos, slideData.slideSizeX, slideData.slideSizeY, xCoord, x, y, slideData.pixelPerStar))
                     {
                         continue;
                     }
-                    dataImage[start_pos + x + y * slideData.slideSizeX] = 255;
+                    if (!onlyParameters)
+                        dataImage[startPos + x + y * slideData.slideSizeX] = 255;
                 }
 
             }
@@ -479,14 +484,17 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
 
     }
 
-    QImage img(dataImage.data(), slideData.slideSizeX, slideData.slideSizeY, slideData.slideSizeX, QImage::Format_Grayscale8);
-    img.setColorTable(colorTable);
-    optimalImage.reset(new QImage(img.convertToFormat(QImage::Format_Mono)));
+    if(!onlyParameters)
+    {
+        QImage img(dataImage.data(), slideData.slideSizeX, slideData.slideSizeY, slideData.slideSizeX, QImage::Format_Grayscale8);
+        img.setColorTable(colorTable);
+        optimalImage.reset(new QImage(img.convertToFormat(QImage::Format_Mono)));
+    }
 
     SlideParameters imageData;
-    imageData.count_of_stars = countOfStars;
-    imageData.view_angle_x = viewAngleX;
-    imageData.view_angle_y = viewAngleY;
+    imageData.countOfStars = countOfStars;
+    imageData.viewAngleX = viewAngleX;
+    imageData.viewAngleY = viewAngleY;
     imageData.coordsOfStars = coordsOfStars;
 
     slideType = SLIDE_TYPE::STAR_TYPE;
@@ -495,118 +503,116 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
 }
 /* Выдает предварительную информацию о размерах слайда, числе звезд на слайде.*/
 /* Если слайдов несколько выдает так же информацию об размере общего изображения*/
-TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_distorsio, const DistorsioData &distData)
+TestSlideParameters SlideCreator::testStarSlide (bool checkSector, bool checkDistorsio, const DistorsioData &distData)
 {
-    if (!starSlideDataPrepare) return TestSlideParameters();
-    int count_of_stars = 0;//для подсчёта числа звезд, попавших на слайд
+    if (!starSlideDataPrepare) return TestSlideParameters {};
+    int countOfStars = 0;//для подсчёта числа звезд, попавших на слайд
 
-    // считаем угол зрения в зависимости от фокусного расстояния и размерности матрицы
-    double view_angle_x = atan((((slideData.slideSizeX / 2) * slideData.pix)/(slideData.focStart))) * 2 * trans_to_grad;
-    double view_angle_y = atan((((slideData.slideSizeY / 2) * slideData.pix)/(slideData.focStart))) * 2 * trans_to_grad;
-    double view_angle = sqrt(pow(view_angle_x, 2) + pow(view_angle_y, 2));// угол зрения- описанная окружность
+    double viewAngleX, viewAngleY, viewAngle;
+    calcViewAngle(viewAngleX, viewAngleY, viewAngle);
 
-    QVector <double> result_alpha;
-    QVector <double> result_beta;
+    QVector <double> resultAlpha;
+    QVector <double> resultBeta;
 
 
-    for (int i = 0;i < angleData.angle_cos.size();i ++)
+    for (int i = 0;i < angleData.angleCos.size();i ++)
     {
-        if (check_sector)
+        if (checkSector)
         {
-            double fieldOfViewCos = cos(view_angle * trans_to_rad);
-            if (angleData.angle_cos[i] >= fieldOfViewCos
+            double fieldOfViewCos = cos(viewAngle * transToRad);
+            if (angleData.angleCos[i] >= fieldOfViewCos
                     && catalogData.mvVec()[i] > slideData.minMv
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
-                result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                resultAlpha.append(angleData.resultAlpha[i]);
+                resultBeta.append(angleData.resultBeta[i]);
 
             }
         }
         else
         {
-            double inside_fieldOfViewCos = cos((slideData.insideViewAngle/2) * trans_to_rad);
-            if (angleData.angle_cos[i] >= inside_fieldOfViewCos
+            double inside_fieldOfViewCos = cos(slideData.insideViewAngle/2 * transToRad);
+            if (angleData.angleCos[i] >= inside_fieldOfViewCos
                     &&  catalogData.mvVec()[i] > slideData.minMv
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
-                result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                resultAlpha.append(angleData.resultAlpha[i]);
+                resultBeta.append(angleData.resultBeta[i]);
             }
         }
     }
 
 
-    QVector <double> filtered_l_st;
-    QVector <double> filtered_m_st;
-    QVector <double> filtered_n_st;
+    QVector <double> filteredLSt;
+    QVector <double> filteredMSt;
+    QVector <double> filteredNSt;
 
-    for (int i = 0;i < result_beta.size();i ++)
+    for (int i = 0; i < resultBeta.size(); i ++)
     {
-        double cos_b = cos(result_beta[i] * trans_to_rad);
-        double cos_a = cos(result_alpha[i] * trans_to_rad);
-        double sin_b = sin(result_beta[i] * trans_to_rad);
-        double sin_a = sin(result_alpha[i] * trans_to_rad);
+        double cos_d = cos(resultBeta[i] * transToRad);
+        double cos_a = cos(resultAlpha[i] * transToRad);
+        double sin_d = sin(resultBeta[i] * transToRad);
+        double sin_a = sin(resultAlpha[i] * transToRad);
 
-        filtered_l_st.append(cos_b * cos_a);
-        filtered_m_st.append(cos_b * sin_a);
-        filtered_n_st.append(sin_b);
+        filteredLSt.append(cos_d * cos_a);
+        filteredMSt.append(cos_d * sin_a);
+        filteredNSt.append(sin_d);
     }
 
     double x_coord_mm, y_coord_mm;
-    int x_coord, y_coord;
+    int xCoord, yCoord;
     float CC;
 
-    for (int i = 0;i < filtered_l_st.size();i ++)
+    for (int i = 0;i < filteredLSt.size();i ++)
     {
-        CC = angleData.trMat[2][0] * filtered_l_st[i]
+        CC = angleData.trMat[2][0] * filteredLSt[i]
                 +
-                angleData.trMat[2][1] * filtered_m_st[i]
+                angleData.trMat[2][1] * filteredMSt[i]
                 +
-                angleData.trMat[2][2] * filtered_n_st[i];
+                angleData.trMat[2][2] * filteredNSt[i];
 
-        if (check_distorsio)
+        if (checkDistorsio)
         {
 
-            x_coord_mm = (-slideData.focStart * (angleData.trMat[0][0] * filtered_l_st[i]
-                    + angleData.trMat[0][1] * filtered_m_st[i]
-                    + angleData.trMat[0][2] * filtered_n_st[i]) / CC);
-            y_coord_mm = (-slideData.focStart * (angleData.trMat[1][0] * filtered_l_st[i]
-                    + angleData.trMat[1][1] * filtered_m_st[i]
-                    + angleData.trMat[1][2] * filtered_n_st[i]) / CC);
+            x_coord_mm = (-slideData.focStart * (angleData.trMat[0][0] * filteredLSt[i]
+                    + angleData.trMat[0][1] * filteredMSt[i]
+                    + angleData.trMat[0][2] * filteredNSt[i]) / CC);
+            y_coord_mm = (-slideData.focStart * (angleData.trMat[1][0] * filteredLSt[i]
+                    + angleData.trMat[1][1] * filteredMSt[i]
+                    + angleData.trMat[1][2] * filteredNSt[i]) / CC);
             x_coord_mm = calc_dist(x_coord_mm, y_coord_mm, distData.xDistorsioVector);
             y_coord_mm = calc_dist(y_coord_mm, x_coord_mm, distData.yDistorsioVector);
-            x_coord = x_coord_mm / slideData.pix + 0.5;
-            y_coord = y_coord_mm / slideData.pix + 0.5;
+            xCoord = x_coord_mm / slideData.pix + 0.5;
+            yCoord = y_coord_mm / slideData.pix + 0.5;
         }
 
         else
         {
-            x_coord = (-slideData.focStart * (angleData.trMat[0][0] * filtered_l_st[i]
-                    + angleData.trMat[0][1] * filtered_m_st[i]
-                    + angleData.trMat[0][2] * filtered_n_st[i]) / CC) / slideData.pix + 0.5;
-            y_coord = (-slideData.focStart * (angleData.trMat[1][0] * filtered_l_st[i]
-                    + angleData.trMat[1][1] * filtered_m_st[i]
-                    + angleData.trMat[1][2] * filtered_n_st[i]) / CC) / slideData.pix + 0.5;
+            xCoord = (-slideData.focStart * (angleData.trMat[0][0] * filteredLSt[i]
+                    + angleData.trMat[0][1] * filteredMSt[i]
+                    + angleData.trMat[0][2] * filteredNSt[i]) / CC) / slideData.pix + 0.5;
+            yCoord = (-slideData.focStart * (angleData.trMat[1][0] * filteredLSt[i]
+                    + angleData.trMat[1][1] * filteredMSt[i]
+                    + angleData.trMat[1][2] * filteredNSt[i]) / CC) / slideData.pix + 0.5;
 
         }
 
-        x_coord += slideData.slideSizeX / 2; y_coord += slideData.slideSizeY / 2;// x_coord,slideSizeX- ось X, y_coord,slideSizeY - ось Y
+        xCoord += slideData.slideSizeX / 2; yCoord += slideData.slideSizeY / 2;// x_coord,slideSizeX- ось X, y_coord,slideSizeY - ось Y
 
-        if ( x_coord > 0
-                && x_coord < slideData.slideSizeX
-                && y_coord > 0
-                && y_coord < slideData.slideSizeY)
+        if ( xCoord > 0
+             && xCoord < slideData.slideSizeX
+             && yCoord > 0
+             && yCoord < slideData.slideSizeY)
         {
-            ++ count_of_stars; // подсчёт числа звезд
+            ++countOfStars; // подсчёт числа звезд
         }
 
     }
 
     TestSlideParameters testData;
-    testData.view_angle_x = view_angle_x;
-    testData.view_angle_y = view_angle_y;
-    testData.count_of_stars = count_of_stars;
+    testData.viewAngleX = viewAngleX;
+    testData.viewAngleY = viewAngleY;
+    testData.countOfStars = countOfStars;
     return testData;
 
 }
@@ -614,4 +620,196 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
 QSharedPointer <QImage> SlideCreator::getSlidePointer() noexcept
 {
     return optimalImage;
+}
+
+
+QDomDocument SlideCreator::createFullSvg(QVector <QVector <StarParameters>> coordsOfStars,
+                                         const int imageWidth, const int imageHeight,
+                                         const GroupImgParams& gParams,
+                                         const InscriptParams& iParams,
+                                         QVector <QString> setableText)
+{
+    int sizeX = gParams.countX * imageWidth + gParams.countX * gParams.space;
+    int sizeY = gParams.countY * imageHeight + gParams.countX * gParams.space;
+    QDomDocument doc("pic");
+    QDomElement svg = doc.createElement("svg");
+    svg.setAttribute("viewBox", QString("0 ")+"0 "+ QString::number(sizeX) + " " + QString::number(sizeY));
+    svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+    svg.setAttribute("xmlns:xlink","http://www.w3.org/1999/xlink");
+    svg.setAttribute("encoding","UTF-8");
+    svg.setAttribute("width",QString::number(sizeX));
+    svg.setAttribute("height",QString::number(sizeY));
+    doc.appendChild(svg);
+
+    for (int i = 0; i < gParams.countY; i++)
+    {
+        for (int j = 0; j < gParams.countX; j++)
+        {
+            int slidePos = i * gParams.countX + j;
+            int xOffset = (imageWidth + gParams.space) * j;
+            int yOffset = (imageHeight + gParams.space) * i;
+            QDomElement cube = doc.createElement("rect");
+            cube.setAttribute("x", QString::number(xOffset));
+            cube.setAttribute("y", QString::number(yOffset));
+            cube.setAttribute("width", QString::number(imageWidth));
+            cube.setAttribute("height", QString::number(imageHeight));
+            cube.setAttribute("fill","black");
+            svg.appendChild(cube);
+            for (auto& starCoordinate : coordsOfStars[slidePos])
+            {
+                QDomElement star = doc.createElement("rect");
+                star.setAttribute("fill","white");
+                star.setAttribute("x",QString::number(starCoordinate.x + xOffset));
+                star.setAttribute("y",QString::number(starCoordinate.y + yOffset));
+                star.setAttribute("width",QString::number(starCoordinate.sizeX));
+                star.setAttribute("height",QString::number(starCoordinate.sizeY));
+                svg.appendChild(star);
+
+            }
+            QDomElement textElement = doc.createElement("text");
+            QDomText text = doc.createTextNode(setableText[slidePos]);
+            textElement.setAttribute("x",QString::number(iParams.fontX + xOffset));
+            textElement.setAttribute("y",QString::number(iParams.fontY + yOffset));
+            textElement.setAttribute("style","fill: white;");
+            textElement.setAttribute("font-size", QString::number(iParams.fontSize - 30));
+            textElement.appendChild(text);
+            svg.appendChild(textElement);
+        }
+    }
+
+    return doc;
+}
+
+QDomDocument SlideCreator::createFullSvgSymbols(QVector <QVector <StarParameters>> coordsOfStars,
+                                                const int imageWidth, const int imageHeight,
+                                                const GroupImgParams& gParams,
+                                                const InscriptParams& iParams,
+                                                QVector <QString> setableText)
+{
+    QDomDocument doc("pic");
+    QDomElement svg = doc.createElement("svg");
+    int sizeX = gParams.countX * imageWidth + gParams.countX * gParams.space;
+    int sizeY = gParams.countY * imageHeight + gParams.countX * gParams.space;
+
+    svg.setAttribute("viewBox",QString("0 ")+"0 "+QString::number(sizeX) + " " + QString::number(sizeY));
+    svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+    svg.setAttribute("xmlns:xlink","http://www.w3.org/1999/xlink");
+    svg.setAttribute("encoding","UTF-8");
+    svg.setAttribute("width",QString::number(sizeX));
+    svg.setAttribute("height",QString::number(sizeY));
+    doc.appendChild(svg);
+
+    QDomElement defs = doc.createElement("defs");
+    svg.appendChild(defs);
+
+    for (int i = 0; i < gParams.countY; i++)
+    {
+        for (int j = 0; j < gParams.countX; j++)
+        {
+            int slidePos = i * gParams.countX + j;
+            QDomElement symbol = doc.createElement("symbol");
+            symbol.setAttribute("id", "slide" + QString::number(slidePos));
+            defs.appendChild(symbol);
+            QDomElement cube = doc.createElement("rect");
+            cube.setAttribute("x", "0");
+            cube.setAttribute("y","0");
+            cube.setAttribute("width", QString::number(imageWidth));
+            cube.setAttribute("height", QString::number(imageHeight));
+            cube.setAttribute("fill","black");
+            symbol.appendChild(cube);
+            for (auto& starCoordinate : coordsOfStars[slidePos])
+            {
+                QDomElement star = doc.createElement("rect");
+                star.setAttribute("fill","white");
+                star.setAttribute("x",QString::number(starCoordinate.x));
+                star.setAttribute("y",QString::number(starCoordinate.y));
+                star.setAttribute("width",QString::number(starCoordinate.sizeX));
+                star.setAttribute("height",QString::number(starCoordinate.sizeY));
+                symbol.appendChild(star);
+            }
+            QDomElement textElement = doc.createElement("text");
+            QDomText text = doc.createTextNode(setableText[slidePos]);
+            textElement.setAttribute("x",QString::number(iParams.fontX));
+            textElement.setAttribute("y",QString::number(iParams.fontY));
+            textElement.setAttribute("style","fill: white;");
+            textElement.setAttribute("font-size", QString::number(iParams.fontSize - 30));
+            textElement.appendChild(text);
+            symbol.appendChild(textElement);
+        }
+    }
+
+
+    for (int i = 0; i < gParams.countY; i++)
+    {
+        for (int j = 0; j < gParams.countX; j++)
+        {
+            int slidePos = i * gParams.countX + j;
+            QDomElement use = doc.createElement("use");
+            use.setAttribute("xlink:href", "#slide" + QString::number(slidePos));
+            use.setAttribute("x", QString::number(j * imageWidth + j * gParams.space));
+            use.setAttribute("y", QString::number(i * imageHeight + i * gParams.space));
+            svg.appendChild(use);
+        }
+    }
+
+    return doc;
+}
+
+
+
+QDomDocument SlideCreator::createSvg (const StarSlideData& sData,
+                                    const InscriptParams& iParams,
+                                    const QString setableText,
+                                    QVector <StarParameters> coordsOfStars)
+{
+
+    QDomDocument doc("pic");
+    QDomElement svg = doc.createElement("svg");
+    int imageWidth = sData.slideSizeX;
+    int imageHeight = sData.slideSizeY;
+    svg.setAttribute("viewBox", QString("0 ")+"0 "+ QString::number(imageWidth) +" "+ QString::number(imageHeight));
+    svg.setAttribute("xmlns","http://www.w3.org/2000/svg");
+    svg.setAttribute("encoding","UTF-8");
+    svg.setAttribute("width",QString::number(imageWidth));
+    svg.setAttribute("height",QString::number(imageHeight));
+
+    QDomElement cube = doc.createElement("rect");
+    cube.setAttribute("x","0");
+    cube.setAttribute("y","0");
+    cube.setAttribute("width",QString::number(imageWidth));
+    cube.setAttribute("height",QString::number(imageHeight));
+    cube.setAttribute("fill","black");
+    doc.appendChild(svg);
+    svg.appendChild(cube);
+    for (auto& starCoordinate : coordsOfStars)
+    {
+        QDomElement star = doc.createElement("rect");
+        star.setAttribute("x",QString::number(starCoordinate.x));
+        star.setAttribute("fill","white");
+        star.setAttribute("y",QString::number(starCoordinate.y));
+        star.setAttribute("width",QString::number(starCoordinate.sizeX));
+        star.setAttribute("height",QString::number(starCoordinate.sizeY));
+        svg.appendChild(star);
+    }
+    QDomElement textElement = doc.createElement("text");
+    QDomText text = doc.createTextNode(setableText);
+    textElement.setAttribute("x",QString::number(iParams.fontX));
+    textElement.setAttribute("y",QString::number(iParams.fontY));
+    textElement.setAttribute("style","fill: white;");
+    textElement.setAttribute("font-size",QString::number(iParams.fontSize - 30));
+    textElement.appendChild(text);
+    svg.appendChild(textElement);
+
+    return doc;
+}
+
+QDomDocument SlideCreator::createSvg (const GridSlideData& gData,
+                                    const InscriptParams& iParams,
+                                    const QString setableText,
+                                    QVector <StarParameters> coordsOfStars)
+{
+     StarSlideData sData;
+     sData.slideSizeX = gData.slideSizeX;
+     sData.slideSizeY = gData.slideSizeY;
+     return createSvg(sData, iParams, setableText, coordsOfStars);
 }
