@@ -53,7 +53,7 @@ struct AngularDistanceOptions
 {
     QVector <double> angle_cos;
     QVector <double> result_alpha;
-    QVector <double> result_delta;
+    QVector <double> result_beta;
     QVector <QVector<float>> trMat;
 };
 using ADO = AngularDistanceOptions ;
@@ -124,7 +124,7 @@ private:
 
     int getStarPos(int default_size, int star_pos);
 
-    double calculateDistorsio(double point_c, double coord_a, double coord_b, const QList <double>& distorsio_coef);
+    double& calc_dist(double& coord_a, const double& coord_b,const QList <double>& distorsio_coef);
 
     QVector< QVector<float> > calcTransitionMatrix(double pointAlpha, double pointBeta, double pointAzimut);
 
