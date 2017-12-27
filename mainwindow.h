@@ -30,28 +30,9 @@
 #include <exception>
 #include <QTextStream>
 #include <QTime>
-#include <QDomDocument>
 #include <QSvgRenderer>
-#include <QXmlStreamReader>
 #include <QGraphicsSvgItem>
 #include <QSharedPointer>
-
-
-struct InscriptParams
-{
-    int fontSize = 0;
-    int fontX = 0;
-    int fontY = 0;
-    QString prefix;
-    QString suffix;
-};
-
-struct GroupImgParams
-{
-    int countY;/*количество слайдов в высоту*/
-    int countX;/*количество слайдов в ширину*/
-    int space;/*расстояние между слайдами*/
-};
 
 
 
@@ -68,6 +49,11 @@ public:
 
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+
+
+
+private:
+
     void chooseCatalog();
     void useCurrentCatalog();
     void createImage();
@@ -75,32 +61,20 @@ public:
     void testForSlide();
     void saveImage();
     void chooseDistorsioFile();
-
-
-
-
-private:
     void setStyle();
     void initWidgetsOptionConnections();
-    QByteArray createPreviewImage(const int imageWidth, const int imageHeight,const int fontSize,const int fontX,const int fontY,const QString setableText,QVector<StarParameters> coordsOfStars);
-    QByteArray createFullPreview(QVector <QVector <StarParameters>> coordsOfStars,
-                                 const int imageWidth, const int imageHeight,
-                                 const GroupImgParams& groupParams,
-                                 const InscriptParams& inscriptParams,
-                                 QVector <QString> setableText);
-
     GroupImgParams readGroupImgParams();
     StarSlideData readInputStarSlideData();
     GridSlideData readInputGridSlideData();
     InscriptParams readInscriptionParams();
-    void drawSlide(QSharedPointer <QImage> im, QVector<QImage>& im_v, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
-    void drawGridSlides(QSharedPointer <QImage> im, QImage &opt_img, int  sz_x, int  sz_y, int  space, int  slideSizeX, int  slideSizeY);
-    void drawPreviewItems(int slideSizeX, int slideSizeY, int countX, int countY, int space);
+    void drawSlide(QSharedPointer <QImage> im, QVector<QImage>& im_v, int  sz_x, int  sz_y, int space, int slideSizeX, int slideSizeY);
+    void drawGridSlides(QSharedPointer <QImage> im, QImage &opt_img, int  sz_x, int  sz_y, int space, int slideSizeX, int slideSizeY);
     void chooseTab();
-    void drawPreviewItem(const QByteArray svg_img,int  slideSizeX,int  slideSizeY);
+    void prepareTextToSvg(QString& text);
+    void drawPreviewItem(const QByteArray& svgByteArray, int slideSizeX, int slideSizeY);
     void clearSceneAndImages();
     void setImagesSizes(int slideSizeX, int slideSizeY, const GroupImgParams& p);
-    void makeInscription(QSharedPointer <QImage> optimalImage,const QString& setableText, int fontX,int fontY,int fontSize);
+    void makeInscription(QSharedPointer <QImage> optimalImage,const QString& setableText, int fontX, int fontY, int fontSize);
     void compareImageFocSize(const int countOfSlides,const int countOfFoc);
     void setUIstate(bool state);
     void openCatalog();
@@ -118,18 +92,15 @@ private:
     void wheelEvent(QWheelEvent* event);
 
 
-
-
     Ui::MainWindow* ui;
 
-    CatalogData catalogData;
+    Catalog catalogData;
     QVector <QSharedPointer <QImage>> images;
     QSharedPointer<QImage> optimalImage;
     QScopedPointer<QGraphicsScene> scene;
     QSharedPointer<QGraphicsSvgItem> svgPreviewItem;
     QSharedPointer<QSvgRenderer> svgPreview;
-    QVector<QSharedPointer<QSvgRenderer>> vectorOfSvgPreviews;
-    QVector<QSharedPointer<QGraphicsSvgItem>> vectorOfSvgItems;
+    QDomDocument svgSlide;
 
     QSettings* settings = nullptr;
     QList <double> xDistorsioVector;

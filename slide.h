@@ -5,6 +5,7 @@
 #include <QImage>
 #include <QRgb>
 #include <QScopedArrayPointer>
+#include <QDomDocument>
 
 struct StarSlideData /*информация для создания слайда*/
 {
@@ -35,7 +36,7 @@ struct StarParameters /*информация о координатах и раз
 
 struct GridSlideData /* данные для создания слайда-сетки*/
 {
-    int grid_distance;
+    int gridDistance;
     int pixelPerStar;
     int slideSizeX;
     int slideSizeY;
@@ -51,27 +52,44 @@ struct DistorsioData
 
 struct AngularDistanceOptions
 {
-    QVector <double> angle_cos;
-    QVector <double> result_alpha;
-    QVector <double> result_beta;
+    QVector <double> angleCos;
+    QVector <double> resultAlpha;
+    QVector <double> resultBeta;
     QVector <QVector<float>> trMat;
 };
 using ADO = AngularDistanceOptions ;
 
 struct SlideParameters /*инфомация о звездном слайде*/
 {
-    double view_angle_x = 0;
-    double view_angle_y = 0;
-    int count_of_stars = 0;
+    double viewAngleX;
+    double viewAngleY;
+    int countOfStars;
     QVector <StarParameters> coordsOfStars;
 };
 
 struct TestSlideParameters
 {
-    double view_angle_x = 0;
-    double view_angle_y = 0;
-    int count_of_stars = 0;
+    double viewAngleX;
+    double viewAngleY;
+    int countOfStars;
     QVector <StarParameters> coordsOfStars;
+};
+
+
+struct InscriptParams
+{
+    int fontSize = 0;
+    int fontX = 0;
+    int fontY = 0;
+    QString prefix;
+    QString suffix;
+};
+
+struct GroupImgParams
+{
+    int countY;/*количество слайдов в высоту*/
+    int countX;/*количество слайдов в ширину*/
+    int space;/*расстояние между слайдами*/
 };
 
 
@@ -80,7 +98,7 @@ class SlideCreator
 
 public:
 
-     enum class SLIDE_TYPE
+    enum class SLIDE_TYPE
     {
         INVALID_TYPE,
         STAR_TYPE,
@@ -98,9 +116,9 @@ public:
 
     void calculateAngularDistOptions (const StarSlideData& _slide_data,const Catalog& _cat_data,bool check_sector);
 
-    SlideParameters  createStarSlide(float focus, bool check_sector, bool dist_check, const DistorsioData& distData);
+    SlideParameters createStarSlide(float focus, bool check_sector, bool dist_check, const DistorsioData& distData);
 
-    QVector <StarParameters>  createGridSlide(const GridSlideData& slideData, bool check_distorsio, const DistorsioData& distData);
+    QVector <StarParameters> createGridSlide(const GridSlideData& slideData, bool check_distorsio, const DistorsioData& distData);
 
     TestSlideParameters testStarSlide(bool check_sector, bool check_distorsio, const DistorsioData& distData);
 
@@ -108,6 +126,33 @@ public:
 
     SLIDE_TYPE SlideType() const noexcept { return slideType; }
 
+    void setOnlyParameters(bool flag) noexcept
+    {
+        onlyParameters = flag;
+    }
+
+    static QDomDocument createFullSvgSymbols(QVector <QVector <StarParameters>> coordsOfStars,
+                                        const int imageWidth, const int imageHeight,
+                                        const GroupImgParams& gParams,
+                                        const InscriptParams& iParams,
+                                        QVector <QString> setableText);
+
+    static QDomDocument createFullSvg(QVector <QVector <StarParameters>> coordsOfStars,
+                                          const int imageWidth, const int imageHeight,
+                                          const GroupImgParams& gParams,
+                                          const InscriptParams& iParams,
+                                          QVector <QString> setableText);
+
+
+    static QDomDocument createSvg(const StarSlideData& sData,
+                                 const InscriptParams& iParams,
+                                 const QString setableText,
+                                 QVector <StarParameters> coordsOfStars);
+
+    static QDomDocument createSvg(const GridSlideData& gData,
+                                 const InscriptParams& iParams,
+                                 const QString setableText,
+                                 QVector <StarParameters> coordsOfStars);
 
 private:
     double calcScalarProduct(double l_oz, double l_st, double m_oz, double m_st, double n_oz, double n_st);
@@ -116,7 +161,7 @@ private:
 
     void calcAngularDistancesNoSectors();
 
-    void calcViewAngle(double& view_angle_x, double& view_angle_y, double& view_angle);
+    void calcViewAngle(double& viewAngleX, double& viewAngleY, double& view_angle);
 
     bool outOfImage(int start_pos,int x_size, int y_size,int central_x_c, int x, int y, int pixelPerStar);
 
@@ -124,9 +169,10 @@ private:
 
     int getStarPos(int default_size, int star_pos);
 
-    double& calc_dist(double& coord_a, const double& coord_b,const QList <double>& distorsio_coef);
+    double calculateDistorsio(double point_c, double coord_a, double coord_b, const QList <double>& distorsio_coef);
 
     QVector< QVector<float> > calcTransitionMatrix(double pointAlpha, double pointBeta, double pointAzimut);
+
 
 
     QSharedPointer <QImage> optimalImage;
@@ -135,9 +181,10 @@ private:
     Catalog catalogData;
     SLIDE_TYPE slideType;
     bool starSlideDataPrepare = false;
+    bool onlyParameters = false;
     static  QVector <QRgb> colorTable;
-    constexpr static double trans_to_rad = 0.0174532925;
-    constexpr static double trans_to_grad = 57.29577957855229;
+    constexpr static double transToRad = 0.0174532925;
+    constexpr static double transToGrad = 57.29577957855229;
 
 
 

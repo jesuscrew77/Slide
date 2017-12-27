@@ -6,7 +6,7 @@
 #include <fstream>
 #include <iostream>
 
-struct CatalogData /*структура, содержащая звездный каталог*/
+class Catalog /*структура, содержащая звездный каталог*/
 {
 public:
     void openCatalog(const QString& filename,  bool& status, QString& error);
@@ -84,22 +84,16 @@ public:
         newNumbers = vec;
     }
 
-    void clear()
-    {
-        alphaAngles.clear();
-        betaAngles.clear();
-        mv.clear();
-        alphaAnglesSec.clear();
-        betaAnglesSec.clear();
-        countSec.clear();
-        shift.clear();
-        newNumbers.clear();
-    }
+
+
 
 private:
+    void clear();
+
     constexpr  static double transToGrad = 57.29577957855229;
     constexpr  static double div = 0.00000001;
     constexpr  static int structSize = 18;
+
     QVector <double> alphaAngles;
     QVector <double> betaAngles;
     QVector <float> mv;
@@ -107,11 +101,11 @@ private:
     QVector <double> betaAnglesSec;
     QVector <long> countSec;
     QVector <long> shift;
-    QVector<short> newNumbers;
+    QVector <short> newNumbers;
 };
 
 #pragma pack(push,1)
-struct sector // каталог секторов
+struct Sectors // каталог секторов
 {
     float alpha_c;
     float beta_c;
@@ -123,7 +117,7 @@ struct sector // каталог секторов
 
 
 #pragma pack(push,1)
-struct data_star // основной каталог/бортовой каталог
+struct DataStar // основной каталог/бортовой каталог
 {
     qint32  NSAO;
     qint32 alpha;
@@ -138,7 +132,7 @@ struct data_star // основной каталог/бортовой катал�
 
 
 #pragma pack(push,1)
-struct numbers // основной каталог/бортовой каталог
+struct Numbers // основной каталог/бортовой каталог
 {
     qint16 num;
 };
