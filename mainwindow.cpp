@@ -29,7 +29,7 @@ void MainWindow::initWidgetsOptionConnections()
     ui->comboBox->insertItems(0,pixperstar);
     QRegExp rx( "^[-0-9]*[.]{1}[0-9]*$" );
     QValidator *validator = new QRegExpValidator(rx, this);
-    ui->betaLineEdit->setValidator(validator);
+    ui->deltaLineEdit->setValidator(validator);
     ui->alphaLineEdit->setValidator(validator);
     ui->azLineEdit->setValidator(validator);
     ui->FocStartLineEdit->setValidator(validator);
@@ -113,7 +113,7 @@ void MainWindow::saveSettings()
     settings->setValue("filename",filename);
     settings->setValue("distorsioFilename",distorsioFilename);
     settings->setValue("DistRead",distorsioIsRead);
-    settings->setValue("betaLineEdit",ui->betaLineEdit->text());
+    settings->setValue("deltaLineEdit",ui->deltaLineEdit->text());
     settings->setValue("alphaLineEdit",ui->alphaLineEdit->text());
     settings->setValue("azLineEdit",ui->azLineEdit->text());
     settings->setValue("FocStartLineEdit",ui->FocStartLineEdit->text());
@@ -160,7 +160,7 @@ void MainWindow::loadSettings()
     distorsioFilename = settings->value("distorsioFilename","Файл не выбран...").toString();
     ui->DistorsioPathLineEdit->setText(distorsioFilename);
     distorsioIsRead = settings->value("DistRead","false").toBool();
-    ui->betaLineEdit->setText(settings->value("betaLineEdit","45").toString());
+    ui->deltaLineEdit->setText(settings->value("deltaLineEdit","45").toString());
     ui->alphaLineEdit->setText(settings->value("alphaLineEdit","45").toString());
     ui->azLineEdit->setText(settings->value("azLineEdit","0").toString());
     ui->FocStartLineEdit->setText(settings->value("FocStartLineEdit","105").toString());
@@ -250,7 +250,7 @@ StarSlideData MainWindow::readInputStarSlideData()
         throw std::invalid_argument("Неверно задан угол альфа");
     }
 
-    data.pointBeta = ui->betaLineEdit->text().toDouble();
+    data.pointBeta = ui->deltaLineEdit->text().toDouble();
     if (data.pointBeta < -90 || data.pointBeta > 90)
     {
         throw std::invalid_argument("Неверно задан угол дельта");
@@ -279,7 +279,6 @@ StarSlideData MainWindow::readInputStarSlideData()
     {
         throw std::invalid_argument("Неверно задано фокусное расстояние (конец интервала)");
     }
-
 
     data.focStep = ui->FocStepLineEdit->text().toDouble();
     if (data.focStep < 0)
@@ -367,9 +366,9 @@ void MainWindow::drawGridSlides(QSharedPointer<QImage> im, QImage &opt_img, int 
     QPainter grid_painter;
     grid_painter.begin(im.data());
 
-    for (int curColumn = 0;curColumn < sz_y;curColumn ++)
+    for (int curColumn = 0; curColumn < sz_y; curColumn++)
     {
-        for (int curRow = 0;curRow < sz_x;curRow ++)
+        for (int curRow = 0; curRow < sz_x; curRow++)
         {
             grid_painter.drawImage(slideSizeX * curRow + space * curRow, slideSizeY * curColumn + space * curColumn, opt_img);
         }
@@ -378,18 +377,14 @@ void MainWindow::drawGridSlides(QSharedPointer<QImage> im, QImage &opt_img, int 
 }
 
 
-
-
-
-
 void MainWindow::drawSlide(QSharedPointer<QImage> im, QVector <QImage> &im_v, int sz_x, int sz_y, int space, int  slideSizeX, int slideSizeY)
 {
     QPainter slide_painter;
     slide_painter.begin(im.data());
 
-    for (int i = 0;i < sz_y;i ++)
+    for (int i = 0;i < sz_y;i++)
     {
-        for (int j = 0;j < sz_x;j ++)
+        for (int j = 0;j < sz_x;j++)
         {
             slide_painter.drawImage(slideSizeX * j + space * j,slideSizeY * i + space * i ,im_v[j + i * sz_x]);
             qApp->processEvents();
@@ -417,9 +412,9 @@ void MainWindow::drawPreviewItem(const QByteArray svg_byteArray,int  slideSizeX,
 void MainWindow::drawPreviewItems(int  slideSizeX,int  slideSizeY,int  countX,int  countY,int  space)
 {
     scene->setSceneRect(0,0,slideSizeX * countX+(space*2) * countX,slideSizeY * countY+(space*2) * countY);
-    for (int i = 0;i < countY;i ++)
+    for (int i = 0;i < countY;i++)
     {
-        for (int j = 0;j < countX;j ++)
+        for (int j = 0;j < countX;j++)
         {
             scene->addItem(vectorOfSvgItems[j + i * countX].data());
             vectorOfSvgItems[j + i * countX]->setPos(slideSizeX * j + space * j,slideSizeY * i + space * i);
@@ -428,7 +423,6 @@ void MainWindow::drawPreviewItems(int  slideSizeX,int  slideSizeY,int  countX,in
 
     }
 }
-
 
 
 void MainWindow::setUIstate(bool state)
@@ -851,9 +845,9 @@ QByteArray MainWindow::createFullPreview(QVector <QVector <StarParameters>> coor
     QDomElement defs = doc.createElement("defs");
     svg.appendChild(defs);
 
-    for (int i = 0; i < groupParams.countY; i ++)
+    for (int i = 0; i < groupParams.countY; i++)
     {
-        for (int j = 0; j < groupParams.countX; j ++)
+        for (int j = 0; j < groupParams.countX; j++)
         {
             int slidePos = i * groupParams.countX + j;
             QDomElement symbol = doc.createElement("symbol");
@@ -888,9 +882,9 @@ QByteArray MainWindow::createFullPreview(QVector <QVector <StarParameters>> coor
     }
 
 
-    for (int i = 0; i < groupParams.countY; i ++)
+    for (int i = 0; i < groupParams.countY; i++)
     {
-        for (int j = 0; j < groupParams.countX; j ++)
+        for (int j = 0; j < groupParams.countX; j++)
         {
             int slidePos = i * groupParams.countX + j;
             QDomElement use = doc.createElement("use");
@@ -1039,7 +1033,7 @@ void MainWindow::createImage()
             int difference = countOfSlides - countOfFoc;
             if (difference >= 0)
             {
-                for (int i = 0; i <= difference;i ++)
+                for (int i = 0; i <= difference;i++)
                 {
                     focusVector.append(focusVector[i]);
                 }
@@ -1062,9 +1056,9 @@ void MainWindow::createImage()
             QVector <QVector <StarParameters> > starParamVecs;
             QVector <QString> textData;
             QVector<float>::const_iterator focusValue = focusVector.begin();
-            for (int imgHeight = 0; imgHeight < groupImgData.countY;imgHeight ++)
+            for (int imgHeight = 0; imgHeight < groupImgData.countY;imgHeight++)
             {
-                for (int imWidth = 0; imWidth < groupImgData.countX;imWidth ++)
+                for (int imWidth = 0; imWidth < groupImgData.countX;imWidth++)
                 {
                     qApp->processEvents();
                     ui->progressBar->setValue(imWidth + imgHeight * groupImgData.countX + 1);
@@ -1115,12 +1109,12 @@ void MainWindow::createImage()
                         imageVector[2].append(*bufImage);
                     }
                     bufImage.reset();
-                    ++focusValue;
+                  ++focusValue;
 
                 }
             }
             createFullPreview(starParamVecs,slideData.slideSizeX,slideData.slideSizeY,groupImgData,inscriptData,textData);
-            for (int i = 0; i < countOfImages; i ++)
+            for (int i = 0; i < countOfImages; i++)
             {
 
                 if (!images[i].isNull())
@@ -1214,9 +1208,9 @@ void MainWindow::createGrid()
                 QSharedPointer<QSvgRenderer> temporarySvg(new QSvgRenderer(previewImageData));
 
 
-                for (int imgHeight = 0;imgHeight < groupImgData.countY;imgHeight ++)
+                for (int imgHeight = 0;imgHeight < groupImgData.countY;imgHeight++)
                 {
-                    for ( int imWidth = 0;imWidth < groupImgData.countX;imWidth ++)
+                    for ( int imWidth = 0;imWidth < groupImgData.countX;imWidth++)
                     {
                         vectorOfSvgPreviews.append(temporarySvg);
                         QSharedPointer <QGraphicsSvgItem> temporarySvgItem(new QGraphicsSvgItem);
@@ -1357,7 +1351,7 @@ void MainWindow::saveImage()
     else if (ui->GroupSlideRadioButton->isChecked())
     {
         QTime currentTime;
-        for (int i = 0; i < images.size(); i ++)
+        for (int i = 0; i < images.size(); i++)
         {
             if (!images[i].isNull())
             {

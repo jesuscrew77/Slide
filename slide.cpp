@@ -24,9 +24,27 @@ SlideCreator::SlideCreator()
 }
 
 /*Расчет скорректированной по полиному дисторсии координаты пикселя*/
-double& SlideCreator::calc_dist(double& coord_a, const double& coord_b, const QList <double>& distorsio_coef)
+//double& SlideCreator::calculateDistorsio(double& coord_a, const double& coord_b, const QList <double>& distorsio_coef)
+//{
+//    coord_a = coord_a + distorsio_coef[0] + distorsio_coef[1]*coord_a + distorsio_coef[2] * coord_b
+//            +distorsio_coef[3] * pow( coord_a,2) + distorsio_coef[4] * coord_a * coord_b
+//            +distorsio_coef[5] * pow(coord_b,2)+ distorsio_coef[6] * pow( coord_a,3)
+//            +distorsio_coef[7] * pow( coord_a,2) * coord_b + distorsio_coef[8]* coord_a * pow(coord_b,2)
+//            +distorsio_coef[9] * pow(coord_b,3) + distorsio_coef[10] * pow(coord_a,4)
+//            +distorsio_coef[11] * pow(coord_a,3) * coord_b + distorsio_coef[12] * pow(coord_b,2) * pow(coord_a,2)
+//            +distorsio_coef[13] * coord_a * pow(coord_b,3) + distorsio_coef[14] * pow(coord_b,4)
+//            +distorsio_coef[15] * pow(coord_a,5) + distorsio_coef[16] * pow(coord_a,4) * coord_b
+//            +distorsio_coef[17] * pow(coord_a,3) * pow(coord_b,2)
+//            +distorsio_coef[18] * pow(coord_a,2) * pow(coord_b,3)
+//            +distorsio_coef[19] * coord_a * pow(coord_b,4)
+//            +distorsio_coef[20] * pow(coord_b,5);
+//    return coord_a;
+//}
+
+
+double SlideCreator::calculateDistorsio(double point_c, double coord_a, double coord_b, const QList <double>& distorsio_coef)
 {
-    coord_a = coord_a + distorsio_coef[0] + distorsio_coef[1]*coord_a + distorsio_coef[2] * coord_b
+    point_c = point_c + distorsio_coef[0] + distorsio_coef[1]*coord_a + distorsio_coef[2] * coord_b
             +distorsio_coef[3] * pow( coord_a,2) + distorsio_coef[4] * coord_a * coord_b
             +distorsio_coef[5] * pow(coord_b,2)+ distorsio_coef[6] * pow( coord_a,3)
             +distorsio_coef[7] * pow( coord_a,2) * coord_b + distorsio_coef[8]* coord_a * pow(coord_b,2)
@@ -38,7 +56,7 @@ double& SlideCreator::calc_dist(double& coord_a, const double& coord_b, const QL
             +distorsio_coef[18] * pow(coord_a,2) * pow(coord_b,3)
             +distorsio_coef[19] * coord_a * pow(coord_b,4)
             +distorsio_coef[20] * pow(coord_b,5);
-    return coord_a;
+    return point_c;
 }
 /*Рассчитывает переходную матрицу для пересчета угловых координат звезд на координаты слайда*/
 QVector< QVector<float> > SlideCreator::calcTransitionMatrix(double pointAlpha, double pointBeta,double pointAzimut)
@@ -46,7 +64,7 @@ QVector< QVector<float> > SlideCreator::calcTransitionMatrix(double pointAlpha, 
 
     QVector< QVector<float> > trMat(3);
     float PS,PC,QS,QC,RS,RC;
-    for (int i = 0;i < trMat.size();i ++) trMat[i].resize(3);
+    for (int i = 0; i < trMat.size(); i++) trMat[i].resize(3);
 
     PS = sin(pointAzimut * trans_to_rad); PC= cos(pointAzimut * trans_to_rad);
     QS = sin(pointBeta * trans_to_rad); QC = cos(pointBeta * trans_to_rad);
@@ -127,9 +145,9 @@ void SlideCreator::calcAngularDistancesWithSectors()
 
     for (int i = 0;i < catalogData.alphaVecSec().size();i ++)// направляющие косинусы центров секторов
     {
-        double cos_b = cos(catalogData.betaVecSec()[i] * trans_to_rad);
+        double cos_b = cos(catalogData.deltaVecSec()[i] * trans_to_rad);
         double cos_a = cos(catalogData.alphaVecSec()[i] * trans_to_rad);
-        double sin_b = sin(catalogData.betaVecSec()[i] * trans_to_rad);
+        double sin_b = sin(catalogData.deltaVecSec()[i] * trans_to_rad);
         double sin_a = sin(catalogData.alphaVecSec()[i] * trans_to_rad);
         l_oz_sec.append(cos_b * cos_a);
         m_oz_sec.append(cos_b * sin_a);
@@ -140,7 +158,7 @@ void SlideCreator::calcAngularDistancesWithSectors()
     QVector <double> angleCosSec;
     angleCosSec.reserve(l_oz_sec.size());
 
-    for (int i = 0;i < l_oz_sec.size();i ++)
+    for (int i = 0;i < l_oz_sec.size(); i++)
     {
         auto scalar_product = calcScalarProduct(l_oz, l_oz_sec[i], m_oz , m_oz_sec[i] , n_oz, n_oz_sec[i]);
         angleCosSec.append(scalar_product);
@@ -157,13 +175,13 @@ void SlideCreator::calcAngularDistancesWithSectors()
     }
 
     const auto countOfStars = starsInSector.size();
-    angleData.result_beta.reserve(countOfStars);
+    angleData.result_delta.reserve(countOfStars);
     angleData.result_alpha.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars; i ++)
+    for (int i = 0;i < countOfStars; i++)
     {
         angleData.result_alpha.append(catalogData.alphaVec()[starsInSector[i]]);
-        angleData.result_beta.append(catalogData.betaVec()[starsInSector[i]]);
+        angleData.result_delta.append(catalogData.deltaVec()[starsInSector[i]]);
     }
 
 
@@ -174,11 +192,11 @@ void SlideCreator::calcAngularDistancesWithSectors()
     QVector<double> n_st;
     n_st.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars;i ++)//направляющие косинусы звезд в секторе
+    for (int i = 0; i < countOfStars; i++)//направляющие косинусы звезд в секторе
     {
-        double cos_b = cos(angleData.result_beta[i] * trans_to_rad);
+        double cos_b = cos(angleData.result_delta[i] * trans_to_rad);
         double cos_a = cos(angleData.result_alpha[i] * trans_to_rad);
-        double sin_b = sin(angleData.result_beta[i] * trans_to_rad);
+        double sin_b = sin(angleData.result_delta[i] * trans_to_rad);
         double sin_a = sin(angleData.result_alpha[i] * trans_to_rad);
         l_st.append(cos_b * cos_a);
         m_st.append(cos_b * sin_a);
@@ -187,7 +205,7 @@ void SlideCreator::calcAngularDistancesWithSectors()
 
     angleData.angle_cos.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars;i ++)// косинусы между точкой проектирования и звездами в секторе
+    for (int i = 0; i < countOfStars;i++)// косинусы между точкой проектирования и звездами в секторе
     {
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
         angleData.angle_cos.append(scalar_product);
@@ -209,12 +227,12 @@ void SlideCreator::calcAngularDistancesNoSectors()
     QVector <double> n_st;
     n_st.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars;i ++)
+    for (int i = 0; i < countOfStars; i++)
     {
         // вычисляем направляющие косинусы всех звезд
-        double cos_b = cos(catalogData.betaVec()[i] * trans_to_rad);
+        double cos_b = cos(catalogData.deltaVec()[i] * trans_to_rad);
         double cos_a = cos(catalogData.alphaVec()[i] * trans_to_rad);
-        double sin_b = sin(catalogData.betaVec()[i] * trans_to_rad);
+        double sin_b = sin(catalogData.deltaVec()[i] * trans_to_rad);
         double sin_a = sin(catalogData.alphaVec()[i]  * trans_to_rad);
         l_st.append(cos_b * cos_a);
         m_st.append(cos_b * sin_a);
@@ -223,7 +241,7 @@ void SlideCreator::calcAngularDistancesNoSectors()
 
 
     angleData.angle_cos.reserve(countOfStars);
-    for (int i = 0;i < countOfStars;i ++)
+    for (int i = 0; i < countOfStars; i++)
     {
         // вычисляем косинус угла между точкой проецирования и координатами звезд
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
@@ -232,7 +250,7 @@ void SlideCreator::calcAngularDistancesNoSectors()
     }
 
     angleData.result_alpha = catalogData.alphaVec();
-    angleData.result_beta = catalogData.betaVec();
+    angleData.result_delta = catalogData.deltaVec();
 }
 
 void SlideCreator::calcViewAngle(double& view_angle_x, double& view_angle_y, double& view_angle)
@@ -277,8 +295,10 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_
 
                 double y_mm = (y - grid_d.slideSizeY / 2) * grid_d.pix;
                 double x_mm = (x - grid_d.slideSizeX / 2) * grid_d.pix;
-                y_mm = calc_dist(y_mm,x_mm,distData.yDistorsioVector);
-                x_mm = calc_dist(x_mm,y_mm,distData.xDistorsioVector);
+
+                x_mm = calculateDistorsio(x_mm, x_mm, y_mm, distData.xDistorsioVector);
+                y_mm = calculateDistorsio(y_mm, x_mm, y_mm, distData.yDistorsioVector);
+
 
                 int y_pix = ((y_mm/grid_d.pix) + 0.5) + grid_d.slideSizeY / 2;
                 int x_pix = ((x_mm/grid_d.pix) + 0.5) + grid_d.slideSizeX / 2;
@@ -292,9 +312,9 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_
 
                 int start_pos = x_pix + y_pix * grid_d.slideSizeX;
 
-                for (int i = 0;i < grid_d.pixelPerStar;i ++)/*i-Y, j-X*/
+                for (int i = 0;i < grid_d.pixelPerStar; i++)/*i-Y, j-X*/
                 {
-                    for (int j = 0;j < grid_d.pixelPerStar;j ++)
+                    for (int j = 0; j < grid_d.pixelPerStar; j++)
                     {
                         if (outOfImage(start_pos,grid_d.slideSizeX, grid_d.slideSizeY, x_pix, j , i, grid_d.pixelPerStar))
                         {
@@ -322,9 +342,9 @@ QVector<StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_
                 starParameters.sizeY = getStarSize(grid_d.pixelPerStar,y);
                 coordsOfStars.append(starParameters);
                 int start_pos = x + y * grid_d.slideSizeX;
-                for (int i = 0;i< grid_d.pixelPerStar;i ++)
+                for (int i = 0; i< grid_d.pixelPerStar; i++)
                 {
-                    for (int j = 0;j < grid_d.pixelPerStar;j ++)
+                    for (int j = 0; j < grid_d.pixelPerStar; j++)
                     {
                         if (outOfImage(start_pos,grid_d.slideSizeX,grid_d.slideSizeY,x,i,j,grid_d.pixelPerStar))
                         {
@@ -355,11 +375,10 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
     double viewAngleX, viewAngleY, view_angle;
     calcViewAngle(viewAngleX, viewAngleY, view_angle);
 
-
     QVector <double> result_alpha;
-    QVector <double> result_beta;
+    QVector <double> result_delta;
 
-    for (int i = 0;i < angleData.angle_cos.size();i ++)
+    for (int i = 0; i < angleData.angle_cos.size(); i++)
     {
         if (check_sector)// если учитываем сектора
         {
@@ -369,7 +388,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                result_delta.append(angleData.result_delta[i]);
 
             }
         }
@@ -381,19 +400,20 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                result_delta.append(angleData.result_delta[i]);
             }
         }
     }
+
     QVector <double> filtered_l_st;
     QVector <double> filtered_m_st;
     QVector <double> filtered_n_st;
 
-    for (int i = 0;i < result_beta.size();i ++)
+    for (int i = 0; i < result_delta.size(); i++)
     {
-        double cos_b = cos(result_beta[i] * trans_to_rad);
+        double cos_b = cos(result_delta[i] * trans_to_rad);
         double cos_a = cos(result_alpha[i] * trans_to_rad);
-        double sin_b = sin(result_beta[i] * trans_to_rad);
+        double sin_b = sin(result_delta[i] * trans_to_rad);
         double sin_a = sin(result_alpha[i] * trans_to_rad);
 
         filtered_l_st.append(cos_b * cos_a);
@@ -410,7 +430,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
     int x_coord, y_coord;
     float CC;
     int countOfStars = 0;//для подсчёта числа звезд, попавших на слайд
-    for (int i = 0;i < filtered_l_st.size();i ++)
+    for (int i = 0; i < filtered_l_st.size(); i++)
     {
 
         CC = angleData.trMat[2][0] * filtered_l_st[i]
@@ -428,8 +448,8 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
             y_coord_mm = (-focus * (angleData.trMat[1][0] * filtered_l_st[i]
                     + angleData.trMat[1][1] * filtered_m_st[i]
                     + angleData.trMat[1][2] * filtered_n_st[i]) / CC);
-            x_coord_mm = calc_dist(x_coord_mm, y_coord_mm, distData.xDistorsioVector);
-            y_coord_mm = calc_dist(y_coord_mm, x_coord_mm, distData.yDistorsioVector);
+            x_coord_mm = calculateDistorsio(x_coord_mm, x_coord_mm, y_coord_mm, distData.xDistorsioVector);
+            y_coord_mm = calculateDistorsio(y_coord_mm, x_coord_mm, y_coord_mm,  distData.yDistorsioVector);
             x_coord = x_coord_mm / slideData.pix + 0.5;
             y_coord = y_coord_mm / slideData.pix + 0.5;
 
@@ -461,9 +481,9 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
             int pos_pix = y_coord * slideData.slideSizeX + x_coord;
             int start_pos = pos_pix - (slideData.pixelPerStar/2) * slideData.slideSizeX - (slideData.pixelPerStar/2);
 
-            for (int y = 0;y < slideData.pixelPerStar;y ++)
+            for (int y = 0; y < slideData.pixelPerStar; y++)
             {
-                for (int x = 0;x < slideData.pixelPerStar;x ++)
+                for (int x = 0; x < slideData.pixelPerStar; x++)
                 {
 
                     if (outOfImage(start_pos, slideData.slideSizeX, slideData.slideSizeY, x_coord, x, y, slideData.pixelPerStar))
@@ -506,10 +526,10 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
     double view_angle = sqrt(pow(view_angle_x, 2) + pow(view_angle_y, 2));// угол зрения- описанная окружность
 
     QVector <double> result_alpha;
-    QVector <double> result_beta;
+    QVector <double> result_delta;
 
 
-    for (int i = 0;i < angleData.angle_cos.size();i ++)
+    for (int i = 0; i < angleData.angle_cos.size(); i++)
     {
         if (check_sector)
         {
@@ -519,7 +539,7 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                result_delta.append(angleData.result_delta[i]);
 
             }
         }
@@ -531,7 +551,7 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
                     && catalogData.mvVec()[i] < slideData.maxMv)
             {
                 result_alpha.append(angleData.result_alpha[i]);
-                result_beta.append(angleData.result_beta[i]);
+                result_delta.append(angleData.result_delta[i]);
             }
         }
     }
@@ -541,11 +561,11 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
     QVector <double> filtered_m_st;
     QVector <double> filtered_n_st;
 
-    for (int i = 0;i < result_beta.size();i ++)
+    for (int i = 0; i < result_delta.size(); i++)
     {
-        double cos_b = cos(result_beta[i] * trans_to_rad);
+        double cos_b = cos(result_delta[i] * trans_to_rad);
         double cos_a = cos(result_alpha[i] * trans_to_rad);
-        double sin_b = sin(result_beta[i] * trans_to_rad);
+        double sin_b = sin(result_delta[i] * trans_to_rad);
         double sin_a = sin(result_alpha[i] * trans_to_rad);
 
         filtered_l_st.append(cos_b * cos_a);
@@ -557,7 +577,7 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
     int x_coord, y_coord;
     float CC;
 
-    for (int i = 0;i < filtered_l_st.size();i ++)
+    for (int i = 0; i < filtered_l_st.size(); i++)
     {
         CC = angleData.trMat[2][0] * filtered_l_st[i]
                 +
@@ -574,8 +594,8 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
             y_coord_mm = (-slideData.focStart * (angleData.trMat[1][0] * filtered_l_st[i]
                     + angleData.trMat[1][1] * filtered_m_st[i]
                     + angleData.trMat[1][2] * filtered_n_st[i]) / CC);
-            x_coord_mm = calc_dist(x_coord_mm, y_coord_mm, distData.xDistorsioVector);
-            y_coord_mm = calc_dist(y_coord_mm, x_coord_mm, distData.yDistorsioVector);
+            x_coord_mm = calculateDistorsio(x_coord_mm, x_coord_mm, y_coord_mm, distData.xDistorsioVector);
+            y_coord_mm = calculateDistorsio(y_coord_mm, x_coord_mm, y_coord_mm, distData.yDistorsioVector);
             x_coord = x_coord_mm / slideData.pix + 0.5;
             y_coord = y_coord_mm / slideData.pix + 0.5;
         }
@@ -589,6 +609,7 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
                     + angleData.trMat[1][1] * filtered_m_st[i]
                     + angleData.trMat[1][2] * filtered_n_st[i]) / CC) / slideData.pix + 0.5;
 
+
         }
 
         x_coord += slideData.slideSizeX / 2; y_coord += slideData.slideSizeY / 2;// x_coord,slideSizeX- ось X, y_coord,slideSizeY - ось Y
@@ -598,6 +619,7 @@ TestSlideParameters SlideCreator::testStarSlide( bool check_sector, bool check_d
                 && y_coord > 0
                 && y_coord < slideData.slideSizeY)
         {
+            qDebug() << x_coord << y_coord;
             ++ count_of_stars; // подсчёт числа звезд
         }
 

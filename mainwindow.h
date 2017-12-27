@@ -39,9 +39,9 @@
 
 struct InscriptParams
 {
-    int fontSize = 0;
-    int fontX = 0;
-    int fontY = 0;
+    int fontSize;
+    int fontX;
+    int fontY;
     QString prefix;
     QString suffix;
 };

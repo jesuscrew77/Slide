@@ -1672,7 +1672,7 @@
             <number>5</number>
            </property>
            <item row="2" column="1">
-            <widget class="QLineEdit" name="betaLineEdit">
+            <widget class="QLineEdit" name="deltaLineEdit">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
                <horstretch>0</horstretch>

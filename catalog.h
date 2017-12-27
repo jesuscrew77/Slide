@@ -3,15 +3,15 @@
 
 #include <QtGlobal>
 #include <QVector>
-#include <fstream>
-#include <iostream>
+#include <QFile>
+#include <QDataStream>
 
 class Catalog /*структура, содержащая звездный каталог*/
 {
 public:
     void openCatalog(const QString& filename,  bool& status, QString& error);
 
-    const QVector<double>& alphaVec() const noexcept {
+    const QVector <double> & alphaVec() const noexcept {
         return alphaAngles;
     }
     void setAlphaVec(const QVector <double>& vec) noexcept
@@ -19,13 +19,13 @@ public:
         alphaAngles = vec;
     }
 
-    const QVector<double>& betaVec() const noexcept {
-        return betaAngles;
+    const QVector<double>& deltaVec() const noexcept {
+        return deltaAngles;
     }
 
     void setBetaVec(const QVector <double>& vec) noexcept
     {
-        betaAngles = vec;
+        deltaAngles = vec;
     }
 
     const QVector <float> & mvVec() const noexcept {
@@ -47,13 +47,13 @@ public:
     }
 
 
-    const QVector<double>& betaVecSec() const noexcept {
-        return betaAnglesSec;
+    const QVector<double>& deltaVecSec() const noexcept {
+        return deltaAnglesSec;
     }
 
     void setBetaVecSec(const QVector <double>& vec) noexcept
     {
-        betaAnglesSec = vec;
+        deltaAnglesSec = vec;
     }
 
     const QVector<long>& countVecSec() const noexcept {
@@ -66,7 +66,7 @@ public:
         countSec = vec;
     }
 
-    const QVector<long>& shiftVec() const noexcept {
+    const QVector <long>& shiftVec() const noexcept {
         return shift;
     }
 
@@ -75,11 +75,11 @@ public:
         shift = vec;
     }
 
-    const QVector<short>& newNumn() const noexcept {
+    const QVector <qint16>& newNumn() const noexcept {
         return newNumbers;
     }
 
-    void setNewNumn(const QVector <short>& vec) noexcept
+    void setNewNumn(const QVector <qint16>& vec) noexcept
     {
         newNumbers = vec;
     }
@@ -90,26 +90,26 @@ public:
 private:
     void clear();
 
-    constexpr  static double transToGrad = 57.29577957855229;
-    constexpr  static double div = 0.00000001;
-    constexpr  static int structSize = 18;
+    constexpr static double transToGrad = 57.29577957855229;
+    constexpr static double div = 0.00000001;
+    constexpr static int structSize = 18;
 
     QVector <double> alphaAngles;
-    QVector <double> betaAngles;
+    QVector <double> deltaAngles;
     QVector <float> mv;
     QVector <double> alphaAnglesSec;
-    QVector <double> betaAnglesSec;
+    QVector <double> deltaAnglesSec;
     QVector <long> countSec;
     QVector <long> shift;
-    QVector <short> newNumbers;
+    QVector <qint16> newNumbers;
 };
 
 #pragma pack(push,1)
 struct Sectors // каталог секторов
 {
     float alpha_c;
-    float beta_c;
-    qint16 count_in_sector;
+    float delta_c;
+    qint16 count_in_sector; //32 для гайа
     int shift;
 };
 #pragma pack(pop)
@@ -121,9 +121,9 @@ struct DataStar // основной каталог/бортовой катало
 {
     qint32  NSAO;
     qint32 alpha;
-    qint32 beta;
+    qint32 delta;
     qint16 ualpha;
-    qint16 ubeta;
+    qint16 udelta;
     unsigned char mv;
     char sp;
 };
@@ -134,7 +134,7 @@ struct DataStar // основной каталог/бортовой катало
 #pragma pack(push,1)
 struct Numbers // основной каталог/бортовой каталог
 {
-    qint16 num;
+    qint16 num; //32 для гайа
 };
 #pragma pack(pop)
 
