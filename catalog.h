@@ -9,7 +9,7 @@
 class Catalog /*структура, содержащая звездный каталог*/
 {
 public:
-    void openCatalog(const QString& filename,  bool& status, QString& error);
+    void openCatalog(const QString& filename,  bool& status, QString& error, bool readAdd = true);
 
     const QVector<double>& alphaVec() const noexcept {
         return alphaAngles;
@@ -84,6 +84,11 @@ public:
         newNumbers = vec;
     }
 
+    bool isMini()
+    {
+        return miniCat;
+    }
+
 
 
 
@@ -93,7 +98,7 @@ private:
     constexpr  static double transToGrad = 57.29577957855229;
     constexpr  static double div = 0.00000001;
     constexpr  static int structSize = 18;
-
+    bool miniCat = false;
     QVector <double> alphaAngles;
     QVector <double> betaAngles;
     QVector <float> mv;
@@ -119,7 +124,7 @@ struct Sectors // каталог секторов
 #pragma pack(push,1)
 struct DataStar // основной каталог/бортовой каталог
 {
-    qint32  NSAO;
+    qint32 NSAO;
     qint32 alpha;
     qint32 beta;
     qint16 ualpha;

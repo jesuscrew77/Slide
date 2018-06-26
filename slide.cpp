@@ -26,12 +26,12 @@ SlideCreator::SlideCreator()
 }
 
 /*Расчет скорректированной по полиному дисторсии координаты пикселя*/
-double SlideCreator::calculateDistorsio(double point_c, double coord_a, double coord_b, const QList <double>& distorsio_coef)
+double SlideCreator::calculateDistorsio(double coord_a, double coord_b, const QList <double>& distorsio_coef)
 {
-    point_c = point_c + distorsio_coef[0] + distorsio_coef[1]*coord_a + distorsio_coef[2] * coord_b
-            +distorsio_coef[3] * pow( coord_a,2) + distorsio_coef[4] * coord_a * coord_b
-            +distorsio_coef[5] * pow(coord_b,2)+ distorsio_coef[6] * pow( coord_a,3)
-            +distorsio_coef[7] * pow( coord_a,2) * coord_b + distorsio_coef[8]* coord_a * pow(coord_b,2)
+    double delta = distorsio_coef[0] + distorsio_coef[1] * coord_a + distorsio_coef[2] * coord_b
+            +distorsio_coef[3] * pow(coord_a,2) + distorsio_coef[4] * coord_a * coord_b
+            +distorsio_coef[5] * pow(coord_b,2)+ distorsio_coef[6] * pow(coord_a,3)
+            +distorsio_coef[7] * pow(coord_a,2) * coord_b + distorsio_coef[8]* coord_a * pow(coord_b,2)
             +distorsio_coef[9] * pow(coord_b,3) + distorsio_coef[10] * pow(coord_a,4)
             +distorsio_coef[11] * pow(coord_a,3) * coord_b + distorsio_coef[12] * pow(coord_b,2) * pow(coord_a,2)
             +distorsio_coef[13] * coord_a * pow(coord_b,3) + distorsio_coef[14] * pow(coord_b,4)
@@ -40,7 +40,7 @@ double SlideCreator::calculateDistorsio(double point_c, double coord_a, double c
             +distorsio_coef[18] * pow(coord_a,2) * pow(coord_b,3)
             +distorsio_coef[19] * coord_a * pow(coord_b,4)
             +distorsio_coef[20] * pow(coord_b,5);
-    return point_c;
+    return delta;
 }
 /*Рассчитывает переходную матрицу для пересчета угловых координат звезд на координаты слайда*/
 QVector< QVector<float> > SlideCreator::calcTransitionMatrix(double pointAlpha, double pointBeta,double pointAzimut)
@@ -127,7 +127,7 @@ void SlideCreator::calcAngularDistancesWithSectors()
     QVector <double> n_oz_sec;
     n_oz_sec.reserve(catalogData.alphaVecSec().size());
 
-    for (int i = 0;i < catalogData.alphaVecSec().size();i ++)// направляющие косинусы центров секторов
+    for (int i = 0; i < catalogData.alphaVecSec().size(); i++)// направляющие косинусы центров секторов
     {
         double cos_d = cos(catalogData.betaVecSec()[i] * transToRad);
         double cos_a = cos(catalogData.alphaVecSec()[i] * transToRad);
@@ -142,7 +142,7 @@ void SlideCreator::calcAngularDistancesWithSectors()
     QVector <double> angleCosSec;
     angleCosSec.reserve(l_oz_sec.size());
 
-    for (int i = 0;i < l_oz_sec.size();i ++)
+    for (int i = 0; i < l_oz_sec.size(); i++)
     {
         auto scalar_product = calcScalarProduct(l_oz, l_oz_sec[i], m_oz , m_oz_sec[i] , n_oz, n_oz_sec[i]);
         angleCosSec.append(scalar_product);
@@ -162,7 +162,7 @@ void SlideCreator::calcAngularDistancesWithSectors()
     angleData.resultBeta.reserve(countOfStars);
     angleData.resultAlpha.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars; i ++)
+    for (int i = 0; i < countOfStars; i++)
     {
         angleData.resultAlpha.append(catalogData.alphaVec()[starsInSector[i]]);
         angleData.resultBeta.append(catalogData.betaVec()[starsInSector[i]]);
@@ -189,7 +189,7 @@ void SlideCreator::calcAngularDistancesWithSectors()
 
     angleData.angleCos.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars;i ++)// косинусы между точкой проектирования и звездами в секторе
+    for (int i = 0; i < countOfStars; i++)// косинусы между точкой проектирования и звездами в секторе
     {
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
         angleData.angleCos.append(scalar_product);
@@ -211,7 +211,7 @@ void SlideCreator::calcAngularDistancesNoSectors()
     QVector <double> n_st;
     n_st.reserve(countOfStars);
 
-    for (int i = 0;i < countOfStars;i ++)
+    for (int i = 0;i < countOfStars; i++)
     {
         // вычисляем направляющие косинусы всех звезд
         double cosD = cos(catalogData.betaVec()[i] * transToRad);
@@ -223,14 +223,12 @@ void SlideCreator::calcAngularDistancesNoSectors()
         n_st.append(sinD);
     }
 
-
     angleData.angleCos.reserve(countOfStars);
-    for (int i = 0;i < countOfStars;i ++)
+    for (int i = 0;i < countOfStars; i++)
     {
         // вычисляем косинус угла между точкой проецирования и координатами звезд
         auto scalar_product = calcScalarProduct(l_oz, l_st[i], m_oz, m_st[i], n_oz, n_st[i]);
         angleData.angleCos.append(scalar_product);
-
     }
 
     angleData.resultAlpha = catalogData.alphaVec();
@@ -267,6 +265,10 @@ void SlideCreator::calculateAngularDistOptions(const StarSlideData& _slide_data,
 QVector <StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid_d, bool check_distorsio, const DistorsioData& distData)
 {
 
+    QVector <double> xv;
+    QVector <double> yv;
+    QVector <double> dxv;
+    QVector <double> dyv;
     slideType = SLIDE_TYPE::INVALID_TYPE;
     QScopedArrayPointer <unsigned char> dataImage(new unsigned char [grid_d.slideSizeX * grid_d.slideSizeY]);
     QVector <StarParameters> coordsOfStars;
@@ -279,9 +281,11 @@ QVector <StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid
 
                 double y_mm = (y - grid_d.slideSizeY / 2) * grid_d.pix;
                 double x_mm = (x - grid_d.slideSizeX / 2) * grid_d.pix;
-                y_mm = calculateDistorsio(y_mm, x_mm, y_mm,distData.yDistorsioVector);
-                x_mm = calculateDistorsio(x_mm, x_mm, y_mm,distData.xDistorsioVector);
-
+               // xv.append(x_mm); yv.append(y_mm);
+                x_mm += calculateDistorsio(x_mm, y_mm, distData.xDistorsioVector);
+                y_mm += calculateDistorsio(x_mm, y_mm, distData.yDistorsioVector);
+                //dxv.append(calculateDistorsio(x_mm, y_mm, distData.xDistorsioVector));
+                //dyv.append(calculateDistorsio(x_mm, y_mm, distData.yDistorsioVector));
                 int y_pix = ((y_mm/grid_d.pix) + 0.5) + grid_d.slideSizeY / 2;
                 int x_pix = ((x_mm/grid_d.pix) + 0.5) + grid_d.slideSizeX / 2;
 
@@ -294,9 +298,9 @@ QVector <StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid
 
                 int start_pos = x_pix + y_pix * grid_d.slideSizeX;
 
-                for (int i = 0;i < grid_d.pixelPerStar;i ++)/*i-Y, j-X*/
+                for (int i = 0;i < grid_d.pixelPerStar; i++)/*i-Y, j-X*/
                 {
-                    for (int j = 0;j < grid_d.pixelPerStar;j ++)
+                    for (int j = 0;j < grid_d.pixelPerStar; j++)
                     {
                         if (outOfImage(start_pos,grid_d.slideSizeX, grid_d.slideSizeY, x_pix, j , i, grid_d.pixelPerStar))
                         {
@@ -308,6 +312,15 @@ QVector <StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid
                 }
             }
         }
+//        QFile test("xydxdy.txt");
+//        if (test.open(QIODevice::WriteOnly))
+//        {
+//            QTextStream out(&test);
+//            for(int i = 0; i < xv.size(); i++)
+//            {
+//                out << QString("%1 %2 %3 %4\n").arg(xv[i] + dxv[i]).arg(yv[i] + dyv[i]).arg(dxv[i]).arg(dyv[i]);
+//            }
+//        }
 
     }
 
@@ -324,9 +337,9 @@ QVector <StarParameters> SlideCreator::createGridSlide(const GridSlideData& grid
                 starParameters.sizeY = getStarSize(grid_d.pixelPerStar,y);
                 coordsOfStars.append(starParameters);
                 int start_pos = x + y * grid_d.slideSizeX;
-                for (int i = 0;i< grid_d.pixelPerStar;i ++)
+                for (int i = 0;i< grid_d.pixelPerStar; i++)
                 {
-                    for (int j = 0;j < grid_d.pixelPerStar;j ++)
+                    for (int j = 0;j < grid_d.pixelPerStar; j++)
                     {
                         if (outOfImage(start_pos,grid_d.slideSizeX,grid_d.slideSizeY,x,i,j,grid_d.pixelPerStar))
                         {
@@ -391,7 +404,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
     QVector <double> filteredMSt;
     QVector <double> filteredNSt;
 
-    for (int i = 0;i < resultBeta.size();i ++)
+    for (int i = 0;i < resultBeta.size(); i++)
     {
         double cosD = cos(resultBeta[i] * transToRad);
         double cosA = cos(resultAlpha[i] * transToRad);
@@ -414,7 +427,7 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
     int xCoord, yCoord;
     float CC;
     int countOfStars = 0;//для подсчёта числа звезд, попавших на слайд
-    for (int i = 0;i < filteredLSt.size();i ++)
+    for (int i = 0;i < filteredLSt.size(); i++)
     {
 
         CC = angleData.trMat[2][0] * filteredLSt[i]
@@ -432,8 +445,8 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
             y_coord_mm = (-focus * (angleData.trMat[1][0] * filteredLSt[i]
                     + angleData.trMat[1][1] * filteredMSt[i]
                     + angleData.trMat[1][2] * filteredNSt[i]) / CC);
-            x_coord_mm = calculateDistorsio (x_coord_mm, x_coord_mm, y_coord_mm, distData.xDistorsioVector);
-            y_coord_mm = calculateDistorsio (y_coord_mm, x_coord_mm, y_coord_mm, distData.yDistorsioVector);
+            x_coord_mm += calculateDistorsio (x_coord_mm, y_coord_mm, distData.xDistorsioVector);
+            y_coord_mm += calculateDistorsio (x_coord_mm, y_coord_mm, distData.yDistorsioVector);
 
             xCoord = x_coord_mm / slideData.pix + 0.5;
             yCoord = y_coord_mm / slideData.pix + 0.5;
@@ -506,7 +519,8 @@ SlideParameters SlideCreator::createStarSlide(float focus, bool check_sector, bo
 /* Если слайдов несколько выдает так же информацию об размере общего изображения*/
 TestSlideParameters SlideCreator::testStarSlide (bool checkSector, bool checkDistorsio, const DistorsioData &distData)
 {
-    if (!starSlideDataPrepare) return TestSlideParameters {};
+    if (!starSlideDataPrepare)
+        return TestSlideParameters {};
     int countOfStars = 0;//для подсчёта числа звезд, попавших на слайд
 
     double viewAngleX, viewAngleY, viewAngle;
@@ -514,7 +528,6 @@ TestSlideParameters SlideCreator::testStarSlide (bool checkSector, bool checkDis
 
     QVector <double> resultAlpha;
     QVector <double> resultBeta;
-
 
     for (int i = 0;i < angleData.angleCos.size();i ++)
     {
@@ -548,7 +561,7 @@ TestSlideParameters SlideCreator::testStarSlide (bool checkSector, bool checkDis
     QVector <double> filteredMSt;
     QVector <double> filteredNSt;
 
-    for (int i = 0; i < resultBeta.size(); i ++)
+    for (int i = 0; i < resultBeta.size(); i++)
     {
         double cos_d = cos(resultBeta[i] * transToRad);
         double cos_a = cos(resultAlpha[i] * transToRad);
@@ -564,7 +577,7 @@ TestSlideParameters SlideCreator::testStarSlide (bool checkSector, bool checkDis
     int xCoord, yCoord;
     float CC;
 
-    for (int i = 0;i < filteredLSt.size();i ++)
+    for (int i = 0; i < filteredLSt.size(); i++)
     {
         CC = angleData.trMat[2][0] * filteredLSt[i]
                 +
@@ -581,8 +594,8 @@ TestSlideParameters SlideCreator::testStarSlide (bool checkSector, bool checkDis
             y_coord_mm = (-slideData.focStart * (angleData.trMat[1][0] * filteredLSt[i]
                     + angleData.trMat[1][1] * filteredMSt[i]
                     + angleData.trMat[1][2] * filteredNSt[i]) / CC);
-            x_coord_mm = calculateDistorsio (x_coord_mm, x_coord_mm, y_coord_mm, distData.xDistorsioVector);
-            y_coord_mm = calculateDistorsio (y_coord_mm, x_coord_mm, y_coord_mm, distData.yDistorsioVector);
+            x_coord_mm += calculateDistorsio (x_coord_mm, y_coord_mm, distData.xDistorsioVector);
+            y_coord_mm += calculateDistorsio (x_coord_mm, y_coord_mm, distData.yDistorsioVector);
             xCoord = x_coord_mm / slideData.pix + 0.5;
             yCoord = y_coord_mm / slideData.pix + 0.5;
         }
@@ -713,7 +726,7 @@ QDomDocument SlideCreator::createFullSvgSymbols(QVector <QVector <StarParameters
             defs.appendChild(symbol);
             QDomElement cube = doc.createElement("rect");
             cube.setAttribute("x", "0");
-            cube.setAttribute("y","0");
+            cube.setAttribute("y", "0");
             cube.setAttribute("width", QString::number(imageWidth));
             cube.setAttribute("height", QString::number(imageHeight));
             cube.setAttribute("fill","black");
@@ -759,9 +772,9 @@ QDomDocument SlideCreator::createFullSvgSymbols(QVector <QVector <StarParameters
 
 
 QDomDocument SlideCreator::createSvg (const StarSlideData& sData,
-                                    const InscriptParams& iParams,
-                                    const QString setableText,
-                                    QVector <StarParameters> coordsOfStars)
+                                      const InscriptParams& iParams,
+                                      const QString setableText,
+                                      QVector <StarParameters> coordsOfStars)
 {
 
     QDomDocument doc("pic");
@@ -805,12 +818,12 @@ QDomDocument SlideCreator::createSvg (const StarSlideData& sData,
 }
 
 QDomDocument SlideCreator::createSvg (const GridSlideData& gData,
-                                    const InscriptParams& iParams,
-                                    const QString setableText,
-                                    QVector <StarParameters> coordsOfStars)
+                                      const InscriptParams& iParams,
+                                      const QString setableText,
+                                      QVector <StarParameters> coordsOfStars)
 {
-     StarSlideData sData;
-     sData.slideSizeX = gData.slideSizeX;
-     sData.slideSizeY = gData.slideSizeY;
-     return createSvg(sData, iParams, setableText, coordsOfStars);
+    StarSlideData sData;
+    sData.slideSizeX = gData.slideSizeX;
+    sData.slideSizeY = gData.slideSizeY;
+    return createSvg(sData, iParams, setableText, coordsOfStars);
 }

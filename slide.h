@@ -169,7 +169,7 @@ private:
 
     int getStarPos(int default_size, int star_pos);
 
-    double calculateDistorsio(double point_c, double coord_a, double coord_b, const QList <double>& distorsio_coef);
+    double calculateDistorsio(double coord_a, double coord_b, const QList <double>& distorsio_coef);
 
     QVector< QVector<float> > calcTransitionMatrix(double pointAlpha, double pointBeta, double pointAzimut);
 

@@ -52,6 +52,8 @@ public:
 
 
 
+private slots:
+
 private:
 
     void chooseCatalog();

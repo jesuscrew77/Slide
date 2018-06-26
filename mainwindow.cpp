@@ -146,7 +146,7 @@ void MainWindow::saveSettings()
     settings->setValue("GenTabCurrent",ui->GenTabWidget->currentIndex());
     settings->setValue("AddTabCurrent",ui->AddTabWidget->currentIndex());
     settings->setValue("GridLenghtLineEdit",ui->GridLenghtLineEdit->text());
-
+    settings->setValue("miniCat", ui->littleCatCheckBox->isChecked());
     settings->sync();
 
 }
@@ -193,6 +193,7 @@ void MainWindow::loadSettings()
     ui->GridLenghtLineEdit->setText(settings->value("GridLenghtLineEdit","100").toString());
     ui->DistorsioCheck->setChecked(settings->value("DistorsioCheck").toBool());
     ui->chooseDistFilePushButton->setDisabled(!settings->value("DistorsioCheck").toBool());
+    ui->littleCatCheckBox->setChecked(settings->value("miniCat").toBool());
     xDistorsioVector = settings->value("xDistorsioVector").value<QList<double> >();
     yDistorsioVector = settings->value("yDistorsioVector").value<QList<double> >();
 
@@ -636,8 +637,8 @@ void MainWindow::setImagesSizes(int slideSizeX,int slideSizeY,const GroupImgPara
         const int thirdImageSlideCountX = p.countX > limitX ? limitX : p.countX;
         const int thirdImageSlideCountY = p.countY - limitY > limitY ? limitY : p.countY - limitY;
 
-        imageSizeX = (slideSizeX * thirdImageSlideCountX)+(p.space*2) * thirdImageSlideCountX;
-        imageSizeY = (slideSizeY * thirdImageSlideCountY)+(p.space*2) * thirdImageSlideCountY;
+        imageSizeX = (slideSizeX * thirdImageSlideCountX) + (p.space*2) * thirdImageSlideCountX;
+        imageSizeY = (slideSizeY * thirdImageSlideCountY) + (p.space*2) * thirdImageSlideCountY;
         images[2].reset(new QImage(imageSizeX, imageSizeY, QImage::Format_Mono));
         images[2]->fill(Qt::color1);
     }
@@ -659,12 +660,22 @@ void MainWindow::openCatalog()
 {
     bool status = false;
     QString error;
-    catalogData.openCatalog(filename, status, error);
+    bool readAdd = !ui->littleCatCheckBox->isChecked();
+    if (!readAdd)
+    {
+        ui->checkSector->setChecked(false);
+        ui->checkSector->setDisabled(true);
+    }
+    else
+    {
+        ui->checkSector->setDisabled(false);
+    }
+    catalogData.openCatalog (filename, status, error, readAdd);
     if (!status)
     {
         ui->catalogStatusLabel->setText("Ошибка");
         catalogIsRead = status;
-        QMessageBox::critical(NULL,"Ошибка", error);
+        QMessageBox::critical (NULL, "Ошибка", error);
     }
     else
     {
@@ -1314,3 +1325,5 @@ MainWindow::~MainWindow()
     saveSettings();
     delete ui;
 }
+
+
