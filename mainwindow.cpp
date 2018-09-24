@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "mainwindow.h"
 #include <QDebug>
+#include <QtGlobal>
 
 
 
@@ -24,7 +25,7 @@ void MainWindow::initWidgetsOptionConnections()
 {
     QStringList pixperstar;
     pixperstar<<"Выберите..."<<"1x1"<<"2x2"<<"3x3"<<"4x4"<<"5x5"<<"6x6"<<"7x7"<<"8x8"<<"9x9"<<"10x10";
-    ui->comboBox->insertItems(0,pixperstar);
+    ui->comboBox->insertItems(0, pixperstar);
     QRegExp rx( "^[-0-9]*[.]{1}[0-9]*$" );
     QValidator *validator = new QRegExpValidator(rx, this);
     ui->betaLineEdit->setValidator(validator);
@@ -40,13 +41,13 @@ void MainWindow::initWidgetsOptionConnections()
     ui->slideWidthLineEdit->setValidator(validator);
     ui->slidePixHeightLineEdit->setValidator(new QIntValidator(100, 32767, this));
     ui->slidePixWidthLineEdit->setValidator(new QIntValidator(100, 32767, this));
-    ui->textLeftLineEdit->setValidator(new QIntValidator(100, 32767,this));
-    ui->textAtopLineEdit->setValidator(new QIntValidator(100, 32767,this));
-    ui->textSizeLineEdit->setValidator(new QIntValidator(0, 32767,this));
-    ui->imageWeightLineEdit->setValidator(new QIntValidator(0,100,this));
-    ui->imageHeightLineEdit->setValidator(new QIntValidator(0,100,this));
-    ui->GridLenghtLineEdit->setValidator(new QIntValidator(0,1000,this));
-    ui->imageSpaceLineEdit->setValidator(new QIntValidator(0,1000,this));
+    ui->textLeftLineEdit->setValidator(new QIntValidator(100, 32767, this));
+    ui->textAtopLineEdit->setValidator(new QIntValidator(100, 32767, this));
+    ui->textSizeLineEdit->setValidator(new QIntValidator(0, 32767, this));
+    ui->imageWeightLineEdit->setValidator(new QIntValidator(0, 100, this));
+    ui->imageHeightLineEdit->setValidator(new QIntValidator(0, 100, this));
+    ui->GridLenghtLineEdit->setValidator(new QIntValidator(0, 1000, this));
+    ui->imageSpaceLineEdit->setValidator(new QIntValidator(0, 1000, this));
     ui->OneSlideRadioButton->setChecked(true);
     ui->filenameLineEdit->setReadOnly(true);
     ui->DistorsioPathLineEdit->setReadOnly(true);
@@ -65,32 +66,32 @@ void MainWindow::initWidgetsOptionConnections()
         ui->imageHeightLineEdit->setDisabled(true);
         ui->imageSpaceLineEdit->setDisabled(true);
     }
-    ui->progressBar->setRange(0,100);
+    ui->progressBar->setRange(0, 100);
     ui->progressBar->setValue(0);
 
 
 
-    connect(ui->chooseNewCatPushButton,&QPushButton::clicked,this,&MainWindow::chooseCatalog);
-    connect(ui->chooseCurrentCatPushButton,&QPushButton::clicked,this,&MainWindow::useCurrentCatalog);
-    connect(ui->chooseDistFilePushButton,&QPushButton::clicked,this,&MainWindow::chooseDistorsioFile);
-    connect(ui->createGridPushButton,&QPushButton::clicked,this,&MainWindow::createGrid);
-    connect(ui->createSlidePushButton,&QPushButton::clicked,this,&MainWindow::createImage);
-    connect(ui->savePushButton,&QPushButton::clicked,this,&MainWindow::saveImage);
-    connect(ui->makeTestPushButton,&QPushButton::clicked,this,&MainWindow::testForSlide);
-    connect(ui->slideHeightLineEdit,&QLineEdit::textEdited,this,&MainWindow::updateLineXPix);
-    connect(ui->slideWidthLineEdit,&QLineEdit::textEdited,this,&MainWindow::updateLineYPix);
-    connect(ui->pixSizeLineEdit,&QLineEdit::textEdited,this,&MainWindow::updateLineXMM);
-    connect(ui->slidePixHeightLineEdit,&QLineEdit::textEdited,this,&MainWindow::updateLineXMM);
-    connect(ui->pixSizeLineEdit,&QLineEdit::textEdited,this,&MainWindow::updateLineYMM);
-    connect(ui->slidePixWidthLineEdit,&QLineEdit::textEdited,this,&MainWindow::updateLineYMM);
-    connect(ui->GroupSlideRadioButton,&QRadioButton::toggled,this,&MainWindow::setLine);
-    connect(ui->OneSlideRadioButton,&QRadioButton::toggled,this,&MainWindow::setLine);
-    connect(ui->slideHeightLineEdit,&QLineEdit::textEdited,this,&MainWindow::setMatrixState);
-    connect(ui->slidePixHeightLineEdit,&QLineEdit::textEdited,this,&MainWindow::setMatrixState);
-    connect(ui->checkBox,&QCheckBox::stateChanged,this,&MainWindow::setMatrixState);
-    connect(ui->checkSector,&QCheckBox::stateChanged,this,&MainWindow::setAlgorithmState);
-    connect(ui->DistorsioCheck,&QCheckBox::stateChanged,this,&MainWindow::setDistButtonState);
-    connect(ui->GenTabWidget,&QTabWidget::currentChanged,this,&MainWindow::chooseTab);
+    connect(ui->chooseNewCatPushButton, &QPushButton::clicked, this, &MainWindow::chooseCatalog);
+    connect(ui->chooseCurrentCatPushButton, &QPushButton::clicked, this, &MainWindow::useCurrentCatalog);
+    connect(ui->chooseDistFilePushButton, &QPushButton::clicked, this, &MainWindow::chooseDistorsioFile);
+    connect(ui->createGridPushButton, &QPushButton::clicked, this, &MainWindow::createGrid);
+    connect(ui->createSlidePushButton, &QPushButton::clicked, this, &MainWindow::createImage);
+    connect(ui->savePushButton, &QPushButton::clicked, this, &MainWindow::saveImage);
+    connect(ui->makeTestPushButton, &QPushButton::clicked, this, &MainWindow::testForSlide);
+    connect(ui->slideHeightLineEdit, &QLineEdit::textEdited, this, &MainWindow::updateLineXPix);
+    connect(ui->slideWidthLineEdit, &QLineEdit::textEdited, this, &MainWindow::updateLineYPix);
+    connect(ui->pixSizeLineEdit, &QLineEdit::textEdited, this, &MainWindow::updateLineXMM);
+    connect(ui->slidePixHeightLineEdit, &QLineEdit::textEdited, this, &MainWindow::updateLineXMM);
+    connect(ui->pixSizeLineEdit, &QLineEdit::textEdited, this, &MainWindow::updateLineYMM);
+    connect(ui->slidePixWidthLineEdit, &QLineEdit::textEdited, this, &MainWindow::updateLineYMM);
+    connect(ui->GroupSlideRadioButton, &QRadioButton::toggled, this, &MainWindow::setLine);
+    connect(ui->OneSlideRadioButton, &QRadioButton::toggled, this, &MainWindow::setLine);
+    connect(ui->slideHeightLineEdit, &QLineEdit::textEdited, this, &MainWindow::setMatrixState);
+    connect(ui->slidePixHeightLineEdit, &QLineEdit::textEdited, this, &MainWindow::setMatrixState);
+    connect(ui->checkBox, &QCheckBox::stateChanged, this, &MainWindow::setMatrixState);
+    connect(ui->checkSector, &QCheckBox::stateChanged, this, &MainWindow::setAlgorithmState);
+    connect(ui->DistorsioCheck, &QCheckBox::stateChanged, this, &MainWindow::setDistButtonState);
+    connect(ui->GenTabWidget, &QTabWidget::currentChanged, this, &MainWindow::chooseTab);
 
 }
 
@@ -108,44 +109,44 @@ void MainWindow::setStyle()
 
 void MainWindow::saveSettings()
 {
-    settings->setValue("filename",filename);
-    settings->setValue("distorsioFilename",distorsioFilename);
-    settings->setValue("DistRead",distorsioIsRead);
-    settings->setValue("betaLineEdit",ui->betaLineEdit->text());
-    settings->setValue("alphaLineEdit",ui->alphaLineEdit->text());
-    settings->setValue("azLineEdit",ui->azLineEdit->text());
-    settings->setValue("FocStartLineEdit",ui->FocStartLineEdit->text());
-    settings->setValue("FocEndLineEdit",ui->FocEndLineEdit->text());
-    settings->setValue("FocStepLineEdit",ui->FocStepLineEdit->text());
-    settings->setValue("minMvLineEdit",ui->minMvLineEdit->text());
-    settings->setValue("maxMvLineEdit",ui->maxMvLineEdit->text());
-    settings->setValue("pixSizeLineEdit",ui->pixSizeLineEdit->text());
-    settings->setValue("slideHeightLineEdit",ui->slideHeightLineEdit->text());
-    settings->setValue("slidewidthLineEdit",ui->slideWidthLineEdit->text());
-    settings->setValue("slidePixHeightLineEdit",ui->slidePixHeightLineEdit->text());
-    settings->setValue("slidePixwidthLineEdit",ui->slidePixWidthLineEdit->text());
-    settings->setValue("textLeftLineEdit",ui->textLeftLineEdit->text());
-    settings->setValue("textAtopLineEdit",ui->textAtopLineEdit->text());
-    settings->setValue("textSizeLineEdit",ui->textSizeLineEdit->text());
-    settings->setValue("imageWeightLineEdit",ui->imageWeightLineEdit->text());
-    settings->setValue("imageHeightLineEdit",ui->imageHeightLineEdit->text());
-    settings->setValue("imageSpaceLineEdit",ui->imageSpaceLineEdit->text());
-    settings->setValue("prefixLineEdit",ui->prefixLineEdit->text());
-    settings->setValue("suffixLineEdit",ui->suffixLineEdit->text());
-    settings->setValue("slidewidthLineEdit_state",ui->slideWidthLineEdit->isReadOnly());
-    settings->setValue("slidePixwidthLineEdit_state",ui->slideWidthLineEdit->isReadOnly());
+    settings->setValue("filename", filename);
+    settings->setValue("distorsioFilename", distorsioFilename);
+    settings->setValue("DistRead", distorsioIsRead);
+    settings->setValue("betaLineEdit", ui->betaLineEdit->text());
+    settings->setValue("alphaLineEdit", ui->alphaLineEdit->text());
+    settings->setValue("azLineEdit", ui->azLineEdit->text());
+    settings->setValue("FocStartLineEdit", ui->FocStartLineEdit->text());
+    settings->setValue("FocEndLineEdit", ui->FocEndLineEdit->text());
+    settings->setValue("FocStepLineEdit", ui->FocStepLineEdit->text());
+    settings->setValue("minMvLineEdit", ui->minMvLineEdit->text());
+    settings->setValue("maxMvLineEdit", ui->maxMvLineEdit->text());
+    settings->setValue("pixSizeLineEdit", ui->pixSizeLineEdit->text());
+    settings->setValue("slideHeightLineEdit", ui->slideHeightLineEdit->text());
+    settings->setValue("slidewidthLineEdit", ui->slideWidthLineEdit->text());
+    settings->setValue("slidePixHeightLineEdit", ui->slidePixHeightLineEdit->text());
+    settings->setValue("slidePixwidthLineEdit", ui->slidePixWidthLineEdit->text());
+    settings->setValue("textLeftLineEdit", ui->textLeftLineEdit->text());
+    settings->setValue("textAtopLineEdit", ui->textAtopLineEdit->text());
+    settings->setValue("textSizeLineEdit", ui->textSizeLineEdit->text());
+    settings->setValue("imageWeightLineEdit", ui->imageWeightLineEdit->text());
+    settings->setValue("imageHeightLineEdit", ui->imageHeightLineEdit->text());
+    settings->setValue("imageSpaceLineEdit", ui->imageSpaceLineEdit->text());
+    settings->setValue("prefixLineEdit", ui->prefixLineEdit->text());
+    settings->setValue("suffixLineEdit", ui->suffixLineEdit->text());
+    settings->setValue("slidewidthLineEdit_state", ui->slideWidthLineEdit->isReadOnly());
+    settings->setValue("slidePixwidthLineEdit_state", ui->slideWidthLineEdit->isReadOnly());
     settings->setValue("checkBox", ui->checkBox->isChecked());
     settings->setValue("comboBoxIndex", ui->comboBox->currentIndex());
     settings->setValue("showPreviewCheckBox", ui->showPreviewCheckBox->isChecked());
-    settings->setValue("checkSector",ui->checkSector->isChecked());
-    settings->setValue("PicDiamLineEdit",ui->PicDiamLineEdit->text());
-    settings->setValue("PicDiamLineEdit_state",ui->checkSector->isChecked());
-    settings->setValue("DistorsioCheck",ui->DistorsioCheck->isChecked());
-    settings->setValue("xDistorsioVector",QVariant::fromValue(xDistorsioVector));
-    settings->setValue("yDistorsioVector",QVariant::fromValue(yDistorsioVector));
-    settings->setValue("GenTabCurrent",ui->GenTabWidget->currentIndex());
-    settings->setValue("AddTabCurrent",ui->AddTabWidget->currentIndex());
-    settings->setValue("GridLenghtLineEdit",ui->GridLenghtLineEdit->text());
+    settings->setValue("checkSector", ui->checkSector->isChecked());
+    settings->setValue("PicDiamLineEdit", ui->PicDiamLineEdit->text());
+    settings->setValue("PicDiamLineEdit_state", ui->checkSector->isChecked());
+    settings->setValue("DistorsioCheck", ui->DistorsioCheck->isChecked());
+    settings->setValue("xDistorsioVector", QVariant::fromValue(xDistorsioVector));
+    settings->setValue("yDistorsioVector", QVariant::fromValue(yDistorsioVector));
+    settings->setValue("GenTabCurrent", ui->GenTabWidget->currentIndex());
+    settings->setValue("AddTabCurrent", ui->AddTabWidget->currentIndex());
+    settings->setValue("GridLenghtLineEdit", ui->GridLenghtLineEdit->text());
     settings->setValue("miniCat", ui->littleCatCheckBox->isChecked());
     settings->sync();
 
@@ -153,44 +154,44 @@ void MainWindow::saveSettings()
 
 void MainWindow::loadSettings()
 {
-    filename = settings->value("filename","Каталог не выбран...").toString();
+    filename = settings->value("filename", "Каталог не выбран...").toString();
     ui->filenameLineEdit->setText(filename);
-    distorsioFilename = settings->value("distorsioFilename","Файл не выбран...").toString();
+    distorsioFilename = settings->value("distorsioFilename", "Файл не выбран...").toString();
     ui->DistorsioPathLineEdit->setText(distorsioFilename);
-    distorsioIsRead = settings->value("DistRead","false").toBool();
-    ui->betaLineEdit->setText(settings->value("betaLineEdit","45").toString());
-    ui->alphaLineEdit->setText(settings->value("alphaLineEdit","45").toString());
-    ui->azLineEdit->setText(settings->value("azLineEdit","0").toString());
-    ui->FocStartLineEdit->setText(settings->value("FocStartLineEdit","105").toString());
-    ui->FocEndLineEdit->setText(settings->value("FocEndLineEdit","110").toString());
-    ui->FocStepLineEdit->setText(settings->value("FocStepLineEdit","0.5").toString());
-    ui->minMvLineEdit->setText(settings->value("minMvLineEdit","0").toString());
-    ui->maxMvLineEdit->setText(settings->value("maxMvLineEdit","10").toString());
-    ui->pixSizeLineEdit->setText(settings->value("pixSizeLineEdit","0.00635").toString());
-    ui->slideHeightLineEdit->setText(settings->value("slideHeightLineEdit","45.085").toString());
-    ui->slideWidthLineEdit->setText(settings->value("slidewidthLineEdit","45.085").toString());
-    ui->slidePixHeightLineEdit->setText(settings->value("slidePixHeightLineEdit","7100").toString());
-    ui->slidePixWidthLineEdit->setText(settings->value("slidePixwidthLineEdit","7100").toString());
-    ui->textLeftLineEdit->setText(settings->value("textLeftLineEdit","150").toString());
-    ui->textAtopLineEdit->setText(settings->value("textAtopLineEdit","150").toString());
-    ui->textSizeLineEdit->setText(settings->value("textSizeLineEdit","200").toString());
-    ui->imageWeightLineEdit->setText(settings->value("imageWeightLineEdit","4").toString());
-    ui->imageHeightLineEdit->setText(settings->value("imageHeightLineEdit","4").toString());
-    ui->imageSpaceLineEdit->setText(settings->value("imageSpaceLineEdit","200").toString());
-    ui->prefixLineEdit->setText(settings->value("prefixLineEdit","Hi").toString());
-    ui->suffixLineEdit->setText(settings->value("suffixLineEdit","Bye").toString());
-    ui->PicDiamLineEdit->setText(settings->value("PicDiamLineEdit","34").toString());
+    distorsioIsRead = settings->value("DistRead", "false").toBool();
+    ui->betaLineEdit->setText(settings->value("betaLineEdit", "45").toString());
+    ui->alphaLineEdit->setText(settings->value("alphaLineEdit", "45").toString());
+    ui->azLineEdit->setText(settings->value("azLineEdit", "0").toString());
+    ui->FocStartLineEdit->setText(settings->value("FocStartLineEdit", "105").toString());
+    ui->FocEndLineEdit->setText(settings->value("FocEndLineEdit", "110").toString());
+    ui->FocStepLineEdit->setText(settings->value("FocStepLineEdit", "0.5").toString());
+    ui->minMvLineEdit->setText(settings->value("minMvLineEdit", "0").toString());
+    ui->maxMvLineEdit->setText(settings->value("maxMvLineEdit", "10").toString());
+    ui->pixSizeLineEdit->setText(settings->value("pixSizeLineEdit", "0.00635").toString());
+    ui->slideHeightLineEdit->setText(settings->value("slideHeightLineEdit", "45.085").toString());
+    ui->slideWidthLineEdit->setText(settings->value("slidewidthLineEdit", "45.085").toString());
+    ui->slidePixHeightLineEdit->setText(settings->value("slidePixHeightLineEdit", "7100").toString());
+    ui->slidePixWidthLineEdit->setText(settings->value("slidePixwidthLineEdit", "7100").toString());
+    ui->textLeftLineEdit->setText(settings->value("textLeftLineEdit", "150").toString());
+    ui->textAtopLineEdit->setText(settings->value("textAtopLineEdit", "150").toString());
+    ui->textSizeLineEdit->setText(settings->value("textSizeLineEdit", "200").toString());
+    ui->imageWeightLineEdit->setText(settings->value("imageWeightLineEdit", "4").toString());
+    ui->imageHeightLineEdit->setText(settings->value("imageHeightLineEdit", "4").toString());
+    ui->imageSpaceLineEdit->setText(settings->value("imageSpaceLineEdit", "200").toString());
+    ui->prefixLineEdit->setText(settings->value("prefixLineEdit", "Hi").toString());
+    ui->suffixLineEdit->setText(settings->value("suffixLineEdit", "Bye").toString());
+    ui->PicDiamLineEdit->setText(settings->value("PicDiamLineEdit", "34").toString());
     ui->checkBox->setChecked(settings->value("checkBox").toBool());
     ui->showPreviewCheckBox->setChecked(settings->value("showPreviewCheckBox").toBool());
     int index = settings->value("comboBoxIndex", 10).toInt();
     ui->comboBox->setCurrentIndex(index);
-    ui->GenTabWidget->setCurrentIndex(settings->value("GenTabCurrent","0").toInt());
-    ui->AddTabWidget->setCurrentIndex(settings->value("AddTabCurrent","0").toInt());
-    ui->slideWidthLineEdit->setReadOnly(settings->value("slidewidthLineEdit_state","false").toBool());
-    ui->slidePixWidthLineEdit->setReadOnly(settings->value("slidePixwidthLineEdit_state","false").toBool());
+    ui->GenTabWidget->setCurrentIndex(settings->value("GenTabCurrent", "0").toInt());
+    ui->AddTabWidget->setCurrentIndex(settings->value("AddTabCurrent", "0").toInt());
+    ui->slideWidthLineEdit->setReadOnly(settings->value("slidewidthLineEdit_state", "false").toBool());
+    ui->slidePixWidthLineEdit->setReadOnly(settings->value("slidePixwidthLineEdit_state", "false").toBool());
     ui->checkSector->setChecked(settings->value("checkSector").toBool());
-    ui->PicDiamLineEdit->setDisabled(settings->value("PicDiamLineEdit_state","true").toBool());
-    ui->GridLenghtLineEdit->setText(settings->value("GridLenghtLineEdit","100").toString());
+    ui->PicDiamLineEdit->setDisabled(settings->value("PicDiamLineEdit_state", "true").toBool());
+    ui->GridLenghtLineEdit->setText(settings->value("GridLenghtLineEdit", "100").toString());
     ui->DistorsioCheck->setChecked(settings->value("DistorsioCheck").toBool());
     ui->chooseDistFilePushButton->setDisabled(!settings->value("DistorsioCheck").toBool());
     ui->littleCatCheckBox->setChecked(settings->value("miniCat").toBool());
@@ -208,19 +209,19 @@ void MainWindow::loadSettings()
 
 }
 
-void MainWindow::makeInscription(QSharedPointer<QImage> optimalImage,const QString& setableText,int fontX,int fontY,int fontSize)
+void MainWindow::makeInscription(QSharedPointer<QImage> optimalImage, const QString& setableText, int fontX, int fontY, int fontSize)
 {
     // наносим надпись на слайд
-    QPainter painter_for_text;
-    painter_for_text.begin(optimalImage.data());
-    QPen pen_for_text;
-    QFont font = painter_for_text.font();
+    QPainter painterForText;
+    painterForText.begin(optimalImage.data());
+    QPen penForText;
+    QFont font = painterForText.font();
     font.setPixelSize(fontSize);
-    painter_for_text.setFont(font);
-    painter_for_text.setPen(pen_for_text);
-    painter_for_text.setPen(QColor(255,255,255,255));
-    painter_for_text.drawText(fontX, fontY, setableText);
-    painter_for_text.end();// завершаем нанесение надписи на слайд
+    painterForText.setFont(font);
+    painterForText.setPen(penForText);
+    painterForText.setPen(QColor(255, 255, 255, 255));
+    painterForText.drawText(fontX, fontY, setableText);
+    painterForText.end();// завершаем нанесение надписи на слайд
 }
 
 
@@ -303,8 +304,8 @@ StarSlideData MainWindow::readInputStarSlideData()
     {
         throw std::invalid_argument("Неверно задан размер слайда по У");
     }
-    data.slideSizeMM_Y = ui->slideHeightLineEdit->text().toDouble();
-    data.slideSizeMM_X = ui->slideWidthLineEdit->text().toDouble();
+    data.slideSizeMMy = ui->slideHeightLineEdit->text().toDouble();
+    data.slideSizeMMx = ui->slideWidthLineEdit->text().toDouble();
 
     data.pix = ui->pixSizeLineEdit->text().toDouble();
     if (data.pix < 0)
@@ -361,19 +362,19 @@ GridSlideData MainWindow::readInputGridSlideData()
 }
 
 
-void MainWindow::drawGridSlides(QSharedPointer<QImage> im, QImage &opt_img, int sz_x, int sz_y, int space, int slideSizeX, int slideSizeY)
+void MainWindow::drawGridSlides(QSharedPointer<QImage> im, QImage& optImg, int szX, int szY, int space, int slideSizeX, int slideSizeY)
 {
-    QPainter grid_painter;
-    grid_painter.begin(im.data());
+    QPainter gridPainter;
+    gridPainter.begin(im.data());
 
-    for (int curColumn = 0; curColumn < sz_y; curColumn++)
+    for (int curColumn = 0; curColumn < szY; curColumn++)
     {
-        for (int curRow = 0; curRow < sz_x; curRow++)
+        for (int curRow = 0; curRow < szX; curRow++)
         {
-            grid_painter.drawImage(slideSizeX * curRow + space * curRow, slideSizeY * curColumn + space * curColumn, opt_img);
+            gridPainter.drawImage(slideSizeX * curRow + space * curRow, slideSizeY * curColumn + space * curColumn, optImg);
         }
     }
-    grid_painter.end();
+    gridPainter.end();
 }
 
 
@@ -381,25 +382,25 @@ void MainWindow::drawGridSlides(QSharedPointer<QImage> im, QImage &opt_img, int 
 
 
 
-void MainWindow::drawSlide(QSharedPointer<QImage> im, QVector <QImage> &im_v, int sz_x, int sz_y, int space, int  slideSizeX, int slideSizeY)
+void MainWindow::drawSlide(QSharedPointer<QImage> im, QVector <QImage>& imageVector, int szX, int szY, int space, int  slideSizeX, int slideSizeY)
 {
-    QPainter slide_painter;
-    slide_painter.begin(im.data());
+    QPainter slidePainter;
+    slidePainter.begin(im.data());
 
-    for (int i = 0;i < sz_y; i++)
+    for (int i = 0;i < szY; i++)
     {
-        for (int j = 0;j < sz_x; j++)
+        for (int j = 0;j < szX; j++)
         {
-            slide_painter.drawImage(slideSizeX * j + space * j,slideSizeY * i + space * i ,im_v[j + i * sz_x]);
+            slidePainter.drawImage(slideSizeX * j + space * j, slideSizeY * i + space * i , imageVector[j + i * szX]);
             qApp->processEvents();
         }
 
     }
-    slide_painter.end();
+    slidePainter.end();
 
 }
 
-void MainWindow::drawPreviewItem(const QByteArray& svgByteArray,int slideSizeX,int slideSizeY)
+void MainWindow::drawPreviewItem(const QByteArray& svgByteArray, int slideSizeX, int slideSizeY)
 {
     svgPreview.reset(new QSvgRenderer(svgByteArray));
     svgPreviewItem.reset(new QGraphicsSvgItem());
@@ -407,7 +408,7 @@ void MainWindow::drawPreviewItem(const QByteArray& svgByteArray,int slideSizeX,i
 
     if (ui->showPreviewCheckBox->isChecked())
     {
-        scene->setSceneRect(0,0, slideSizeX, slideSizeY);
+        scene->setSceneRect(0, 0, slideSizeX, slideSizeY);
         scene->addItem(svgPreviewItem.data());
         ui->graphicsView->setScene(scene.data());
     }
@@ -428,11 +429,12 @@ void MainWindow::updateLineXPix()
 {
     QString updateString;
     int updateBuffer;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
-    double slideSizeMM_X = ui->slideHeightLineEdit->text().toDouble();
-    if (slideSizeMM_X != 0 && pix != 0)
+    double pix = ui->pixSizeLineEdit->text().toDouble();
+    double slideSizeMMx = ui->slideHeightLineEdit->text().toDouble();
+    if (!qFuzzyCompare(slideSizeMMx, 0.0)
+            && !qFuzzyCompare(pix, 0.0))
     {
-        updateBuffer = slideSizeMM_X / pix;
+        updateBuffer = slideSizeMMx / pix;
         updateString = QString::number(updateBuffer);
         ui->slidePixHeightLineEdit->setText(updateString);
     }
@@ -443,11 +445,12 @@ void MainWindow::updateLineYPix()
 {
     QString updateString;
     int updateBuffer;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
-    double slideSizeMM_Y = ui->slideWidthLineEdit->text().toDouble();
-    if (slideSizeMM_Y != 0 && pix != 0)
+    double pix = ui->pixSizeLineEdit->text().toDouble();
+    double slideSizeMMy = ui->slideWidthLineEdit->text().toDouble();
+    if (!qFuzzyCompare(slideSizeMMy, 0.0)
+            && !qFuzzyCompare(pix, 0.0))
     {
-        updateBuffer = slideSizeMM_Y/pix;
+        updateBuffer = slideSizeMMy / pix;
         updateString = QString::number((updateBuffer));
         ui->slidePixWidthLineEdit->setText(updateString);
     }
@@ -460,9 +463,10 @@ void MainWindow::updateLineXMM()
 
 {
     QString updateString;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
+    double pix = ui->pixSizeLineEdit->text().toDouble();
     int slideSizeX = ui->slidePixHeightLineEdit->text().toInt();
-    if (pix != 0 && slideSizeX != 0)
+    if (!qFuzzyCompare(pix, 0.0) &&
+            !qFuzzyCompare(slideSizeX, 0.0))
     {
         updateString = QString::number(slideSizeX * pix);
         ui->slideHeightLineEdit->setText(updateString);
@@ -477,9 +481,10 @@ void MainWindow::updateLineYMM()
 
 {
     QString updateString;
-    float pix = ui->pixSizeLineEdit->text().toDouble();
+    double pix = ui->pixSizeLineEdit->text().toDouble();
     int slideSizeY = ui->slidePixWidthLineEdit->text().toInt();
-    if (pix != 0 && slideSizeY != 0)
+    if (!qFuzzyCompare(pix, 0.0)
+            && !qFuzzyCompare(slideSizeY, 0.0))
     {
         updateString = QString::number(slideSizeY * pix);
         ui->slideWidthLineEdit->setText(updateString);
@@ -603,7 +608,7 @@ void MainWindow::clearSceneAndImages()
     optimalImage.reset();
 }
 
-void MainWindow::setImagesSizes(int slideSizeX,int slideSizeY,const GroupImgParams& p)
+void MainWindow::setImagesSizes(int slideSizeX, int slideSizeY, const GroupImgParams& p)
 {
     images.resize(countOfImages);
     const int limitX = imageSizeLimit / slideSizeX;// вычисляем максимально возможное чесло слайдов в ширинуизображении
@@ -618,7 +623,7 @@ void MainWindow::setImagesSizes(int slideSizeX,int slideSizeY,const GroupImgPara
 
     imageSizeX = (slideSizeX * firstImageSlideCountX)+(p.space*2) * firstImageSlideCountX;
     imageSizeY = (slideSizeY * firstImageSlideCountY)+(p.space*2) * firstImageSlideCountY;
-    images[0].reset(new QImage(imageSizeX, imageSizeY , QImage::Format_Mono));
+    images[0].reset(new QImage(imageSizeX, imageSizeY, QImage::Format_Mono));
     images[0]->fill(Qt::color1);
 
     if (p.countX > limitX)
@@ -675,7 +680,7 @@ void MainWindow::openCatalog()
     {
         ui->catalogStatusLabel->setText("Ошибка");
         catalogIsRead = status;
-        QMessageBox::critical (NULL, "Ошибка", error);
+        QMessageBox::critical (nullptr, "Ошибка", error);
     }
     else
     {
@@ -754,7 +759,7 @@ void MainWindow::chooseDistorsioFile()
     }
     else
     {
-        QMessageBox::critical(NULL,"Ошибка","Ошибка открытия файла");
+        QMessageBox::critical(nullptr, "Ошибка", "Ошибка открытия файла");
         ui->distReadInfoLabel->setText("Коэффициенты не считаны");
         ui->DistorsioPathLineEdit->setText(" ");
         file.close();
@@ -778,7 +783,7 @@ void MainWindow::chooseDistorsioFile()
 
 
 // проверка соответствия длины массива фокусных расстояний размерности матрицы
-void MainWindow::compareImageFocSize(const int countOfSlides,const int countOfFoc)
+void MainWindow::compareImageFocSize(const int countOfSlides, const int countOfFoc)
 {
     // проверка соответствия длины массива фокусных расстояний размерности матрицы
     if (countOfSlides < countOfFoc)
@@ -838,13 +843,13 @@ void MainWindow::createImage()
 
     if (!catalogIsRead)// если каталог не считан
     {
-        QMessageBox::warning(NULL,"Ошибка","Выберите каталог или подтвердите использование текущего");
+        QMessageBox::warning(nullptr, "Ошибка", "Выберите каталог или подтвердите использование текущего");
         return;
     }
 
     if (ui->DistorsioCheck->isChecked() && !distorsioIsRead)
     {
-        QMessageBox::warning(NULL,"Ошибка","Выберите файл с коэффициентами дисторсии");
+        QMessageBox::warning(nullptr, "Ошибка", "Выберите файл с коэффициентами дисторсии");
         return;
     }
 
@@ -863,7 +868,7 @@ void MainWindow::createImage()
         if  (ui->vectorRadioButton->isChecked())
              slideCreator->setOnlyParameters(true);
 
-        slideCreator->calculateAngularDistOptions(slideData,catalogData,ui->checkSector->isChecked());
+        slideCreator->calculateAngularDistOptions(slideData, catalogData, ui->checkSector->isChecked());
 
 
         if (ui->OneSlideRadioButton->isChecked())
@@ -876,29 +881,29 @@ void MainWindow::createImage()
                 distData.yDistorsioVector = yDistorsioVector;
             }
 
-            SlideParameters imgData = slideCreator->createStarSlide(slideData.focStart,ui->checkSector->isChecked(),ui->DistorsioCheck->isChecked(),distData);
+            SlideParameters imgData = slideCreator->createStarSlide(slideData.focStart, ui->checkSector->isChecked(), ui->DistorsioCheck->isChecked(), distData);
             ui->progressBar->setValue(50);
-            QString setableText = inscriptData.prefix + " "+ "f=" + QString::number(slideData.focStart)+"mm"+","+" "
-                    +QString::number(imgData.countOfStars)+"zv." + "," + " " + " cat."+" "
-                    +QString::number(catalogData.alphaVec().size())+","+" " + ui->comboBox->currentText()+","
-                    +" "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0) + ","
-                    +" "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0) + ","+" "
+            QString setableText = inscriptData.prefix + " " + "f=" + QString::number(slideData.focStart)+"mm"+", "+" "
+                    +QString::number(imgData.countOfStars)+"zv." + ", " + " " + " cat."+" "
+                    +QString::number(catalogData.alphaVec().size())+", " + " " + ui->comboBox->currentText()+", "
+                    +" "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0) + ", "
+                    +" "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0) + ", "+" "
                     +"2w=" + QString::number(imgData.viewAngleX)+"x"
                     +QString::number(imgData.viewAngleY)+" "+inscriptData.suffix;
 
             if (ui->rasterRadioButton->isChecked())
             {
                 optimalImage = slideCreator->getSlidePointer();
-                makeInscription(optimalImage,setableText,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+                makeInscription(optimalImage, setableText, inscriptData.fontX, inscriptData.fontY, inscriptData.fontSize);
             }
 
             prepareTextToSvg(setableText);
             svgSlide =
-                    SlideCreator::createSvg (slideData, inscriptData ,setableText,imgData.coordsOfStars);
+                    SlideCreator::createSvg (slideData, inscriptData , setableText, imgData.coordsOfStars);
 
             if (ui->showPreviewCheckBox->isChecked())
             {
-                drawPreviewItem(svgSlide.toByteArray(),slideData.slideSizeX,slideData.slideSizeY);
+                drawPreviewItem(svgSlide.toByteArray(), slideData.slideSizeX, slideData.slideSizeY);
             }
             ui->progressBar->setValue(100);
         }
@@ -916,8 +921,8 @@ void MainWindow::createImage()
             if (ui->rasterRadioButton->isChecked())
                 setImagesSizes(slideData.slideSizeX, slideData.slideSizeY, groupImgData);
 
-            QVector <float> focusVector;
-            for (float i = slideData.focStart;i <= slideData.focEnd;i += slideData.focStep) // формируем вектор фокусных расстояний
+            QVector <double> focusVector;
+            for (double i = slideData.focStart; i <= slideData.focEnd; i += slideData.focStep) // формируем вектор фокусных расстояний
             {
                 focusVector.append(i);
             }
@@ -947,7 +952,7 @@ void MainWindow::createImage()
             QSharedPointer <QImage> bufImage;
             QVector <QVector <StarParameters> > starParamVecs;
             QVector <QString> textData;
-            QVector<float>::const_iterator focusValue = focusVector.begin();
+            QVector<double>::const_iterator focusValue = focusVector.begin();
             for (int imgHeight = 0; imgHeight < groupImgData.countY; imgHeight++)
             {
                 for (int imWidth = 0; imWidth < groupImgData.countX; imWidth++)
@@ -958,18 +963,18 @@ void MainWindow::createImage()
                             slideCreator->createStarSlide(*focusValue, ui->checkSector->isChecked(), ui->DistorsioCheck->isChecked(), distData);
                     starParamVecs.append(imgData.coordsOfStars);
 
-                    QString setableText = inscriptData.prefix+" "+"f="+QString::number(*focusValue)+ "mm" + "," + " "
-                            +QString::number(imgData.countOfStars)+"zv."+","+" "+" cat."+" "
-                            +QString::number(catalogData.alphaVec().size())+","+" "+ui->comboBox->currentText()+","
-                            +" "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0)+","
-                            +" "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0)+","+" "
-                            +"2w = " +QString::number(imgData.viewAngleX)+"x"
-                            +QString::number(imgData.viewAngleY)+" "+inscriptData.suffix;
+                    QString setableText = inscriptData.prefix + " " + "f="+QString::number(*focusValue) +  "mm" + ", " + " "
+                            + QString::number(imgData.countOfStars)+"zv." + ", " + " " + " cat." + " "
+                            + QString::number(catalogData.alphaVec().size()) + ", " + " "+ui->comboBox->currentText() + ", "
+                            + " "+QChar(0x03B1) + "=" + QString::number(slideData.pointAlpha) + QChar(0x00B0) + ", "
+                            + " "+QChar(0x03B4) + "=" + QString::number(slideData.pointBeta) + QChar(0x00B0) + ", " + " "
+                            + "2w = " +QString::number(imgData.viewAngleX) + "x"
+                            + QString::number(imgData.viewAngleY) + " " + inscriptData.suffix;
 
                     if (ui->rasterRadioButton->isChecked())
                     {
                         bufImage = slideCreator->getSlidePointer();
-                        makeInscription(bufImage, setableText,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+                        makeInscription(bufImage, setableText, inscriptData.fontX, inscriptData.fontY, inscriptData.fontSize);
                         textData.append(setableText);
 
                         // расфасовываем слайды по изображениям
@@ -1005,7 +1010,7 @@ void MainWindow::createImage()
                 {
                     int sizeY = images[i]->height()/(slideData.slideSizeY + groupImgData.space * 2);
                     int sizeX = images[i]->width()/(slideData.slideSizeX + groupImgData.space * 2);
-                    drawSlide(images[i],imageVector[i],sizeX,sizeY,groupImgData.space, slideData.slideSizeX, slideData.slideSizeY);
+                    drawSlide(images[i], imageVector[i], sizeX, sizeY, groupImgData.space, slideData.slideSizeX, slideData.slideSizeY);
                 }
             }
 
@@ -1018,7 +1023,7 @@ void MainWindow::createImage()
 
             if (ui->showPreviewCheckBox->isChecked())
             {
-                drawPreviewItem(svgSlide.toByteArray(),slideData.slideSizeX * groupImgData.countX, slideData.slideSizeY * groupImgData.countY);
+                drawPreviewItem(svgSlide.toByteArray(), slideData.slideSizeX * groupImgData.countX, slideData.slideSizeY * groupImgData.countY);
             }
 
         }
@@ -1028,7 +1033,7 @@ void MainWindow::createImage()
     catch (exception &e)
     {
         setUIstate(false);
-        QMessageBox::information(NULL,"Ошибка",e.what());
+        QMessageBox::information(nullptr, "Ошибка", e.what());
         return;
     }
 
@@ -1043,7 +1048,7 @@ void MainWindow::createGrid()
 
     if (ui->DistorsioCheck->isChecked() && !distorsioIsRead)
     {
-        QMessageBox::warning(NULL,"Ошибка","Выберите файл с коэффициентами дисторсии");
+        QMessageBox::warning(nullptr, "Ошибка", "Выберите файл с коэффициентами дисторсии");
         return;
     }
     try
@@ -1065,45 +1070,45 @@ void MainWindow::createGrid()
 
         if (ui->OneSlideRadioButton->isChecked())
         {
-            QVector<StarParameters> coordsOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
+            QVector<StarParameters> coordsOfStars = slideCreator->createGridSlide(gridData, ui->DistorsioCheck->isChecked(), distData);
 
-            QString textForGrid = inscriptData.prefix+" "+"Разм.пикселя:" + " " + ui->comboBox->currentText()+ "," + " " +
-                    "Расстояние,пикс.:" + " " + QString::number(gridData.gridDistance) + " " + inscriptData.suffix;
+            QString textForGrid = inscriptData.prefix+" "+"Разм.пикселя:" + " " + ui->comboBox->currentText()+ ", " + " " +
+                    "Расстояние, пикс.:" + " " + QString::number(gridData.gridDistance) + " " + inscriptData.suffix;
 
             if (ui->rasterRadioButton->isChecked())
             {
                 optimalImage = slideCreator->getSlidePointer();
-                makeInscription(optimalImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+                makeInscription(optimalImage, textForGrid, inscriptData.fontX, inscriptData.fontY, inscriptData.fontSize);
             }
 
             prepareTextToSvg(textForGrid);
             svgSlide =
-                    SlideCreator::createSvg(gridData ,inscriptData ,textForGrid, coordsOfStars);
+                    SlideCreator::createSvg(gridData , inscriptData , textForGrid, coordsOfStars);
             if (ui->showPreviewCheckBox->isChecked())
             {
-                drawPreviewItem(svgSlide.toByteArray(),gridData.slideSizeX, gridData.slideSizeY);
+                drawPreviewItem(svgSlide.toByteArray(), gridData.slideSizeX, gridData.slideSizeY);
             }
             ui->progressBar->setValue(100);
         }
 
         else if (ui->GroupSlideRadioButton->isChecked())
         {
-            ui->progressBar->setRange(0,100);
+            ui->progressBar->setRange(0, 100);
             GroupImgParams groupImgData (readGroupImgParams());
             QSharedPointer <QImage> bufImage;
 
             if (ui->rasterRadioButton->isChecked())
-                setImagesSizes(gridData.slideSizeX,gridData.slideSizeY, groupImgData);
+                setImagesSizes(gridData.slideSizeX, gridData.slideSizeY, groupImgData);
 
-            QVector <StarParameters> coordsOfStars = slideCreator->createGridSlide(gridData,ui->DistorsioCheck->isChecked(),distData);
+            QVector <StarParameters> coordsOfStars = slideCreator->createGridSlide(gridData, ui->DistorsioCheck->isChecked(), distData);
 
-            QString textForGrid = inscriptData.prefix+" "+"Size,pix:"+" "+ui->comboBox->currentText()+","+" "+
-                    "Distance,pix.:"+" "+QString::number(gridData.gridDistance)+" "+inscriptData.suffix;
+            QString textForGrid = inscriptData.prefix+" "+"Size, pix:"+" "+ui->comboBox->currentText()+", "+" "+
+                    "Distance, pix.:"+" "+QString::number(gridData.gridDistance)+" "+inscriptData.suffix;
 
             if (ui->rasterRadioButton->isChecked())
             {
                 bufImage = slideCreator->getSlidePointer();
-                makeInscription(bufImage,textForGrid,inscriptData.fontX,inscriptData.fontY,inscriptData.fontSize);
+                makeInscription(bufImage, textForGrid, inscriptData.fontX, inscriptData.fontY, inscriptData.fontSize);
             }
 
             ui->progressBar->setValue(50);
@@ -1114,7 +1119,7 @@ void MainWindow::createGrid()
                 {
                     int sizeY = image->height() / (gridData.slideSizeY + groupImgData.space * 2);
                     int sizeX = image->width() / (gridData.slideSizeX + groupImgData.space * 2);
-                    drawGridSlides(image,*bufImage,sizeX,sizeY,groupImgData.space,gridData.slideSizeX,gridData.slideSizeY);
+                    drawGridSlides(image, *bufImage, sizeX, sizeY, groupImgData.space, gridData.slideSizeX, gridData.slideSizeY);
                 }
             }
 
@@ -1129,7 +1134,7 @@ void MainWindow::createGrid()
                     SlideCreator::createFullSvg(sParams, gridData.slideSizeX, gridData.slideSizeY, groupImgData, inscriptData, textData);
             if (ui->showPreviewCheckBox->isChecked())
             {
-                drawPreviewItem(svgSlide.toByteArray(),gridData.slideSizeX * groupImgData.countX, gridData.slideSizeY * groupImgData.countY);
+                drawPreviewItem(svgSlide.toByteArray(), gridData.slideSizeX * groupImgData.countX, gridData.slideSizeY * groupImgData.countY);
             }
             ui->progressBar->setValue(100);
 
@@ -1137,10 +1142,10 @@ void MainWindow::createGrid()
         setUIstate(false);
     }
 
-    catch (exception &e)
+    catch (std::exception &e)
     {
         setUIstate(false);
-        QMessageBox::information(NULL,"Ошибка",e.what());
+        QMessageBox::information(nullptr, "Ошибка", e.what());
         return;
     }
 
@@ -1155,7 +1160,7 @@ void MainWindow::testForSlide()
 {
     if (!catalogIsRead)// если каталог не считан
     {
-        QMessageBox::warning(NULL,"Ошибка","Выберите каталог или подтвердите использование текущего");
+        QMessageBox::warning(nullptr, "Ошибка", "Выберите каталог или подтвердите использование текущего");
         return;
     }
     else
@@ -1164,14 +1169,14 @@ void MainWindow::testForSlide()
         {
             QScopedPointer<SlideCreator> slideCreator(new SlideCreator());
             StarSlideData slideData = readInputStarSlideData();
-            slideCreator->calculateAngularDistOptions(slideData,catalogData,ui->checkSector->isChecked());
+            slideCreator->calculateAngularDistOptions(slideData, catalogData, ui->checkSector->isChecked());
 
             DistorsioData distData;
             distData.xDistorsioVector = xDistorsioVector;
             distData.yDistorsioVector = yDistorsioVector;
 
 
-            TestSlideParameters testData=slideCreator->testStarSlide(ui->checkSector->isChecked(),ui->DistorsioCheck->isChecked(),distData);
+            TestSlideParameters testData=slideCreator->testStarSlide(ui->checkSector->isChecked(), ui->DistorsioCheck->isChecked(), distData);
             QString message;
 
             if (ui->OneSlideRadioButton->isChecked())
@@ -1180,7 +1185,7 @@ void MainWindow::testForSlide()
                         +"\n"+ "Фокусное расстояние :"+" "+ QString::number(slideData.focStart)
                         +"\n"+ "Угол зрения слайда ШхВ, град :"+" "+ QString::number(testData.viewAngleX)+"x"+QString::number(testData.viewAngleY)
                         +"\n"+ "Размер слайда пикс. :"+" "+ QString::number(slideData.slideSizeX)+"x"+QString::number(slideData.slideSizeY)
-                        +"\n"+ "Размер слайда мм. :"+" "+ QString::number(slideData.slideSizeMM_X)+"x"+QString::number(slideData.slideSizeMM_Y);
+                        +"\n"+ "Размер слайда мм. :"+" "+ QString::number(slideData.slideSizeMMx)+"x"+QString::number(slideData.slideSizeMMy);
 
             }
 
@@ -1190,26 +1195,26 @@ void MainWindow::testForSlide()
                 message = QString("ШхВ :")+" "+ QString::number(groupImageParams.countX) + "x" + QString::number(groupImageParams.countY)+
                         "\n"+"Число cлайдов :"+" "+ QString::number(groupImageParams.countX * groupImageParams.countY)+
                         "\n"+"Число фокусных расстояний :"+" "+ QString::number(((slideData.focEnd - slideData.focStart)/slideData.focStep) + 1)+
-                        "\n"+"Размер мм. :"+" "+ QString::number(slideData.slideSizeMM_X * groupImageParams.countX)+
-                        "x"+ QString::number(slideData.slideSizeMM_Y * groupImageParams.countY)+
+                        "\n"+"Размер мм. :"+" "+ QString::number(slideData.slideSizeMMx * groupImageParams.countX)+
+                        "x"+ QString::number(slideData.slideSizeMMy * groupImageParams.countY)+
                         "\n"+"Размер пикс. :"+" "+ QString::number(slideData.slideSizeX * groupImageParams.countX)+
                         "x"+ QString::number(slideData.slideSizeY*groupImageParams.countY)
                         +"\n"+ "Фокусное расстояние первого слайда :"+" "+ QString::number(slideData.focStart)
-                        +"\n"+ "Размер первого слайда мм. :"+" "+ QString::number(slideData.slideSizeMM_X) + "x" + QString::number(slideData.slideSizeMM_Y)
+                        +"\n"+ "Размер первого слайда мм. :"+" "+ QString::number(slideData.slideSizeMMx) + "x" + QString::number(slideData.slideSizeMMy)
                         +"\n"+ "Размер первого слайда пикс. :"+" "+ QString::number(slideData.slideSizeX) + "x" + QString::number(slideData.slideSizeY)
                         +"\n"+ "Угол зрения первого слайда ШхВ, град :"+" "+ QString::number(testData.viewAngleX)+"x" + QString::number(testData.viewAngleY)
                         +"\n"+ "Число звезд на первом слайде :"+" "+ QString::number(testData.countOfStars);
 
 
             }
-            QMessageBox::information(NULL,"Тест",message);
+            QMessageBox::information(nullptr, "Тест", message);
 
 
         }
 
         catch (exception &e)
         {
-            QMessageBox::information(NULL,"Ошибка",e.what());
+            QMessageBox::information(nullptr, "Ошибка", e.what());
             return;
         }
 
@@ -1245,14 +1250,14 @@ void MainWindow::saveImage()
             {
                 if (!writer.write(*optimalImage))
                 {
-                    QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                    QMessageBox::information(nullptr, "Ошибка", writer.errorString());
                     return;
                 }
                 optimalImage.reset();
             }
             else
             {
-                QMessageBox::information(NULL,"Ошибка", "Нечего сохранять");
+                QMessageBox::information(nullptr, "Ошибка", "Нечего сохранять");
                 return;
             }
         }
@@ -1264,26 +1269,26 @@ void MainWindow::saveImage()
                 if (!images[i].isNull())
                 {
                     QString tempFileName = filenameSave;
-                    QString filenameSaveAdd = tempFileName.remove(tempFileName.lastIndexOf("/") + 1,tempFileName.end() - tempFileName.begin());
-                    filenameSaveAdd.append(currentTime.currentTime().toString("hh_mm_ss_") + QString::number(i) + ".tiff");
+                    QString filenameSaveAdd = tempFileName.remove(tempFileName.lastIndexOf("/") + 1, tempFileName.end() - tempFileName.begin());
+                    filenameSaveAdd.append(currentTime.currentTime().toString("hhMM_ss_") + QString::number(i) + ".tiff");
                     writer.setFileName(filenameSaveAdd);
                     if (!writer.write(*images[i]))
                     {
-                        QMessageBox::information(NULL,"Ошибка",writer.errorString());
+                        QMessageBox::information(nullptr, "Ошибка", writer.errorString());
                         return;
                     }
                     images[i].reset();
                 }
                 else
                 {
-                    QMessageBox::information(NULL,"Ошибка","Нечего сохранять");
+                    QMessageBox::information(nullptr, "Ошибка", "Нечего сохранять");
                     return;
                 }
             }
 
         }
     }
-    QMessageBox::information(NULL,"Сохранение","Успешно сохранено");
+    QMessageBox::information(nullptr, "Сохранение", "Успешно сохранено");
 }
 
 

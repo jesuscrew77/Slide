@@ -1290,7 +1290,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Ширина,мм</string>
+              <string>Ширина, мм</string>
              </property>
             </widget>
            </item>
@@ -1703,7 +1703,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Az [0,360], град</string>
+              <string>Az [0, 360], град</string>
              </property>
             </widget>
            </item>

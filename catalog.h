@@ -28,11 +28,11 @@ public:
         betaAngles = vec;
     }
 
-    const QVector <float> & mvVec() const noexcept {
+    const QVector <double> & mvVec() const noexcept {
         return mv;
     }
 
-    void setMvVec(const QVector <float>& vec) noexcept
+    void setMvVec(const QVector <double>& vec) noexcept
     {
         mv = vec;
     }
@@ -101,7 +101,7 @@ private:
     bool miniCat = false;
     QVector <double> alphaAngles;
     QVector <double> betaAngles;
-    QVector <float> mv;
+    QVector <double> mv;
     QVector <double> alphaAnglesSec;
     QVector <double> betaAnglesSec;
     QVector <long> countSec;
@@ -109,19 +109,19 @@ private:
     QVector <short> newNumbers;
 };
 
-#pragma pack(push,1)
+#pragma pack(push, 1)
 struct Sectors // каталог секторов
 {
-    float alpha_c;
-    float beta_c;
-    qint16 count_in_sector;
+    double alpha_c;
+    double beta_c;
+    qint16 countInsector;
     int shift;
 };
 #pragma pack(pop)
 
 
 
-#pragma pack(push,1)
+#pragma pack(push, 1)
 struct DataStar // основной каталог/бортовой каталог
 {
     qint32 NSAO;
@@ -136,7 +136,7 @@ struct DataStar // основной каталог/бортовой катало
 
 
 
-#pragma pack(push,1)
+#pragma pack(push, 1)
 struct Numbers // основной каталог/бортовой каталог
 {
     qint16 num;

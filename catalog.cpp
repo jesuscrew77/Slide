@@ -15,7 +15,7 @@ void Catalog::openCatalog(const QString& filename, bool& status, QString& error,
         return;
     }
 
-    std::ifstream in(filename.toLocal8Bit().constData(),ios::binary);
+    std::ifstream in(filename.toLocal8Bit().constData(), ios::binary);
     QVector <DataStar> dataStarVec;
     if (in.is_open())
     {
@@ -40,16 +40,16 @@ void Catalog::openCatalog(const QString& filename, bool& status, QString& error,
     }
     dataStarVec.clear();
 
-    for (int i = 0;i < mv.size();i ++)
+    for (int i = 0; i < mv.size(); i++)
     {
         mv[i] = mv[i] / 10;
     }
     if (readAdd)
     {
         bufFilename = filename;
-        filenameAdd = bufFilename.remove(filename.lastIndexOf("."),filename.end() - filename.begin());
-        filenameAdd.append("_SEC.CAT");
-        in.open(filenameAdd.toLocal8Bit().constData(),ios::binary);
+        filenameAdd = bufFilename.remove(filename.lastIndexOf("."), filename.end() - filename.begin());
+        filenameAdd.append("Sec.CAT");
+        in.open(filenameAdd.toLocal8Bit().constData(), ios::binary);
 
         QVector <Sectors> secVec;
         if (in.is_open())
@@ -71,7 +71,7 @@ void Catalog::openCatalog(const QString& filename, bool& status, QString& error,
         {
             alphaAnglesSec.append((it->alpha_c) *(transToGrad));
             betaAnglesSec.append((it->beta_c) * (transToGrad));
-            countSec.append(it->count_in_sector);
+            countSec.append(it->countInsector);
             shift.append(it->shift);
         }
         secVec.clear();
